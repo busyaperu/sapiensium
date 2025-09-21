@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    container_name: sapiensium_app
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    env_file:
+      - .env
+    networks:
+      - sapiensium_network
+
+  nginx:
+    image: nginx:alpine
+    container_name: sapiensium_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - app
+    networks:
+      - sapiensium_network
+
+networks:
+  sapiensium_network:
+    driver: bridge

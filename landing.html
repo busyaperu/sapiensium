@@ -1,0 +1,566 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExamPro - Plataforma de evaluación con IA</title>
+    <link rel="stylesheet" href="landing-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.2/index.js",
+                "ScrollTrigger": "https://cdn.jsdelivr.net/npm/gsap@3.12.2/ScrollTrigger.js"
+            }
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 2C8.268 2 2 8.268 2 16C2 23.732 8.268 30 16 30C23.732 30 30 23.732 30 16C30 8.268 23.732 2 16 2Z" fill="#4f46e5"/>
+                    <path d="M22 10H10C9.448 10 9 10.448 9 11V21C9 21.552 9.448 22 10 22H22C22.552 22 23 21.552 23 21V11C23 10.448 22.552 10 22 10Z" fill="white"/>
+                    <path d="M13 14H19V16H13V14Z" fill="#4f46e5"/>
+                    <path d="M13 17H19V19H13V17Z" fill="#4f46e5"/>
+                </svg>
+                <span>ExamPro</span>
+            </div>
+            <div class="menu-toggle">
+                <div class="hamburger"></div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#features">Características</a></li>
+                <li><a href="#how-it-works">Cómo funciona</a></li>
+                <li><a href="#pricing">Precios</a></li>
+                <li><a href="#testimonials">Testimonios</a></li>
+                <li><a href="public/contacto.html">Contacto</a></li>
+            </ul>
+            <div class="cta-buttons">
+                <a href="public/loging.html" class="btn btn-secondary">Iniciar sesión</a> 
+                <a href="public/loging.html" class="btn btn-primary">Registrarse</a>
+                <!-- *** BOTÓN ADMIN DISCRETO *** -->
+                <a href="public/admin-auth.html" class="btn btn-secondary">🔐 Staff</a>             
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Revoluciona la evaluación académica con <span>Inteligencia Artificial</span></h1>
+            <p>Genera, ejecuta y evalúa exámenes en línea con la potencia de la IA. Ahorra tiempo y mejora la precisión en tus evaluaciones.</p>
+            <div class="hero-cta">
+                <a href="public/loging.html" class="btn btn-primary">Comenzar ahora</a>
+                <a href="#" id="btnSolicitarDemo" class="btn btn-outlined">Solicita un Demo <i class="fas fa-flask"></i></a>
+            </div>
+            <!-- /// INICIO: Elemento Añadido /// -->
+            <div class="singularity-ref">
+                <i class="fas fa-infinity"></i> 
+                <span>Camino a la Singularidad</span>
+            </div>
+            <div class="demo-video-section">
+                <h2>Ve cómo funciona</h2>
+                <p>Mira nuestro sistema en acción antes de solicitar tu demo</p>
+                <a href="#" class="btn btn-outlined">Ver demostración <i class="fas fa-play-circle"></i></a>
+            </div>
+            <!-- /// FIN: Elemento Añadido /// -->
+        </div>
+        <div class="hero-image">
+            <svg class="blob" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#4f46e5" d="M38.9,-66.2C53.1,-58.4,69.1,-53,77.8,-41.6C86.5,-30.2,87.8,-12.8,84.8,3.1C81.7,19,74.4,33.5,64.6,45.6C54.8,57.7,42.4,67.3,28.8,72.3C15.2,77.3,0.4,77.6,-12.9,73.2C-26.2,68.8,-38,59.6,-50.4,50C-62.9,40.3,-75.9,30.2,-81.7,16.5C-87.5,2.8,-86,-14.4,-79.3,-28.6C-72.6,-42.8,-60.7,-54,-47.2,-62.2C-33.7,-70.3,-18.5,-75.3,-3.5,-70.5C11.5,-65.7,24.7,-74,38.9,-66.2Z" transform="translate(100 100)" />
+            </svg>
+            <div class="dashboard-mockup">
+                <div class="mock-header"></div>
+                <div class="mock-sidebar"></div>
+                <div class="mock-content">
+                    <div class="mock-question"></div>
+                    <div class="mock-options"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="clients">
+        <h2>Confían en nosotros</h2>
+        <div class="client-logos">
+            <div class="logo-item">
+                <svg class="client-logo" width="150" height="40" viewBox="0 0 150 40">
+                    <rect width="150" height="40" fill="none"/>
+                    <text x="10" y="25" font-family="Arial" font-size="16" fill="#666">Universidad XYZ</text>
+                </svg>
+            </div>
+            <div class="logo-item">
+                <svg class="client-logo" width="150" height="40" viewBox="0 0 150 40">
+                    <rect width="150" height="40" fill="none"/>
+                    <text x="10" y="25" font-family="Arial" font-size="16" fill="#666">Colegio ABC</text>
+                </svg>
+            </div>
+            <div class="logo-item">
+                <svg class="client-logo" width="150" height="40" viewBox="0 0 150 40">
+                    <rect width="150" height="40" fill="none"/>
+                    <text x="10" y="25" font-family="Arial" font-size="16" fill="#666">Instituto 123</text>
+                </svg>
+            </div>
+            <div class="logo-item">
+                <svg class="client-logo" width="150" height="40" viewBox="0 0 150 40">
+                    <rect width="150" height="40" fill="none"/>
+                    <text x="10" y="25" font-family="Arial" font-size="16" fill="#666">Escuela Tech</text>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <h2>Características principales</h2>
+        <p class="section-desc">ExamPro combina la potencia de la IA con herramientas intuitivas para crear una experiencia de evaluación sin precedentes.</p>
+        
+        <div class="feature-cards">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3>Generación con IA</h3>
+                <p>ExamPro utiliza 18 diferentes modelos de inteligencia artificial para crear exámenes personalizados en segundos, adaptados a tres niveles: básico, intermedio y avanzado. La plataforma genera preguntas de opción múltiple, verdadero/falso y abiertas, garantizando una evaluación integral y equilibrada.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-cloud"></i>
+                </div>
+                <h3>Almacenamiento en la Nube</h3>
+                <p>Todos los exámenes generados, las plantillas de respuesta y los exámenes respondidos por los estudiantes se almacenan de forma segura en una base de datos en la nube. Este almacenamiento es totalmente administrado por cada usuario, permitiendo gestionar y acceder a los exámenes desde cualquier lugar.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Seguridad Avanzada Contra el Plagio</h3>
+                <p>ExamPro implementa múltiples niveles de seguridad para evitar el plagio y el uso de IA por parte de los estudiantes. El sistema bloquea intentos de fraude, asegurando que las respuestas sean auténticas y precisas, protegiendo así la integridad académica.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>Evaluación automática</h3>
+                <p>La plataforma califica automáticamente las respuestas tanto cerradas como abiertas, proporcionando retroalimentación detallada y precisa de inmediato. Esto permite a los estudiantes recibir resultados al instante y comprender sus áreas de mejora.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Análisis de resultados</h3>
+                <p>Obtén insights detallados sobre el rendimiento y las áreas de mejora de tus estudiantes.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3>Multiplataforma</h3>
+                <p>Accede desde cualquier dispositivo y ofrece una experiencia perfecta para tus estudiantes.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-search-plus"></i>
+                </div>
+                <h3>Búsqueda Inteligente de Exámenes</h3>
+                <p>Encuentra y carga cualquier examen guardado con búsqueda semántica instantánea. Escribe una palabra clave y obtén resultados precisos de tu biblioteca de miles de exámenes. Carga automática y 100% editable al instante.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <h3>Generación de Diagramas SVG/Vectoriales</h3>
+                <p>Crea diagramas, gráficos e imágenes vectoriales automaticamente con 10 modelos multimodales especializados. Perfecto para matemáticas, ciencias, ingeniería y materias técnicas que requieren elementos visuales precisos.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <h3>Rúbricas Automáticas con 18 Modelos</h3>
+                <p>Sistema de rúbricas inteligente que evalúa respuestas abiertas con 18 modelos de IA diferentes. Proporciona calificación detallada, retroalimentación constructiva y análisis profundo del desempeño estudiantil.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-file-upload"></i>
+                </div>
+                <h3>Evaluación de Documentos Adjuntos</h3>
+                <p>Los estudiantes pueden adjuntar archivos PDF, imágenes y documentos como parte de sus respuestas. 10 modelos multimodales analizan y evalúan automáticamente el contenido de trabajos y proyectos.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h3>API Completa y Integraciones LMS</h3>
+                <p>API REST completa para integración con Moodle, Canvas, Blackboard y otros LMS. Webhooks, SSO, sincronización automática de calificaciones y importación/exportación de datos en múltiples formatos estándar.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <h3>Soporte Multiidioma con IA</h3>
+                <p>Genera exámenes en más de 50 idiomas con traducción automática inteligente. Los modelos de IA adaptan el contenido culturalmente y mantienen la precisión académica en cada idioma, perfecto para instituciones internacionales.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="how-it-works">
+        <h2>Cómo funciona</h2>
+        <p class="section-desc">Un proceso sencillo para revolucionar la evaluación académica</p>
+        
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Configura tu examen</h3>
+                <p>Define los parámetros, temas y tipos de preguntas que necesitas para tu evaluación.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>La IA genera el contenido</h3>
+                <p>Nuestro sistema crea automáticamente preguntas relevantes y precisas para tu materia.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Distribuye a tus estudiantes</h3>
+                <p>Comparte el examen a través de un enlace o integrado en tu LMS preferido.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <h3>Evaluación en tiempo real</h3>
+                <p>Los resultados se procesan instantáneamente con retroalimentación detallada.</p>
+            </div>
+        </div>
+        
+        <div class="demo-cta">
+            <p>¿Quieres ver ExamPro en acción?</p>
+            <a href="#" class="btn btn-primary">Solicitar demostración</a>
+        </div>
+    </section>
+
+    <section id="pricing" class="pricing">
+        <h2>Planes y precios</h2>
+        <p class="section-desc">Soluciones flexibles para instituciones de todos los tamaños</p>
+        
+        <div class="pricing-toggle">
+            <span>Mensual</span>
+            <label class="switch">
+                <input type="checkbox" id="billing-toggle">
+                <span class="slider"></span>
+            </label>
+            <span>Anual <span class="save-badge">Ahorra 20%</span></span>
+        </div>
+        
+        <div class="pricing-cards">
+            <div class="pricing-card">
+                <div class="pricing-header">
+                    <h3>Básico</h3>
+                    <div class="price">
+                        <span class="currency">$</span>
+                        <span class="amount" data-monthly="15" data-annual="15">15</span>
+                        <span class="period">/mes</span>
+                    </div>
+                    <p>Ideal para profesores individuales</p>
+                </div>
+                <ul class="pricing-features">
+                    <li><i class="fas fa-check"></i> Hasta 50 exámenes/mes</li>
+                    <li><i class="fas fa-check"></i> 3 tipos de preguntas</li>
+                    <li><i class="fas fa-check"></i> Evaluación automática básica</li>
+                    <li><i class="fas fa-check"></i> Reportes simples</li>
+                    <li><i class="fas fa-check"></i> Soporte por email</li>
+                </ul>
+                <a href="public/carrito.html?plan=basico" class="btn btn-outlined">Comenzar ahora</a>
+            </div>
+            
+            <div class="pricing-card popular">
+                <div class="popular-badge">Más popular</div>
+                <div class="pricing-header">
+                    <h3>Profesional</h3>
+                    <div class="price">
+                        <span class="currency">$</span>
+                        <span class="amount" data-monthly="20" data-annual="20">20</span>
+                        <span class="period">/mes</span>
+                    </div>
+                    <p>Para departamentos y pequeñas instituciones</p>
+                </div>
+                <ul class="pricing-features">
+                    <li><i class="fas fa-check"></i> Hasta 100 exámenes/mes </li>
+                    <li><i class="fas fa-check"></i> Todos los tipos de preguntas</li>
+                    <li><i class="fas fa-check"></i> Evaluación IA avanzada</li>
+                    <li><i class="fas fa-check"></i> Análisis detallado</li>
+                    <li><i class="fas fa-check"></i> Integración con LMS</li>
+                    <li><i class="fas fa-check"></i> Soporte prioritario</li>
+                </ul>
+                <a href="public/carrito.html?plan=profesional" class="btn btn-primary">Comenzar ahora</a>
+            </div>
+            
+            <div class="pricing-card">
+                <div class="pricing-header">
+                    <h3>Empresarial</h3>
+                    <div class="price">
+                        <span class="custom-price">Personalizado</span>
+                    </div>
+                    <p>Para grandes instituciones educativas</p>
+                </div>
+                <ul class="pricing-features">
+                    <li><i class="fas fa-check"></i> Todo lo de Profesional</li>
+                    <li><i class="fas fa-check"></i> IA personalizada</li>
+                    <li><i class="fas fa-check"></i> API completa</li>
+                    <li><i class="fas fa-check"></i> Marca blanca</li>
+                    <li><i class="fas fa-check"></i> Cumplimiento normativo</li>
+                    <li><i class="fas fa-check"></i> Gestor de cuenta dedicado</li>
+                </ul>
+                <a href="public/contacto.html" class="btn btn-outlined">Contactar ventas</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="testimonials">
+        <h2>Lo que dicen nuestros usuarios</h2>
+        
+        <div class="testimonial-carousel">
+            <div class="testimonial-container">
+                <div class="testimonial-card active">
+                    <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
+                    <p class="testimonial-text">ExamPro ha transformado completamente nuestra forma de evaluar. El tiempo que ahorramos en la creación y calificación de exámenes nos permite dedicar más atención a nuestros estudiantes.</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="25" cy="25" r="20" fill="#e0e0e0" />
+                                <circle cx="25" cy="20" r="8" fill="#bdbdbd" />
+                                <path d="M25,50 C16,50 11,42 11,34 L39,34 C39,42 34,50 25,50 Z" fill="#bdbdbd" />
+                            </svg>
+                        </div>
+                        <div class="author-info">
+                            <h4>María Rodríguez</h4>
+                            <p>Directora Académica, Universidad XYZ</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
+                    <p class="testimonial-text">La precisión con la que la IA evalúa las respuestas de desarrollo es impresionante. Por fin podemos ofrecer retroalimentación detallada a gran escala sin sacrificar calidad.</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="25" cy="25" r="20" fill="#e0e0e0" />
+                                <circle cx="25" cy="20" r="8" fill="#bdbdbd" />
+                                <path d="M25,50 C16,50 11,42 11,34 L39,34 C39,42 34,50 25,50 Z" fill="#bdbdbd" />
+                            </svg>
+                        </div>
+                        <div class="author-info">
+                            <h4>Carlos Mendoza</h4>
+                            <p>Profesor de Ingeniería, Instituto 123</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
+                    <p class="testimonial-text">Implementamos ExamPro en toda nuestra red de escuelas y los resultados han sido extraordinarios. La analítica nos ayuda a identificar patrones y mejorar constantemente nuestra enseñanza.</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="25" cy="25" r="20" fill="#e0e0e0" />
+                                <circle cx="25" cy="20" r="8" fill="#bdbdbd" />
+                                <path d="M25,50 C16,50 11,42 11,34 L39,34 C39,42 34,50 25,50 Z" fill="#bdbdbd" />
+                            </svg>
+                        </div>
+                        <div class="author-info">
+                            <h4>Laura Jiménez</h4>
+                            <p>Coordinadora Educativa, Grupo Escolar ABC</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="carousel-controls">
+                <button class="prev-btn"><i class="fas fa-arrow-left"></i></button>
+                <div class="carousel-dots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                <button class="next-btn"><i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="cta-section">
+        <div class="cta-content">
+            <h2>Lleva tus evaluaciones al siguiente nivel</h2>
+            <p>Descubre cómo ExamPro puede transformar la experiencia de evaluación en tu institución.</p>
+            <form class="cta-form">
+                <div class="form-group">
+                    <input type="email" placeholder="Tu correo electrónico" required>
+                    <button type="submit" class="btn btn-primary">Comenzar prueba gratuita</button>
+                </div>
+                <p class="form-disclaimer">14 días de prueba sin compromiso. No se requiere tarjeta de crédito.</p>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 2C8.268 2 2 8.268 2 16C2 23.732 8.268 30 16 30C23.732 30 30 23.732 30 16C30 8.268 23.732 2 16 2Z" fill="#4f46e5"/>
+                        <path d="M22 10H10C9.448 10 9 10.448 9 11V21C9 21.552 9.448 22 10 22H22C22.552 22 23 21.552 23 21V11C23 10.448 22.552 10 22 10Z" fill="white"/>
+                        <path d="M13 14H19V16H13V14Z" fill="#4f46e5"/>
+                        <path d="M13 17H19V19H13V17Z" fill="#4f46e5"/>
+                    </svg>
+                    <span>ExamPro</span>
+                </div>
+                <p>Transformando la educación con inteligencia artificial</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Producto</h4>
+                <ul>
+                    <li><a href="#">Características</a></li>
+                    <li><a href="#">Precios</a></li>
+                    <li><a href="#">Integraciones</a></li>
+                    <li><a href="#">Hoja de ruta</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Recursos</h4>
+                <ul>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Documentación</a></li>
+                    <li><a href="#">Guías</a></li>
+                    <li><a href="#">Webinars</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Empresa</h4>
+                <ul>
+                    <li><a href="#">Sobre nosotros</a></li>
+                    <li><a href="#">Clientes</a></li>
+                    <li><a href="#">Únete al equipo</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Términos de servicio</a></li>
+                    <li><a href="#">Política de privacidad</a></li>
+                    <li><a href="#">Seguridad</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2023 ExamPro. Todos los derechos reservados.</p>
+            <div class="language-selector">
+                <i class="fas fa-globe"></i>
+                <select>
+                    <option>Español</option>
+                    <option>English</option>
+                    <option>Français</option>
+                </select>
+            </div>
+        </div>
+    </footer>
+    <!-- Modal Solicitar Demo -->
+    <div id="modalDemo" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Solicita tu Demo Gratuito</h2>
+            <form id="formSolicitudDemo">
+                <input type="text" id="demoName" placeholder="Tu nombre completo*" required>
+                <input type="email" id="demoEmail" placeholder="Email*" required>
+                <input type="text" id="demoCompany" placeholder="Empresa/Institución">
+                <input type="tel" id="demoPhone" placeholder="Teléfono">
+                <textarea id="demoUseCase" placeholder="¿Cómo planeas usar nuestro sistema de exámenes?*" required></textarea>
+                
+                <button type="submit">Enviar Solicitud</button>
+            </form>
+            <div id="demoMensaje" style="display: none;"></div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+
+    <script>
+            // Configuración para landing.html
+            const config = {
+                pagosAppwrite: {
+                    endpoint: "https://appwrite.sapiensium.com/v1",
+                    projectId: "68b9b7dd98304d1d2268", 
+                    databaseId: "68b9b80f1fae24f27525",       
+                }
+            };
+        // Abrir modal
+        document.getElementById('btnSolicitarDemo').addEventListener('click', function() {
+            document.getElementById('modalDemo').style.display = 'block';
+        });
+
+        // Cerrar modal
+        document.querySelector('.close').addEventListener('click', function() {
+            document.getElementById('modalDemo').style.display = 'none';
+        });
+
+        // Manejar envío del formulario
+        document.getElementById('formSolicitudDemo').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await enviarSolicitudDemo();
+        });
+
+        const { Client, Databases } = Appwrite;
+
+        async function enviarSolicitudDemo() {
+            const datos = {
+                name: document.getElementById('demoName').value,
+                email: document.getElementById('demoEmail').value,
+                company: document.getElementById('demoCompany').value,
+                phone: document.getElementById('demoPhone').value,
+                use_case: document.getElementById('demoUseCase').value,
+                status: 'pending',
+                requested_at: new Date().toISOString()
+            };
+            
+            try {
+                const pagosClient = new Client()
+                    .setEndpoint(config.pagosAppwrite.endpoint)
+                    .setProject(config.pagosAppwrite.projectId)
+                    
+                const databases = new Databases(pagosClient);
+                
+                await databases.createDocument(
+                    config.pagosAppwrite.databaseId,
+                    '68b9de1494e971cb7e1b',  // ID exacto de la colección
+                    'unique()',
+                    datos
+                );
+                
+                document.getElementById('demoMensaje').innerHTML = 
+                    '<p style="color: green;">¡Solicitud enviada! Te contactaremos en 24 horas.</p>';
+                document.getElementById('demoMensaje').style.display = 'block';
+                document.getElementById('formSolicitudDemo').style.display = 'none';
+                
+            } catch (error) {
+                document.getElementById('demoMensaje').innerHTML = 
+                    '<p style="color: red;">Error enviando solicitud. Inténtalo de nuevo.</p>';
+                document.getElementById('demoMensaje').style.display = 'block';
+                console.error('Error:', error);
+            }
+        }
+    </script>
+
+    <script type="module" src="index.js"></script>
+</body>
+</html>

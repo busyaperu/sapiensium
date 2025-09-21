@@ -1,0 +1,2465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación de Exámenes - ExamPro</title>
+    <!-- Enlaza la hoja de estilos principal -->
+    <link rel="stylesheet" href="styles.css"> <!-- Asegúrate que la ruta sea correcta -->
+    <!-- Añade Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.1"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <link rel="icon" href="data:,"> <!-- Se mantiene -->
+
+    <!-- NUEVOS Estilos específicos para esta página, alineados con el tema -->
+    <style>
+        /* Estilos base del body y layout principal (Consistente) */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+            font-family: var(--font-family, sans-serif);
+            color: var(--text-color, #333);
+            line-height: 1.6; /* Mejora legibilidad general */
+        }
+
+        /* Header y Footer (Estilo consistente) */
+        header nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+        }
+        header .logo span { font-weight: 600; font-size: 1.4rem; color: #333; }
+        header .logo svg { vertical-align: middle; margin-right: 0.5rem; }
+
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 3rem 1rem;
+        }
+
+        /* Contenedor principal estilo 'card' (Consistente) */
+        .content-container {
+            background-color: #fff;
+            padding: 2.5rem 3rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 1100px; /* Ancho mayor para tablas */
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Títulos (Consistente) */
+        .content-container h1,
+        .content-container h2 {
+            text-align: center;
+            color: var(--primary-color, #4f46e5);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        .content-container h1 { font-size: 1.8rem; margin-bottom: 2rem; }
+        .content-container h2 {
+            font-size: 1.5rem;
+            margin-top: 2.5rem;
+             border-top: 1px solid #eee;
+             padding-top: 2rem;
+             text-align: left; /* Alinear H2 a la izquierda */
+             color: #334155; /* Color un poco más oscuro para H2 */
+        }
+
+        /* Sección de Filtros (Estilo Card) */
+        .filter-card { /* Nueva clase para la sección de filtros */
+            background-color: #f8fafc; /* Fondo ligeramente distinto */
+            padding: 1.5rem 2rem;
+            border-radius: 6px;
+            margin-bottom: 2.5rem;
+            border: 1px solid #e2e8f0;
+        }
+         .filter-card h2 { /* Estilo específico para H2 dentro de filtros */
+             text-align: left;
+             margin-top: 0;
+             padding-top: 0;
+             border-top: none;
+             margin-bottom: 1.5rem;
+             font-size: 1.3rem;
+             color: #475569;
+         }
+         .filter-card .form-row { /* Para alinear filtros horizontalmente */
+             display: flex;
+             flex-wrap: wrap; /* Permitir que pasen a la siguiente línea */
+             gap: 1.5rem;
+             margin-bottom: 1rem;
+         }
+         .filter-card .form-group {
+             flex: 1; /* Intentar que ocupen espacio equitativo */
+             min-width: 180px; /* Ancho mínimo antes de envolver */
+             margin-bottom: 0; /* Quitar margen inferior si están en fila */
+         }
+         .filter-card .mode-selection { /* Estilo para selección de modo */
+             margin-top: 1.5rem;
+             padding-top: 1rem;
+             border-top: 1px dashed #e2e8f0;
+         }
+         .filter-card .mode-selection label {
+             margin-right: 1.5rem; /* Espacio entre opciones de radio */
+             font-weight: 400;
+             font-size: 0.9rem;
+             cursor: pointer;
+         }
+          .filter-card .mode-selection input[type="radio"] {
+              width: auto; /* Tamaño normal para radios */
+              margin-right: 0.4rem;
+              vertical-align: middle;
+          }
+
+
+        /* Estilo Formularios (Consistente) */
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #444; font-size: 0.9rem; }
+        .form-group input[type="text"],
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: #fff;
+            color: #333;
+        }
+        .form-group input[type="text"]:focus,
+        .form-group select:focus {
+            border-color: var(--primary-color, #4f46e5);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        /* Grupo de botones (Consistente) */
+        .btn-group { /* Clase para agrupar botones, p.ej. Buscar/Limpiar */
+             display: flex;
+             gap: 1rem;
+             margin-top: 1rem;
+             justify-content: flex-start; /* Alinear al inicio por defecto */
+         }
+        .btn-group.end-aligned { /* Clase opcional para alinear al final */
+            justify-content: flex-end;
+        }
+
+        /* Estilo Botones (Consistente - Copiado de cargar.html) */
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.2rem; border-radius: 5px; cursor: pointer; font-size: 0.95rem; font-weight: 500; text-decoration: none; border: 1px solid transparent; transition: all 0.2s ease; white-space: nowrap; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-primary { background-color: var(--primary-color, #4f46e5); border-color: var(--primary-color, #4f46e5); color: white; }
+        .btn-primary:hover:not(:disabled) { background-color: var(--primary-dark-color, #4338ca); border-color: var(--primary-dark-color, #4338ca); }
+        .btn-secondary { background-color: #e2e8f0; border-color: #cbd5e1; color: #475569; }
+        .btn-secondary:hover:not(:disabled) { background-color: #cbd5e1; border-color: #94a3b8; }
+        .btn-success { background-color: #22c55e; border-color: #22c55e; color: white; } /* Verde */
+        .btn-success:hover:not(:disabled) { background-color: #16a34a; border-color: #16a34a; }
+        .btn-danger { background-color: #ef4444; border-color: #ef4444; color: white; }
+        .btn-danger:hover:not(:disabled) { background-color: #dc2626; border-color: #dc2626; }
+        .btn-info { background-color: #3b82f6; border-color: #3b82f6; color: white; } /* Azul info */
+        .btn-info:hover:not(:disabled) { background-color: #2563eb; border-color: #2563eb; }
+        .btn-warning { background-color: #f59e0b; border-color: #f59e0b; color: white; } /* Amarillo/Naranja warning */
+        .btn-warning:hover:not(:disabled) { background-color: #d97706; border-color: #d97706; }
+        .btn-small { padding: 0.3rem 0.6rem; font-size: 0.8rem; } /* Para botones en tablas */
+
+
+        /* Estilo Tablas (Consistente) */
+        .table-container { /* Contenedor para hacer tablas responsive */
+             margin-top: 1.5rem;
+             overflow-x: auto;
+             border: 1px solid #e2e8f0; /* Borde alrededor de la tabla */
+             border-radius: 6px;
+             background-color: #fff; /* Fondo blanco por si acaso */
+         }
+        .exam-table { /* Clase para ambas tablas */
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .exam-table th,
+        .exam-table td {
+            padding: 0.8rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0; /* Líneas horizontales */
+            white-space: nowrap; /* Evitar que el contenido se rompa mucho */
+        }
+         .exam-table th {
+             background-color: #f8fafc; /* Fondo de encabezado muy sutil */
+             font-weight: 600;
+             color: #475569; /* Color de texto gris oscuro */
+             border-bottom-width: 2px; /* Línea inferior más gruesa */
+             border-color: #e2e8f0;
+         }
+         .exam-table tbody tr:last-child td {
+             border-bottom: none; /* Sin borde en la última fila */
+         }
+        .exam-table tbody tr:hover {
+            background-color: #f1f5f9; /* Resaltado suave */
+        }
+        .exam-table .action-buttons button { /* Grupo botones en tabla */
+             margin-right: 0.5rem;
+        }
+         .exam-table .action-buttons button:last-child { margin-right: 0; }
+
+
+        /* Estilos Modales (Adaptados al tema) */
+        .modal-overlay {
+            position: fixed;
+            inset: 0; /* top, right, bottom, left = 0 */
+            background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro semitransparente */
+            display: flex; /* Usar flex para centrar */
+            align-items: center;
+            justify-content: center;
+            z-index: 1000; /* Asegurar que esté por encima */
+            padding: 1rem;
+            display: none; /* Oculto por defecto (controlado por JS) */
+        }
+        .modal-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 800px; /* Ancho máximo del modal */
+            max-height: 90vh; /* Altura máxima */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Para controlar scroll interno */
+            animation: modalFadeIn 0.3s ease-out;
+        }
+         @keyframes modalFadeIn {
+             from { opacity: 0; transform: scale(0.95); }
+             to { opacity: 1; transform: scale(1); }
+         }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+         .modal-header h2 {
+             margin: 0;
+             font-size: 1.3rem;
+             color: #334155;
+             border: none; /* Quitar borde superior/padding si lo hereda */
+             padding: 0;
+             text-align: left;
+         }
+         .modal-close { /* Botón 'X' para cerrar */
+             background: none;
+             border: none;
+             font-size: 1.8rem;
+             font-weight: 300;
+             color: #64748b;
+             cursor: pointer;
+             padding: 0.2rem 0.5rem;
+             line-height: 1;
+         }
+          .modal-close:hover { color: #334155; }
+
+        .modal-body {
+            padding: 1.5rem 2rem;
+            overflow-y: auto; /* Scroll si el contenido es muy largo */
+            flex-grow: 1; /* Ocupa el espacio restante */
+        }
+
+        /* Estilos específicos dentro del modal de evaluación */
+        #evaluacion-progreso .progress-bar { /* Barra de progreso */
+            width: 100%;
+            height: 10px; /* Más delgada */
+            background-color: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 0.8rem 0;
+        }
+        #evaluacion-progreso .progress {
+            height: 100%;
+            background-color: var(--primary-color, #4f46e5);
+            border-radius: 5px;
+            transition: width 0.3s ease-out;
+            width: 0%; /* Empieza en 0 */
+        }
+        #evaluacion-progreso p { margin-bottom: 0.5rem; color: #64748b; }
+
+         #evaluacion-resultado h3, #modal-resultado h3 { /* Títulos dentro del modal */
+             font-size: 1.2rem;
+             color: #475569;
+             margin-bottom: 1rem;
+             margin-top: 1.5rem;
+             padding-bottom: 0.5rem;
+             border-bottom: 1px solid #eee;
+         }
+         #evaluacion-resultado h4, #modal-resultado h4 {
+             font-size: 1.1rem;
+             color: #475569;
+             margin-top: 2rem;
+             margin-bottom: 1rem;
+         }
+
+
+        .resultado-summary { /* Resumen de calificación */
+            background-color: #f1f5f9;
+            border-radius: 6px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            gap: 2rem; /* Espacio entre items */
+            margin-bottom: 2rem;
+            flex-wrap: wrap; /* Para pantallas pequeñas */
+        }
+        .resultado-item { display: flex; flex-direction: column; }
+        .resultado-item span { font-size: 0.85rem; color: #64748b; margin-bottom: 0.2rem; }
+        .resultado-item strong { font-size: 1.2rem; font-weight: 600; color: var(--primary-color, #4f46e5); }
+
+        .resultado-pregunta { /* Detalle de cada pregunta */
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            overflow: hidden; /* Para bordes redondeados */
+        }
+        .pregunta-header {
+            background-color: #f8fafc;
+            padding: 0.8rem 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .pregunta-header h5 { margin: 0; font-size: 1rem; color: #475569; }
+        .puntaje span { font-weight: 600; color: var(--primary-color, #4f46e5); }
+
+        .pregunta-contenido { padding: 1.2rem; }
+        .pregunta-contenido p { margin-bottom: 0.8rem; font-size: 0.9rem; }
+        .pregunta-contenido strong { font-weight: 500; color: #334155; }
+        .respuesta-texto, .comentario { /* Estilo para respuestas largas o comentarios */
+             background-color: #f8fafc;
+             border: 1px solid #e2e8f0;
+             border-radius: 4px;
+             padding: 0.8rem 1rem;
+             font-size: 0.9rem;
+             white-space: pre-wrap; /* Conservar saltos de línea */
+             margin-top: 0.5rem;
+             max-height: 200px; /* Limitar altura y permitir scroll */
+             overflow-y: auto;
+         }
+
+        /* Clase para expandir elementos durante la captura del PDF */
+         .pdf-capture .respuesta-texto,
+         .pdf-capture .comentario {
+             max-height: none !important;
+             overflow-y: visible !important;
+         }
+         
+         .pdf-capture .modal-body {
+             max-height: none !important;
+             overflow-y: visible !important;
+         }
+
+        /* Footer (Consistente) */
+        footer { background-color: #fff; border-top: 1px solid #eee; padding: 1.5rem 1rem; margin-top: auto; }
+        footer .footer-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        footer .footer-logo span { font-size: 1.1rem; font-weight: 600; color: #333; }
+        footer .footer-logo svg { vertical-align: middle; margin-right: 0.5rem; }
+        footer .footer-bottom { text-align: right; font-size: 0.85rem; color: #666; margin-top: 0; padding-top: 0; border-top: none; }
+
+        /* Responsividad básica */
+         @media (max-width: 768px) {
+            main { padding: 2rem 1rem; }
+            .content-container { padding: 2rem 1.5rem; max-width: 100%;}
+            .content-container h1 { font-size: 1.6rem; }
+            .content-container h2 { font-size: 1.4rem; }
+            .filter-card .form-row { flex-direction: column; gap: 1rem;}
+            .filter-card .form-group { min-width: 100%; }
+            .btn-group { flex-direction: column; align-items: stretch; }
+            .btn-group .btn { width: 100%; justify-content: center;}
+            .modal-container { max-width: 95%; max-height: 85vh;}
+            .modal-body { padding: 1rem 1.2rem;}
+         }
+         @media (max-width: 600px) {
+              footer .footer-content { flex-direction: column; align-items: center; text-align: center; }
+             footer .footer-bottom { text-align: center; margin-top: 1rem; }
+         }
+
+         /* DISEÑO MODAL RESULTADO - AGREGAR AL FINAL DEL <style> */
+        #modal-resultado .resultado-summary { 
+            background-color: #f1f5f9 !important;
+            border-radius: 6px !important;
+            padding: 1rem 1.5rem !important;
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 1.5rem !important;
+            margin-bottom: 2rem !important;
+        }
+
+        #modal-resultado .resultado-item { 
+            display: flex !important; 
+            flex-direction: column !important; 
+            text-align: center !important;
+        }
+
+        #modal-resultado .resultado-item span { 
+            font-size: 0.85rem !important; 
+            color: #64748b !important; 
+            margin-bottom: 0.2rem !important; 
+        }
+
+        #modal-resultado .resultado-item strong { 
+            font-size: 1.2rem !important; 
+            font-weight: 600 !important; 
+            color: #4f46e5 !important; 
+        }
+
+        .model-legend {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .model-legend h4 {
+            margin: 0 0 0.8rem 0;
+            font-size: 1rem;
+            color: #475569;
+        }
+        
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .legend-grid span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- NUEVO Header estándar -->
+    <header>
+        <nav>
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- SVG del logo -->
+                    <path d="M16 2C8.268 2 2 8.268 2 16C2 23.732 8.268 30 16 30C23.732 30 30 23.732 30 16C30 8.268 23.732 2 16 2Z" fill="#4f46e5"/>
+                    <path d="M22 10H10C9.448 10 9 10.448 9 11V21C9 21.552 9.448 22 10 22H22C22.552 22 23 21.552 23 21V11C23 10.448 22.552 10 22 10Z" fill="white"/>
+                    <path d="M13 14H19V16H13V14Z" fill="#4f46e5"/>
+                    <path d="M13 17H19V19H13V17Z" fill="#4f46e5"/>
+                </svg>
+                <span>ExamPro</span>
+            </div>
+            <!-- Sin navegación extra -->
+            <button class="btn btn-secondary" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i> Volver
+            </button>
+        </nav>
+    </header>
+
+    <!-- Contenido principal -->
+    <main>
+        <div class="content-container"> <!-- Contenedor principal -->
+            <h1>Evaluación de Exámenes</h1>
+
+            <!-- Sección de Filtros -->
+            <div class="filter-card">
+                <h2>Filtrar Exámenes</h2>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="filtro-examen">ID Examen</label>
+                        <input type="text" id="filtro-examen" placeholder="Buscar por ID Examen">
+                    </div>
+                    <div class="form-group">
+                        <label for="filtro-alumno">ID Alumno</label>
+                        <input type="text" id="filtro-alumno" placeholder="Buscar por ID Alumno">
+                    </div>
+                    <div class="form-group">
+                        <label for="filtro-estado">Estado</label>
+                        <select id="filtro-estado">
+                            <option value="">Todos</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="evaluado">Evaluado</option>
+                        </select>
+                    </div>
+                    <!-- ✅ NUEVO: Selector de Nivel de Evaluación -->
+                    <div class="form-group">
+                        <label for="nivel-evaluacion">Nivel de Evaluación</label>
+                        <select id="nivel-evaluacion">
+                            <option value="Normal">🟡 Normal</option>
+                            <option value="Intermedia">🟠 Intermedia</option>
+                            <option value="Avanzada">🔴 Avanzada</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="modelo-evaluacion">
+                    <!-- Leyenda de iconos -->
+                    <div class="model-legend">
+                        <h4>🏷️ Especialidades por Modelo:</h4>
+                        <div class="legend-grid">
+                            <span><strong>🔬</strong> Ciencias (STEM)</span>
+                            <span><strong>💻</strong> Ingeniería/Tecnología</span>
+                            <span><strong>📚</strong> Letras/Humanidades</span>
+                            <span><strong>💼</strong> Economía/Negocios</span>
+                            <span><strong>⚕️</strong> Medicina/Salud</span>
+                            <span><strong>🎓</strong> Educación General</span>
+                            <span><strong>🖼️</strong> Multimodal</span>
+                            <span><strong>🧠</strong> Razonamiento Complejo</span>
+                        </div>
+                    </div>
+                
+                    <table class="model-table">
+                        <tbody>
+                          <!-- Fila 1 - Meta LLaMA Models -->
+                          <tr>
+                            <td><label><input type="checkbox" name="modelos" value="meta-llama/Llama-Guard-4-12B"> 🛡️ Llama Guard 4 12B</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8"> 🖼️💻 Llama 4 Maverick 17B FP8</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="meta-llama/Llama-3.3-70B-Instruct-Turbo"> 🔬📚 Llama 3.3 70B Turbo</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"> 🔬📚 Llama 3.3 70B Turbo Free</label></td>
+                          </tr>
+                          <!-- Fila 2 -->
+                          <tr>
+                            <td><label><input type="checkbox" name="modelos" value="meta-llama/Llama-4-Scout-17B-16E-Instruct"> 💻📚 Llama 4 Scout 17B 16E</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo"> 🧠🔬 Meta Llama 3.1 405B Turbo</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"> 💻🎓 Meta Llama 3.1 8B Turbo</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"> 💻📚 Meta Llama 3.1 70B Turbo</label></td>
+                          </tr>
+                          <!-- Fila 3 -->
+                          <tr>
+                            <td><label><input type="checkbox" name="modelos" value="meta-llama/Llama-3.2-3B-Instruct-Turbo"> 🎓💻 Llama 3.2 3B Turbo</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="meta-llama/Llama-Guard-3-11B-Vision-Turbo"> 🛡️🖼️ Llama Guard 3 11B Vision</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="meta-llama/Meta-Llama-Guard-3-8B"> 🛡️ Meta Llama Guard 3 8B</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="meta-llama/Meta-Llama-3-70B-Instruct-Turbo"> 💻📚 Meta Llama 3 70B Turbo</label></td>
+                          </tr>
+                          <!-- Fila 4 -->
+                          <tr>
+                            <td><label><input type="checkbox" name="modelos" value="meta-llama/Meta-Llama-3-8B-Instruct-Lite"> 🎓💻 Meta Llama 3 8B Lite</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="meta-llama/Llama-3-70b-chat-hf"> 💻📚 Llama 3 70B Chat HF</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="meta-llama/LlamaGuard-2-8b"> 🛡️ Llama Guard 2 8B</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="meta-llama/Llama-2-70b-hf"> 💻📚 Llama 2 70B HF</label></td>
+                          </tr>
+                          <!-- Fila 5 - Qwen Models -->
+                          <tr>
+                            <td><label><input type="checkbox" name="modelos" value="Qwen/Qwen3-Next-80B-A3B-Thinking"> 🔬🧠 Qwen3 Next 80B Thinking</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="Qwen/Qwen3-235B-A22B-Thinking-2507"> 🔬🧠 Qwen3 235B Thinking</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8"> 💻🔬 Qwen3 Coder 480B</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="Qwen/Qwen3-235B-A22B-Instruct-2507-tput"> 🔬🧠 Qwen3 235B A22B</label></td>
+                          </tr>
+                          <!-- Fila 6 -->
+                          <tr>
+                            <td><label><input type="checkbox" name="modelos" value="Qwen/Qwen2.5-VL-72B-Instruct"> 🖼️💻 Qwen2.5-VL-72B</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="Qwen/QwQ-32B"> 🔬🧠 Qwen QwQ-32B</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="Qwen/Qwen3-235B-A22B-fp8-tput"> 🔬🧠 Qwen3 235B FP8</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="Qwen/Qwen2.5-72B-Instruct-Turbo"> 💻📚 Qwen 2.5 72B Turbo</label></td>
+                          </tr>
+                          <!-- Fila 7 -->
+                          <tr>
+                            <td><label><input type="checkbox" name="modelos" value="Qwen/Qwen2.5-7B-Instruct-Turbo"> 🎓💻 Qwen 2.5 7B Turbo</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="Qwen/Qwen2.5-Coder-32B-Instruct"> 💻🔬 Qwen 2.5 Coder 32B</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="deepseek-ai/DeepSeek-R1"> 🔬🧠 DeepSeek R1</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="deepseek-ai/DeepSeek-V3"> 💻🔬 DeepSeek V3</label></td>
+                          </tr>
+                          <!-- Fila 8 - DeepSeek Models -->
+                          <tr>
+                            <td><label><input type="checkbox" name="modelos" value="deepseek-ai/DeepSeek-R1-0528-tput"> 🔬🧠 DeepSeek R1 0528</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="deepseek-ai/DeepSeek-R1-Distill-Llama-70B"> 🔬🧠 DeepSeek R1 Distill Llama</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="deepseek-ai/DeepSeek-R1-Distill-Qwen-14B"> 🔬🧠 DeepSeek R1 Distill Qwen</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free"> 🔬🧠 DeepSeek R1 Distill Free</label></td>
+                          </tr>
+                          <!-- Fila 9 - Mistral Models -->
+                          <tr>
+                            <td><label><input type="checkbox" name="modelos" value="mistralai/Mixtral-8x7B-Instruct-v0.1"> 💻📚 Mixtral-8x7B</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="mistralai/Mistral-7B-Instruct-v0.1"> 💼🎓 Mistral 7B v0.1</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="mistralai/Mistral-Small-24B-Instruct-2501"> 💼🎓 Mistral Small 24B</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="mistralai/Mistral-7B-Instruct-v0.3"> 💼🎓 Mistral 7B v0.3</label></td>
+                          </tr>
+                          <!-- Fila 10 -->
+                          <tr>
+                            <td><label><input type="checkbox" name="modelos" value="mistralai/Mistral-7B-Instruct-v0.2"> 💼🎓 Mistral 7B v0.2</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="arcee_ai/arcee-spotlight"> 🔬💼 Arcee Spotlight</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="arcee-ai/virtuoso-large"> 📚💼 Arcee Virtuoso Large</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="arcee-ai/coder-large"> 💻🔬 Arcee Coder Large</label></td>
+                          </tr>
+                          <!-- Fila 11 - Arcee AI Models -->
+                          <tr>
+                            <td><label><input type="checkbox" name="modelos" value="arcee-ai/maestro-reasoning"> 📚💼 Arcee Maestro Reasoning</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="arcee-ai/AFM-4.5B"> 💻🎓 Arcee AFM-4.5B</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="openai/gpt-oss-20b"> 💻🔬 OpenAI GPT-OSS-20B</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="openai/gpt-oss-120b"> 🧠🔬 OpenAI GPT-OSS-120B</label></td>
+                          </tr>
+                          <!-- Fila 12 - OpenAI & Together Computer Models -->
+                          <tr>
+                            <td><label><input type="checkbox" name="modelos" value="openai/whisper-large-v3"> 🎵 Whisper Large V3</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="togethercomputer/Refuel-Llm-V2-Small"> 💻🎓 Refuel LLM V2 Small</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="togethercomputer/Refuel-Llm-V2"> 💻📚 Refuel LLM V2</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="togethercomputer/m2-bert-80M-32k-retrieval"> 🔍 M2-BERT 80M Retrieval</label></td>
+                          </tr>
+                          <!-- Fila 13 - BAAI Models -->
+                          <tr>
+                            <td><label><input type="checkbox" name="modelos" value="BAAI/bge-large-en-v1.5"> 🔍📚 BGE Large EN v1.5</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="BAAI/bge-base-en-v1.5"> 🔍💻 BGE Base EN v1.5</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="moonshotai/Kimi-K2-Instruct"> 🔬💻🎓 Kimi K2</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="zai-org/GLM-4.5-Air-FP8"> 💻🔬 GLM 4.5 Air FP8</label></td>
+                          </tr>
+                          <!-- Fila 14 - Other Specialized Models -->
+                          <tr>
+                            <td><label><input type="checkbox" name="modelos" value="lgai/exaone-3-5-32b-instruct"> 💻🔬 LGAI EXAONE 3.5 32B</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="lgai/exaone-deep-32b"> 🔬🧠 LGAI EXAONE Deep 32B</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="marin-community/marin-8b-instruct"> 💻🎓 Marin 8B Instruct</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="intfloat/multilingual-e5-large-instruct"> 🌐🔍 E5 Large Multilingual</label></td>
+                          </tr>
+                          <!-- Fila 15 -->
+                          <tr>
+                            <td><label><input type="checkbox" name="modelos" value="Alibaba-NLP/gte-modernbert-base"> 🔍💻 GTE ModernBERT Base</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="scb10x/scb10x-typhoon-2-1-gemma3-12b"> 💻🔬 SCB10X Typhoon Gemma3</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="arize-ai/qwen-2-1.5b-instruct"> 💻🎓 Arize Qwen 2 1.5B</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="deepcogito/cogito-v2-preview-llama-70B"> 🧠🔬 DeepCogito V2 Llama 70B</label></td>
+                          </tr>
+                          <!-- Fila 16 -->
+                          <tr>
+                            <td><label><input type="checkbox" name="modelos" value="upstage/SOLAR-10.7B-Instruct-v1.0"> ☀️💻 SOLAR 10.7B Instruct</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="claude-sonnet-4"> 📚⚕️💼🧠 Claude Sonnet 4</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="claude-opus"> 🧠⚕️📚 Claude Opus</label></td>
+                            <td><label><input type="checkbox" name="modelos" value="gpt-4o"> 💼🖼️⚕️ ChatGPT-4o</label></td>
+                          </tr>
+                          <!-- Fila 17 -->
+                          <tr>
+                            <td><label><input type="checkbox" name="modelos" value="gpt-5"> 🧠💼⚕️ ChatGPT-5</label></td>
+                            <td colspan="3"></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                </div>
+
+                <div class="mode-selection">
+                    <label><strong>Modo de Evaluación:</strong></label>
+                    <label>
+                        <input type="radio" name="modoEvaluacion" value="webhook"> <i class="fas fa-robot"></i> Webhook (automático)
+                    </label>
+                    <label>
+                        <input type="radio" name="modoEvaluacion" value="manual" checked> <i class="fas fa-user-edit"></i> Manual (Flask)
+                    </label>
+                </div>
+
+                <div class="btn-group"> <!-- Grupo para botones de filtro -->
+                    <button class="btn btn-primary" id="btn-buscar">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                    <button class="btn btn-secondary" id="btn-limpiar-filtros">
+                        <i class="fas fa-eraser"></i> Limpiar Filtros
+                    </button>
+                </div>
+            </div>
+
+            <!-- AGREGAR ANTES de los campos de rúbrica -->
+            <div class="form-group">
+                <label for="selector-rubrica">📚 Biblioteca de Rúbricas:</label>
+                <div style="display: flex; gap: 10px;">
+                    <select id="selector-rubrica" style="flex: 1;">
+                        <option value="">-- Seleccionar rúbrica existente --</option>
+                        <option value="nueva">✨ Crear nueva rúbrica</option>
+                        <!-- Opciones dinámicas cargadas por JS -->
+                    </select>
+                    <button class="btn btn-info" onclick="cargarRubricaSeleccionada()">
+                        📁 Cargar
+                    </button>
+                    <button class="btn btn-success" onclick="mostrarModalGuardarRubrica()">
+                        💾 Guardar Como...
+                    </button>
+                </div>
+            </div>
+
+            <!-- NUEVA SECCIÓN: Rúbricas de Evaluación -->
+            <div class="filter-card">
+                <h2>Rúbricas de Evaluación</h2>
+                
+                <!-- Selector de Modelo para Generar Rúbricas -->
+                <div class="form-group">
+                    <label for="modelo-rubrica">Modelo IA para Generar Rúbricas:</label>
+                    <select id="modelo-rubrica" class="form-control">
+                        <!-- Gemini -->
+                        <option value="gemini-2-5-pro">Gemini 2.5 Pro</option>
+                        <option value="gemini-2-5-flash">Gemini 2.5 Flash</option>
+                        <option value="gemini-2-0-flash">Gemini 2.0 Flash</option>
+                        <option value="gemini-1-5-flash">Gemini 1.5 Flash</option>
+                        <option value="gemini-1-5-pro">Gemini 1.5 Pro</option>
+
+                        <!-- OpenRouter: Texto -->
+                        <option value="deepseek/deepseek-chat-v3-0324">DeepSeek Chat V3</option>
+                        <option value="moonshotai/Kimi-K2-Instruct">Kimi K2</option>
+                        <option value="mistralai/mistral-small-3.1-24b-instruct:free">Mistral Small 24B</option>
+                        <option value="meta-llama/llama-3.3-70b-instruct:free">Meta Llama 3.3 70B</option>
+                        <option value="meta-llama/llama-3.1-405b:free">Meta Llama 3.1 405B</option>
+
+                        <!-- OpenRouter: Multimodal -->
+                        <option value="qwen/qwen2.5-vl-32b-instruct:free">Qwen 2.5 VL 32B</option>
+                        <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash Exp</option>
+                        <option value="google/learnlm-1.5-pro-experimental:free">LearnLM 1.5 Pro</option>
+                        <option value="meta-llama/llama-3.2-11b-vision-instruct:free">Meta Llama 3.2 11B Vision</option>
+
+                        <!-- Otros modelos -->
+                        <option value="gpt-4o">GPT-4o</option>
+                        <option value="gpt-4o-mini">GPT-4o Mini</option>
+                    </select>
+                </div>
+
+                <!-- Rúbrica para Preguntas de Marcar -->
+                <div class="form-group">
+                    <label for="rubrica-marcar">Rúbrica Preguntas de Marcar:</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <button class="btn btn-info" onclick="generarRubricaIA('marcar')">
+                            🤖 Generar con IA
+                        </button>
+                        <button class="btn btn-secondary" onclick="usarRubricaDefecto('marcar')">
+                            📋 Predeterminada
+                        </button>
+                        <button class="btn btn-warning" onclick="limpiarRubrica('marcar')">
+                            🗑️ Limpiar
+                        </button>
+                    </div>
+                    <textarea id="rubrica-marcar" rows="4" class="form-control"
+                            placeholder="Escriba los criterios de evaluación para preguntas de opción múltiple..."></textarea>
+                </div>
+
+                <!-- Rúbrica para Preguntas Libres -->
+                <div class="form-group">
+                    <label for="rubrica-libres">Rúbrica Preguntas Libres:</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <button class="btn btn-info" onclick="generarRubricaIA('libres')">
+                            🤖 Generar con IA
+                        </button>
+                        <button class="btn btn-secondary" onclick="usarRubricaDefecto('libres')">
+                            📋 Predeterminada
+                        </button>
+                        <button class="btn btn-warning" onclick="limpiarRubrica('libres')">
+                            🗑️ Limpiar
+                        </button>
+                    </div>
+                    <textarea id="rubrica-libres" rows="6" class="form-control"
+                            placeholder="Escriba los criterios de evaluación para preguntas de desarrollo..."></textarea>
+                </div>
+
+                <!-- Rúbrica para Casos de Uso -->
+                <div class="form-group">
+                    <label for="rubrica-casos">Rúbrica Casos de Uso:</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <button class="btn btn-info" onclick="generarRubricaIA('casos')">
+                            🤖 Generar con IA
+                        </button>
+                        <button class="btn btn-secondary" onclick="usarRubricaDefecto('casos')">
+                            📋 Predeterminada
+                        </button>
+                        <button class="btn btn-warning" onclick="limpiarRubrica('casos')">
+                            🗑️ Limpiar
+                        </button>
+                    </div>
+                    <textarea id="rubrica-casos" rows="6" class="form-control"
+                            placeholder="Escriba los criterios de evaluación para casos de uso..."></textarea>
+                </div>
+            </div>
+            <!-- Sección Exámenes Pendientes -->
+            <div class="pending-exams-section"> <!-- Agrupador opcional -->
+                <h2>Exámenes Pendientes de Evaluación</h2>
+                <div class="table-container" id="examenes-pendientes-container"> <!-- Mover ID aquí -->
+                     <!-- Tabla con clase del tema -->
+                    <table class="exam-table">
+                        <thead>
+                            <tr>
+                                <th>ID Examen</th>
+                                <th>ID Alumno</th>
+                                <th>Fecha Carga</th>
+                                <th>P. Marcar</th> <!-- Abreviado -->
+                                <th>P. Libres</th> <!-- Abreviado -->
+                                <th>Caso Uso</th> <!-- Abreviado -->
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="examenes-pendientes">
+                            <!-- Filas generadas por JS (SIN CAMBIOS EN JS) -->
+                            <tr><td colspan="8" style="text-align:center; padding: 1rem;">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sección Exámenes Evaluados -->
+            <div class="evaluated-exams-section"> <!-- Agrupador opcional -->
+                <h2>Exámenes Evaluados</h2>
+                <div class="table-container" id="examenes-evaluados-container"> <!-- Mover ID aquí -->
+                     <!-- Tabla con clase del tema -->
+                    <table class="exam-table">
+                        <thead>
+                            <tr>
+                                <th>ID Examen</th>
+                                <th>ID Alumno</th>
+                                <th>Calificación</th>
+                                <th>Fecha Evaluación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="examenes-evaluados">
+                            <!-- Filas generadas por JS (SIN CAMBIOS EN JS) -->
+                             <tr><td colspan="5" style="text-align:center; padding: 1rem;">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Modal de Evaluación (IDs se mantienen para JS) -->
+            <div id="modal-evaluacion" class="modal-overlay"> <!-- Estilo overlay -->
+                <div class="modal-container"> <!-- Estilo contenedor -->
+                    <div class="modal-header"> <!-- Estilo header -->
+                        <h2>Evaluando Examen <span id="modal-id-examen"></span></h2>
+                        <!-- Botón con clases del tema -->
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn btn-info" id="btn-imprimir-pdf">
+                                <i class="fas fa-file-pdf"></i> Imprimir PDF
+                            </button>
+                            <button class="btn btn-warning" id="btn-documento-completo">
+                                <i class="fas fa-file-text"></i> Documento Completo
+                            </button>
+                            <button class="btn btn-success" id="btn-guardar-respuestas">
+                                <i class="fas fa-save"></i> Guardar Respuestas
+                            </button>
+                        </div>
+                        <!-- <button class="modal-close" onclick="cerrarModal()">×</button> Si necesitas botón X -->
+                    </div>
+
+                    <div class="modal-body"> <!-- Estilo body -->
+                        <!-- Sugerencia: Añadir justo después de <div class=\"modal-header\"> o al inicio de <div class=\"modal-body\"> -->
+                        <div style="padding: 1.5rem 2rem 0.5rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 1rem;">
+                            <p style="margin: 0.3rem 0; font-size: 0.9rem;"><strong>ID Examen:</strong> <span id="modal-id-examen-display"></span></p>
+                            <p style="margin: 0.3rem 0; font-size: 0.9rem;"><strong>ID Alumno:</strong> <span id="modal-eval-display-id-alumno"></span></p>
+                            <p style="margin: 0.3rem 0; font-size: 0.9rem;"><strong>Nombre Alumno:</strong> <span id="modal-eval-display-nombre-alumno"></span></p>
+                            <p style="margin: 0.3rem 0; font-size: 0.9rem;"><strong>Nombre Profesor:</strong> <span id="modal-eval-display-nombre-profesor"></span></p>
+                        </div>                            
+                        <div id="evaluacion-progreso">
+                            <p id="mensaje-evaluacion">Iniciando evaluación...</p>
+                            <div class="progress-bar"> <!-- Estilo barra progreso -->
+                                <div class="progress" id="progress-bar"></div>
+                            </div>
+                        </div>
+
+                        <div id="evaluacion-resultado" style="display: none;">
+                            <h3>Resultados de la Evaluación</h3>
+
+                            <div id="resumen-modelos"> <!-- Estilo tabla modelos -->
+                                <h4>Resumen por Modelo</h4>
+                                <div class="table-container">
+                                    <table id="tabla-modelos" class="exam-table"> <!-- Reusar estilo tabla -->
+                                      <thead>
+                                        <tr>
+                                          <th>Modelo</th>
+                                          <th>Marcar</th>
+                                          <th>Libres</th>
+                                          <th>Casos Uso</th>
+                                          <th>Total</th>
+                                          <th>%</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody id="tabla-modelos-body">
+                                          <!-- Contenido JS -->
+                                      </tbody>
+                                    </table>
+                                </div>
+                              </div>
+
+                            <div class="resultado-summary"> <!-- Estilo resumen -->
+                                <div class="resultado-item">
+                                    <span>Calificación Final:</span>
+                                    <strong id="calificacion-final">0/0</strong>
+                                </div>
+                                <div class="resultado-item">
+                                    <span>Porcentaje:</span>
+                                    <strong id="porcentaje-final">0%</strong>
+                                </div>
+                            </div>
+
+                            <h4>Detalle por Pregunta</h4>
+                            <div id="detalle-resultados">
+                                <!-- Detalles generados por JS (SIN CAMBIOS EN JS) -->
+                            </div>
+                        </div>
+                    </div> <!-- Fin modal-body -->
+                </div> <!-- Fin modal-container -->
+            </div> <!-- Fin modal-overlay -->
+
+            <!-- Modal de Resultado Detallado (IDs se mantienen para JS) -->
+            <div id="modal-resultado" class="modal-overlay"> <!-- Estilo overlay -->
+                <div class="modal-container"> <!-- Estilo contenedor -->
+                    <div class="modal-header"> <!-- Estilo header -->
+                        <h2>Resultado Examen <span id="modal-resultado-id"></span></h2>
+                        <button class="modal-close" id="btn-cerrar-resultado">×</button> <!-- Botón X -->
+                    </div>
+
+                    <div class="modal-body"> <!-- Estilo body -->
+                        <div class="resultado-summary"> <!-- Estilo resumen -->
+                            <div class="resultado-item">
+                                <span>Nombre Alumno:</span>
+                                <strong id="resultado-display-nombre-alumno"></strong> <!-- Nuevo ID para el nombre del alumno -->
+                            </div>
+                            <div class="resultado-item">
+                                <span>ID Alumno:</span>
+                                <strong id="resultado-id-alumno"></strong>
+                            </div>
+                            <div class="resultado-item">
+                                <span>Calificación:</span>
+                                <strong id="resultado-calificacion">0</strong>
+                            </div>
+                            <div class="resultado-item">
+                                <span>Preguntas Marcar:</span>
+                                <strong id="resultado-marcar">N/A</strong>
+                            </div>
+                            <div class="resultado-item">
+                                <span>Preguntas Libres:</span>
+                                <strong id="resultado-libres">N/A</strong>
+                            </div>
+                            <div class="resultado-item">
+                                <span>Casos de Uso:</span>
+                                <strong id="resultado-casos">N/A</strong>
+                            </div>
+                            <div class="resultado-item">
+                                <span>Porcentaje:</span>
+                                <strong id="resultado-porcentaje">0%</strong>
+                            </div>
+                        </div>
+
+                        <h4>Detalle por Pregunta</h4>
+                        <div id="detalle-resultado">
+                            <!-- Detalles generados por JS (SIN CAMBIOS EN JS) -->
+                        </div>
+
+                        <!-- Grupo botones modal con clases del tema -->
+                        <div class="btn-group end-aligned">
+                             <button class="btn btn-secondary" id="btn-cerrar-resultado-btn">
+                                 <i class="fas fa-times"></i> Cerrar
+                             </button>
+                             <button class="btn btn-success" id="btn-enviar-resultado">
+                                 <i class="fas fa-paper-plane"></i> Enviar Resultado
+                             </button>
+                         </div>
+                    </div> <!-- Fin modal-body -->
+                </div> <!-- Fin modal-container -->
+            </div> <!-- Fin modal-overlay -->
+
+            <!-- Modal para nombrar y categorizar la rúbrica -->
+            <div id="modal-guardar-rubrica" class="modal-overlay">
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <h2>💾 Guardar Rúbrica</h2>
+                        <button class="modal-close" onclick="cerrarModalGuardarRubrica()">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Nombre de la Rúbrica:</label>
+                            <input type="text" id="nombre-nueva-rubrica" placeholder="Ej: Programación Java - Nivel Básico">
+                        </div>
+                        <div class="form-group">
+                            <label>Categoría:</label>
+                            <select id="categoria-nueva-rubrica">
+                                <option value="programacion">Programación</option>
+                                <option value="matematicas">Matemáticas</option>
+                                <option value="arquitectura">Arquitectura de Software</option>
+                                <option value="base-datos">Bases de Datos</option>
+                                <option value="otros">Otros</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nivel:</label>
+                            <select id="nivel-nueva-rubrica">
+                                <option value="basico">Básico</option>
+                                <option value="intermedio">Intermedio</option>
+                                <option value="avanzado">Avanzado</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-success" onclick="guardarNuevaRubrica()">💾 Guardar</button>
+                            <button class="btn btn-secondary" onclick="cerrarModalGuardarRubrica()">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- Fin content-container -->
+    </main>
+
+    <!-- NUEVO Footer estándar -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <!-- SVG del logo --> <path d="M16 2C8.268 2 2 8.268 2 16C2 23.732 8.268 30 16 30C23.732 30 30 23.732 30 16C30 8.268 23.732 2 16 2Z" fill="#4f46e5"/> <path d="M22 10H10C9.448 10 9 10.448 9 11V21C9 21.552 9.448 22 10 22H22C22.552 22 23 21.552 23 21V11C23 10.448 22.552 10 22 10Z" fill="white"/> <path d="M13 14H19V16H13V14Z" fill="#4f46e5"/> <path d="M13 17H19V19H13V17Z" fill="#4f46e5"/> </svg>
+                <span>ExamPro</span>
+            </div>
+            <div class="footer-bottom">
+                 <p>© 2023 ExamPro. Todos los derechos reservados.</p>
+             </div>
+        </div>
+    </footer>
+    <!-- EL SCRIPT ORIGINAL SE MANTIENE EXACTAMENTE IGUAL -->
+
+    <script>
+        const { Query } = Appwrite;
+        // Variables globales (SIN CAMBIOS)
+        let examenesPendientes = [];
+        let examenesEvaluados = [];
+        let examenActual = {};
+        let examenResultado = {};
+        let resultadoEvaluacion = null;
+        let evaluacionConsensoGlobal = null;
+
+        const API_BASE_URL = 'http://127.0.0.1:5001';
+
+        async function obtenerExamenesEvaluacion(email) {
+            const response = await fetch(`${API_BASE_URL}/api/obtener-examenes-evaluacion?email=${encodeURIComponent(email)}`);
+            return await response.json();
+        }
+
+        // Configuración Appwrite (SIN CAMBIOS)
+        //const appwriteEndpoint = 'https://cloud.appwrite.io/v1';
+        //const projectId = '67e565df001722171560';
+        //const databaseId = '67e566170025284a0b1a';
+        //const collectionId = '681a8a3600138c6b94b3'; // Asegúrate que es la colección CORRECTA para leer exámenes
+        //const apiKey = 'standard_51ad4bd76676dffb7d82c9a41b9adb6f86f6d82bb4971679febe6eab09438db90233edd93794ce1ed140200c2d2b756f75001b5d7215a581493ad185ccae64908c930660c2f57bc2c5a59b7b8f0533dfa7156ad91cf25fd7341ae838edbd11c44569cdbb4b98ded143cba51d5bc3e473265a48b20dd9408172433b3dded8695f'; // API Key se mantiene
+        // Obtener email del usuario autenticado
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const currentUserEmail = currentUser.email;
+        
+        if (!currentUserEmail) {
+            alert('Error: Usuario no autenticado');
+            window.location.href = 'login.html';
+            throw new Error('Usuario no autenticado'); // ← AGREGAR ESTA LÍNEA
+        }
+        console.log("DEBUG currentUserEmail:", currentUserEmail);
+        console.log("DEBUG currentUser completo:", currentUser);
+
+        //==============Inicio funciones rubrica=========================
+
+        // Agregar al final del script en evaluacion.html
+
+        async function generarRubricaIA(tipo) {
+            const modeloSeleccionado = document.getElementById('modelo-rubrica').value;
+            const textarea = document.getElementById(`rubrica-${tipo}`);
+            
+            // Obtener prompt del usuario o usar mensaje si está vacío
+            let promptUsuario = textarea.value.trim();
+            
+            if (!promptUsuario) {
+                promptUsuario = `Actúa como experto en evaluación académica. Genera una rúbrica específica para evaluar ${tipo === 'marcar' ? 'preguntas de opción múltiple' : tipo === 'libres' ? 'preguntas de desarrollo' : 'casos de uso prácticos'}. Proporciona criterios claros y niveles de desempeño.`;
+            }
+            
+            textarea.value = "🤖 Generando con IA...";
+            
+            try {
+                // ✅ USAR NUEVO ENDPOINT PLAYGROUND
+                const response = await fetch('http://127.0.0.1:5001/api/playground', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt: promptUsuario,
+                        modelo_ia: modeloSeleccionado,
+                        email: currentUserEmail,
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    textarea.value = data.contenido;
+                } else {
+                    textarea.value = 'Error: ' + (data.error || 'Error desconocido');
+                }
+                
+            } catch (error) {
+                textarea.value = 'Error: ' + error.message;
+            }
+        }
+
+        function usarRubricaDefecto(tipo) {
+            const rubricas = {
+                marcar: `CRITERIOS DE EVALUACIÓN - PREGUNTAS DE MARCAR:
+        - Respuesta Correcta: 100% del puntaje
+        - Respuesta Incorrecta: 0% del puntaje
+        - Sin respuesta: 0% del puntaje`,
+                    
+                libres: `CRITERIOS DE EVALUACIÓN - PREGUNTAS LIBRES:
+        - Excelente (90-100%): Respuesta completa, precisa y bien fundamentada
+        - Bueno (70-89%): Respuesta mayormente correcta con detalles menores faltantes  
+        - Regular (50-69%): Respuesta parcialmente correcta, conceptos básicos presentes
+        - Deficiente (25-49%): Respuesta mínima, errores conceptuales importantes
+        - Incorrecto (0-24%): Sin respuesta o respuesta completamente incorrecta`,
+                    
+                casos: `CRITERIOS DE EVALUACIÓN - CASOS DE USO:
+        - Análisis del problema (30%): Comprensión clara del caso
+        - Solución propuesta (40%): Viabilidad y creatividad de la solución  
+        - Justificación (20%): Argumentación sólida de la propuesta
+        - Presentación (10%): Claridad y organización de la respuesta`
+            };
+                
+            document.getElementById(`rubrica-${tipo}`).value = rubricas[tipo];
+        }
+
+        function limpiarRubrica(tipo) {
+            document.getElementById(`rubrica-${tipo}`).value = '';
+        }        
+
+        //==============Inicio funciones rubrica=========================
+
+        // Inicializar cuando el DOM esté listo (SIN CAMBIOS EN LÓGICA)
+        document.addEventListener('DOMContentLoaded', function() {
+
+        // Sin inicialización de Appwrite - se usa el servidor
+        console.log("✅ Configuración lista para usar servidor evaluador");
+
+            // Referencias a elementos del DOM (Los IDs se mantienen)
+            const filtroExamen = document.getElementById('filtro-examen');
+            const filtroAlumno = document.getElementById('filtro-alumno');
+            const filtroEstado = document.getElementById('filtro-estado');
+            const btnBuscar = document.getElementById('btn-buscar');
+            const modelosSeleccionados = Array.from(document.querySelectorAll('input[name="modelos"]:checked')).map(cb => cb.value);
+            const btnLimpiarFiltros = document.getElementById('btn-limpiar-filtros');
+            const examenesPendientesContainer = document.getElementById('examenes-pendientes-container'); // Se mantiene ID
+            const examenesEvaluadosContainer = document.getElementById('examenes-evaluados-container'); // Se mantiene ID
+            const examenesPendientesTbody = document.getElementById('examenes-pendientes');
+            const examenesEvaluadosTbody = document.getElementById('examenes-evaluados');
+
+            // Elementos del modal de evaluación (IDs se mantienen)
+            const modalEvaluacion = document.getElementById('modal-evaluacion');
+            const modalIdExamen = document.getElementById('modal-id-examen');
+            const evaluacionProgreso = document.getElementById('evaluacion-progreso');
+            const evaluacionResultado = document.getElementById('evaluacion-resultado');
+            const progressBar = document.getElementById('progress-bar'); // ID se mantiene
+            const mensajeEvaluacion = document.getElementById('mensaje-evaluacion');
+            const calificacionFinal = document.getElementById('calificacion-final');
+            const porcentajeFinal = document.getElementById('porcentaje-final');
+            const detalleResultados = document.getElementById('detalle-resultados');
+
+            // Elementos del modal de resultado (IDs se mantienen)
+            const modalResultado = document.getElementById('modal-resultado');
+            const modalResultadoId = document.getElementById('modal-resultado-id');
+            const btnCerrarResultado = document.getElementById('btn-cerrar-resultado');
+            const resultadoIdAlumno = document.getElementById('resultado-id-alumno');
+            const resultadoCalificacion = document.getElementById('resultado-calificacion');
+            const resultadoPorcentaje = document.getElementById('resultado-porcentaje');
+            const detalleResultado = document.getElementById('detalle-resultado');
+            const btnCerrarResultadoBtn = document.getElementById('btn-cerrar-resultado-btn');
+            const btnEnviarResultado = document.getElementById('btn-enviar-resultado');
+
+            // Llamada inicial (SIN CAMBIOS)
+            cargarExamenesDesdeAppwrite();
+            cargarListaRubricas(); 
+
+            // Event Listeners (SIN CAMBIOS EN LÓGICA)
+            btnBuscar.addEventListener('click', buscarExamenes);
+            btnLimpiarFiltros.addEventListener('click', limpiarFiltros);
+            btnCerrarResultado.addEventListener('click', cerrarModalResultado);
+            btnCerrarResultadoBtn.addEventListener('click', cerrarModalResultado);
+            btnEnviarResultado.addEventListener('click', enviarResultadoDesdeModal);
+
+            // Agregar listener al botón Documento Completo  
+            const btnDocumentoCompleto = document.getElementById('btn-documento-completo');
+            if (btnDocumentoCompleto) {
+                btnDocumentoCompleto.addEventListener('click', async function() {
+                    await generarDocumentoCompleto();
+                });
+            }           
+
+            // Listener para guardar respuestas (SIN CAMBIOS EN LÓGICA)
+             document.getElementById("btn-guardar-respuestas").addEventListener("click", async function () {
+                if (!resultadoEvaluacion) return;
+
+                // Lógica para mapear feedback (SIN CAMBIOS)
+                const feedback = resultadoEvaluacion.detalle.map(p => ({
+                  numero: p.numeroPregunta, // Ajustado a la estructura de 'resultadoEvaluacion'
+                  comentario: p.comentario,
+                  puntaje_obtenido: p.puntajeObtenido,
+                  puntaje_total: p.puntajeTotal
+                }));
+
+                console.log('Intentando guardar. Datos de examenActual:', JSON.stringify(examenActual, null, 2));
+                console.log('Valor de examenActual.idExamen:', examenActual.idExamen);
+                console.log('Valor de evaluacionConsensoGlobal:', JSON.stringify(evaluacionConsensoGlobal, null, 2));
+                console.log('Datos de examenActual ANTES del payload:', JSON.stringify(examenActual, null, 2));
+                console.log('Valor específico de examenActual.profesor:', examenActual.profesor);
+
+                // Lógica para payload (SIN CAMBIOS)
+                const payload = {
+                    id_examen: examenActual.idExamen,
+                    id_alumno: examenActual.idAlumno,
+                    nombre_alumno: examenActual.nombreAlumno,
+                    email_profesor: currentUserEmail,
+                    id_profesor: examenActual.profesorId,    // Tomado de examenActual
+                    nombre_profesor: examenActual.profesor,  // Tomado de examenActual
+                
+                    // Valores del consenso de la evaluación
+                    calificacion_total: String(evaluacionConsensoGlobal.total),
+                    porcentaje_respuesta: String(evaluacionConsensoGlobal.porcentaje),
+                    comentarios_detalle: JSON.stringify(resultadoEvaluacion.detalle), // Asegúrate que el backend espera esta clave
+                
+                    // Puntajes de consenso por tipo de pregunta
+                    // Estas claves deben coincidir con lo que espera data.get("CLAVE",...) en el backend (app_evaluador.py)
+                    // y también con los nombres de los atributos en tu colección Appwrite.
+                    preguntas_marcar: String(evaluacionConsensoGlobal.preguntas_marcar || 0),
+                    preguntas_libres: String(evaluacionConsensoGlobal.preguntas_libres || 0),
+                    casos_uso: String(evaluacionConsensoGlobal.casos_de_uso || 0)
+                };
+
+                // Lógica fetch (SIN CAMBIOS)
+                try {
+                  const response = await fetch("http://localhost:5001/guardar_evaluacion_profesor", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                  });
+
+                  const result = await response.json();
+                  if (!response.ok) throw new Error(result.error || "Error desconocido");
+
+                  alert("✅ Respuestas guardadas correctamente");
+
+                  // Mover examen de pendientes a evaluados
+                    const indexPendiente = examenesPendientes.findIndex(e => 
+                    e.idExamen === examenActual.idExamen && e.idAlumno === examenActual.idAlumno
+                    );
+
+                    if (indexPendiente !== -1) {
+                    // Crear examen evaluado con los datos de la evaluación
+                    const examenEvaluado = {
+                        idExamen: examenActual.idExamen,
+                        idAlumno: examenActual.idAlumno,
+                        nombreAlumno: examenActual.nombreAlumno,
+                        calificacion: evaluacionConsensoGlobal.total,
+                        puntajeTotal: 20, // O el total que corresponda
+                        fechaEvaluacion: new Date().toISOString(),
+                        detalle: resultadoEvaluacion.detalle,
+                        estado: 'evaluado',
+                    };
+
+                    // Remover de pendientes y agregar a evaluados
+                    examenesPendientes.splice(indexPendiente, 1);
+                    examenesEvaluados.push(examenEvaluado);
+
+                    // Re-renderizar ambas tablas
+                    renderizarExamenesPendientes(examenesPendientes);
+                    renderizarExamenesEvaluados(examenesEvaluados);
+                    }
+                  cerrarModal(); // Llama a la función original
+                } catch (error) {
+                  console.error("❌ Error al guardar respuestas:", error);
+                  alert("Error al guardar las respuestas.");
+                }
+            });
+            
+            // Función para mostrar resumen (SIN CAMBIOS EN LÓGICA)
+             function mostrarResumenModelos(resumen) {
+                console.log("🔍 RESUMEN RECIBIDO EN mostrarResumenModelos:", resumen); // ← AGREGAR ESTA LÍNEA
+                const tbody = document.getElementById("tabla-modelos-body");
+                tbody.innerHTML = ""; // limpiar
+
+                // Lógica para llenar tabla (SIN CAMBIOS)
+                if (resumen && Array.isArray(resumen)) {
+                    resumen.forEach(m => {
+                        console.log("🔍 PROCESANDO MODELO:", m); // ← AGREGAR ESTA LÍNEA
+                        const tr = document.createElement("tr");
+                        tr.innerHTML = `
+                             <td>${m.modelo || '?'}</td>
+                            <td>${m.preguntas_marcar || m.marcar || 0}</td>
+                            <td>${m.preguntas_libres || m.libres || 0}</td>
+                            <td>${m.casos_uso || m.casos || 0}</td>
+                            <td>${m.total || 0}</td>
+                            <td>${m.porcentaje || 0}%</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                     tbody.innerHTML = '<tr><td colspan="6">No hay datos de resumen por modelo.</td></tr>';
+                 }
+            }
+
+            //============================================================================================================
+            
+            // Función para procesar TODOS los comentarios de todas las preguntas
+            async function procesarTodosLosComentarios(dataServidor) {
+                console.log("[DEBUG] Obteniendo comentarios completos del servidor...");
+                
+                try {
+                    // Obtener comentarios guardados
+                    const response = await fetch(`http://localhost:5001/comentarios/${examenActual.idExamen}/${examenActual.idAlumno}?email_profesor=${encodeURIComponent(currentUserEmail)}`);
+                    const data = await response.json();
+                    
+                    if (data.comentarios && data.comentarios.respuestas_por_modelo) {
+                        const detalleCompleto = [];
+                        const comentariosPorPregunta = {};
+                        
+                        // Procesar cada modelo
+                        data.comentarios.respuestas_por_modelo.forEach(modeloData => {
+                            const nombreModelo = modeloData.modelo;
+                            const respuestaCompleta = modeloData.respuesta_completa;
+                            
+                            console.log(`[DEBUG] Procesando ${nombreModelo}`);
+                            
+                            // Extraer comentarios por pregunta de este modelo
+                            extraerComentariosDeModelo(respuestaCompleta, nombreModelo, comentariosPorPregunta);
+                        });
+                        
+                        // Crear detalle para cada pregunta
+                        Object.keys(comentariosPorPregunta).forEach(numPregunta => {
+                            const num = parseInt(numPregunta);
+                            let tipoPregunta = 'marcar';
+                            let puntajeTotal = 0.5;
+                            
+                            if (num >= 10 && num <= 13) {
+                                tipoPregunta = 'libre';
+                                puntajeTotal = 1;
+                            } else if (num >= 14) {
+                                tipoPregunta = 'caso_uso';
+                                puntajeTotal = 5;
+                            }
+                            
+                            const comentarios = comentariosPorPregunta[numPregunta];
+                            const puntajePromedio = comentarios.reduce((sum, c) => sum + c.puntaje, 0) / comentarios.length;
+                            
+                            // Crear comentario consolidado
+                            let comentarioFinal = `📊 Evaluación de ${comentarios.length} modelo(s):\n\n`;
+                            comentarios.forEach((c, i) => {
+                                comentarioFinal += `🤖 **${c.modelo}**:\n${c.comentario} (${c.puntaje} pts)\n\n`;
+                            });
+                            
+                            const detallePregunta = {
+                                numeroPregunta: num,
+                                textoPregunta: `${tipoPregunta === 'marcar' ? 'Pregunta Marcar' : 
+                                            tipoPregunta === 'libre' ? 'Pregunta Libre' : 
+                                            'Caso de Uso'} ${num}`,
+                                respuestaAlumno: 'Ver respuesta en el examen original',
+                                respuestaCorrecta: tipoPregunta === 'marcar' ? 'Ver respuesta correcta en el examen' : null,
+                                puntajeObtenido: Math.round(puntajePromedio * 10) / 10,
+                                puntajeTotal: puntajeTotal,
+                                comentario: comentarioFinal.trim(),
+                                tipo: tipoPregunta
+                            };
+                            
+                            detalleCompleto.push(detallePregunta);
+                        });
+                        
+                        // Ordenar por número de pregunta
+                        detalleCompleto.sort((a, b) => a.numeroPregunta - b.numeroPregunta);
+                        
+                        console.log(`[DEBUG] Detalle completo generado: ${detalleCompleto.length} preguntas`);
+                        return detalleCompleto;
+                    }
+                } catch (error) {
+                    console.log("[DEBUG] Error obteniendo comentarios, usando método original:", error);
+                }
+                
+                // Fallback al método original si falla
+                return [];
+            }
+            
+            // AGREGAR nueva función auxiliar
+            function extraerComentariosDeModelo(respuesta, nombreModelo, comentariosPorPregunta) {
+                // Patrones para diferentes formatos
+                const patrones = [
+                    // meta-llama: - **P1**: comentario **Puntaje: 0**
+                    /-\s*\*\*P(\d+)\*\*:\s*(.*?)\s*\*\*Puntaje:\s*([0-9.]+)\*\*/g,
+                    // gemini: P1: comentario (0 puntos)
+                    /P(\d+):\s*(.*?)\s*\(([0-9.]+)\s*punt[os]*\)/g,
+                    // Formato genérico: **P1**: comentario
+                    /\*\*P(\d+)\*\*:\s*([^*]+?)(?=\*\*P\d+|\*\*|$)/g
+                ];
+                
+                patrones.forEach(patron => {
+                    let match;
+                    while ((match = patron.exec(respuesta)) !== null) {
+                        const numPregunta = parseInt(match[1]);
+                        const comentario = match[2].trim();
+                        const puntaje = match[3] ? parseFloat(match[3]) : 0;
+                        
+                        if (!comentariosPorPregunta[numPregunta]) {
+                            comentariosPorPregunta[numPregunta] = [];
+                        }
+                        
+                        comentariosPorPregunta[numPregunta].push({
+                            modelo: nombreModelo,
+                            comentario: comentario,
+                            puntaje: puntaje
+                        });
+                    }
+                });
+            }
+
+            //================================================================================================
+
+            //================================================================================================
+
+            async function generarDocumentoCompleto() {
+                    try {
+                        //const response = await fetch(`http://localhost:5001/comentarios/${examenActual.idExamen}/${examenActual.idAlumno}`);
+                        // Obtener IDs del modal actual
+                        const idExamenActual = document.getElementById('modal-id-examen-display').textContent;
+                        const idAlumnoActual = document.getElementById('modal-eval-display-id-alumno').textContent;
+                        console.log(`[DEBUG] Buscando comentarios para: ${idExamenActual}/${idAlumnoActual}`);
+                        //const response = await fetch(`http://localhost:5001/comentarios/${idExamenActual}/${idAlumnoActual}?email_profesor=${encodeURIComponent(currentUserEmail)}`);
+                        //const data = await response.json();
+                        const data = { comentarios: { respuestas_por_modelo: resultadoEvaluacion.resumenModelos.map(m => ({modelo: m.modelo, respuesta_completa: window.ultimaRespuestaFlask?.resultado?.detalles?.find(d => d[0] === m.modelo)?.[1] || "Sin comentarios"})) } };
+                        
+                        if (data.comentarios) {
+                            console.log(`[DEBUG] Respuesta del servidor:`, data);
+                            // Crear contenido HTML completo
+                            let contenidoHTML = `
+                            <h1>Evaluación Completa - Examen ${idExamenActual}</h1>
+                            <h2>Alumno: ${document.getElementById('modal-eval-display-nombre-alumno').textContent}</h2>
+                            <h3>Profesor: ${document.getElementById('modal-eval-display-nombre-profesor').textContent}</h3>
+                                <hr>
+                            `;
+                            
+                            // Agregar respuesta de cada modelo
+                            data.comentarios.respuestas_por_modelo.forEach(modeloData => {
+                                contenidoHTML += `
+                                    <div style="margin-bottom: 30px; border: 1px solid #ccc; padding: 15px;">
+                                        <h3 style="color: #4f46e5;">🤖 ${modeloData.modelo}</h3>
+                                        <pre style="white-space: pre-wrap; font-family: Arial;">${modeloData.respuesta_completa}</pre>
+                                    </div>
+                                `;
+                            });
+                            
+                            // Crear ventana nueva con el contenido
+                            const ventana = window.open('', '_blank');
+                            ventana.document.write(`
+                                <html>
+                                    <head>
+                                        <title>Evaluación Completa - ${examenActual.idExamen}</title>
+                                        <style>
+                                            body { font-family: Arial, sans-serif; margin: 20px; }
+                                            h1, h2, h3 { color: #333; }
+                                            pre { background: #f5f5f5; padding: 10px; border-radius: 5px; }
+                                        </style>
+                                    </head>
+                                    <body>${contenidoHTML}</body>
+                                </html>
+                            `);
+                            ventana.document.close();
+                        }
+                    } catch (error) {
+                        alert('Error generando documento: ' + error.message);
+                    }
+                }
+
+                //================================================================================================
+
+
+             // Listener para Evaluar (SIN CAMBIOS EN LÓGICA)
+             document.getElementById("examenes-pendientes").addEventListener("click", async function (event) {
+                const target = event.target.closest('button[data-action="evaluar"]'); // Mejor selector
+                if (target) {
+                    const index = target.dataset.index;
+                    // Verifica que el índice sea válido
+                    if (index === undefined || index === null || !examenesPendientes[index]) {
+                        console.error("Índice inválido o examen no encontrado:", index);
+                        return;
+                    }
+                    const examen = examenesPendientes[index];
+                    examenActual = examen; // Guarda el examen actual
+
+                    // ← AGREGAR: Obtener puntaje total real del examen----------------------------------------------------------------------------------------
+                    try {
+                        const responseExamen = await fetch(`http://127.0.0.1:5000/api/examen/${examen.idExamen}?email=${encodeURIComponent(currentUserEmail)}`);
+                        const dataExamen = await responseExamen.json();
+                        if (dataExamen.success && dataExamen.examenDataJson) {
+                            const examenData = JSON.parse(dataExamen.examenDataJson);
+                            // Calcular puntaje total real
+                            let puntajeTotalReal = 0;
+                            (examenData.preguntasMarcar || []).forEach(p => puntajeTotalReal += parseFloat(p.puntaje) || 0);
+                            (examenData.preguntasLibres || []).forEach(p => puntajeTotalReal += parseFloat(p.puntaje) || 0);
+                            (examenData.casosUso || []).forEach(c => puntajeTotalReal += parseFloat(c.puntaje) || 0);
+                            examen.puntajeTotal = puntajeTotalReal; // ← ASIGNAR PUNTAJE REAL
+                            console.log(`Puntaje total real obtenido: ${puntajeTotalReal}`);
+                        }
+                    } catch (error) {
+                        console.log("Error obteniendo puntaje total, usando 20 por defecto:", error);
+                        examen.puntajeTotal = 20;
+                    }
+                    //-------------------------------------------------------------------------------------------------------------------------------------------
+                    const idExamen = examen.idExamen;
+                    const idAlumno = examen.idAlumno;
+                    const nombreAlumno = examen.nombreAlumno;
+                    const nombreProfesor = examen.profesor || examen.nombreProfesor || examen.nombre_profesor || 'Sin asignar';
+
+                    // Verifica que los IDs existan
+                    if (!idExamen || !idAlumno) {
+                        alert("Error: Falta ID de Examen o ID de Alumno.");
+                        return;
+                    }
+
+                    const modoSeleccionado = document.querySelector('input[name="modoEvaluacion"]:checked').value;
+
+
+                    // Configurar y mostrar modal ANTES de la llamada fetch
+                     modalIdExamen.textContent = idExamen;
+
+                     // ***** INICIO DE LA CORRECCIÓN *****
+                     // Poblar los campos de información del examen en el cuerpo del modal
+                     document.getElementById('modal-id-examen-display').textContent = idExamen || 'N/A';
+                     document.getElementById('modal-eval-display-id-alumno').textContent = idAlumno || 'N/A';
+                     document.getElementById('modal-eval-display-nombre-alumno').textContent = nombreAlumno || 'N/A';
+                     document.getElementById('modal-eval-display-nombre-profesor').textContent = nombreProfesor || 'N/A';
+
+                     // ***** FIN DE LA CORRECCIÓN *****
+                     evaluacionProgreso.style.display = 'block'; // Muestra progreso
+                     evaluacionResultado.style.display = 'none';
+                     progressBar.style.width = '10%'; // Progreso inicial
+                     mensajeEvaluacion.textContent = 'Contactando al servidor de evaluación...';
+                     modalEvaluacion.style.display = 'flex'; // Muestra modal
+
+                    if (modoSeleccionado === "manual") {
+                        try {
+                             // Simular progreso mientras espera respuesta
+                             progressBar.style.width = '50%';
+                             mensajeEvaluacion.textContent = 'Esperando resultados del servidor Flask...';
+
+                             const modelosSeleccionados = Array.from(document.querySelectorAll('input[name="modelos"]:checked')).map(cb => cb.value);
+                             const nivelEvaluacion = document.getElementById('nivel-evaluacion').value; // ← AGREGAR ESTA LÍNEA
+
+                            // ✅ INICIO CAMBIO----------------------------------------------
+                            // Obtener etiquetas del modal de profesor (si está disponible)
+                            let etiquetasPreguntas = {};
+                            try {
+                                if (window.parent && window.parent.recolectarEtiquetasPreguntas) {
+                                    etiquetasPreguntas = window.parent.recolectarEtiquetasPreguntas();
+                                } else if (window.recolectarEtiquetasPreguntas) {
+                                    etiquetasPreguntas = window.recolectarEtiquetasPreguntas();
+                                }
+                            } catch (e) {
+                                console.log("No se pudieron obtener etiquetas, usando valores por defecto");
+                            }
+
+                            const response = await fetch(`http://localhost:5001/evaluar/${idExamen}/${idAlumno}`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ 
+                                    modelos: modelosSeleccionados,
+                                    etiquetas: etiquetasPreguntas,
+                                    nivel_evaluacion: nivelEvaluacion,
+                                    email_profesor: currentUserEmail,
+                                    rubricas: {
+                                        preguntasMarcar: document.getElementById('rubrica-marcar').value.trim() || '',
+                                        preguntasLibres: document.getElementById('rubrica-libres').value.trim() || '',
+                                        casosUso: document.getElementById('rubrica-casos').value.trim() || ''
+                                    }
+                                })
+                            });
+                            //------FIN DEL CAMBIO-----------------------------------------------
+                            
+                             progressBar.style.width = '80%';
+                             mensajeEvaluacion.textContent = 'Procesando respuesta...';
+
+                             if (!response.ok) {
+                                 const errorData = await response.text(); // Leer como texto si no es JSON
+                                 throw new Error(`Error del servidor (${response.status}): ${errorData}`);
+                             }
+
+                             const data = await response.json();
+                             console.log("📦 Respuesta del servidor Flask:", data);
+                             console.log("📦 Detalle en la respuesta:", data.resultado.detalle);
+
+                             // ✅ AGREGAR AQUÍ:
+                            console.log("🔍 DATOS RECIBIDOS DEL SERVIDOR:", data);
+                            console.log("🔍 CONSENSO COMPLETO:", data.resultado.consenso);
+                            console.log("🔍 DETALLES MODELO:", data.resultado.detalles_modelo);
+
+                            // Validación robusta de la respuesta
+                             if (!data || !data.resultado || !data.resultado.consenso || typeof data.resultado.consenso.total === 'undefined') {
+                                 throw new Error("La respuesta del servidor no tiene el formato esperado (falta resultado.consenso.total)");
+                             }
+
+                             evaluacionConsensoGlobal = data.resultado.consenso;
+                             window.ultimaRespuestaFlask = data;  // ← AGREGAR ESTA LÍNEA
+                             // ✅ AGREGAR AQUÍ:
+                             console.log("🔍 evaluacionConsensoGlobal ASIGNADO:", evaluacionConsensoGlobal);
+
+                             // Procesar TODOS los comentarios de TODAS las preguntas
+                             //const detalleCompleto = procesarTodosLosComentarios(data);
+                             const detalleCompleto = await procesarTodosLosComentarios(data);
+
+                            // Guardar resultado completo para usarlo después
+                             resultadoEvaluacion = {
+                                 calificacionFinal: data.resultado.consenso.total,
+                                 puntajeTotal: examen.puntajeTotal || 20,
+                                 detalle: detalleCompleto,  // ← USAR DETALLE COMPLETO PROCESADO
+                                 resumenModelos: data.resultado.detalles_modelo || []
+                             };
+
+                            // ✅ AGREGAR AQUÍ:
+                            console.log("🔍 resultadoEvaluacion CREADO:", resultadoEvaluacion);
+                            console.log("🔍 calificacionFinal:", resultadoEvaluacion.calificacionFinal);
+
+                             // Actualizar UI con los datos recibidos
+                             calificacionFinal.textContent = `${resultadoEvaluacion.calificacionFinal}/${resultadoEvaluacion.puntajeTotal}`;
+                             porcentajeFinal.textContent = `${data.resultado.consenso.porcentaje !== undefined ? data.resultado.consenso.porcentaje.toFixed(2) : 'N/A'}%`;
+
+                            // ✅ AGREGAR AQUÍ:
+                            console.log("🔍 VALORES MOSTRADOS EN MODAL:");
+                            console.log("🔍 - calificacionFinal:", `${resultadoEvaluacion.calificacionFinal}/${resultadoEvaluacion.puntajeTotal}`);
+                            console.log("🔍 - porcentajeFinal:", `${data.resultado.consenso.porcentaje}%`);
+                            console.log("🔍 DATOS ENVIADOS A mostrarResumenModelos:", resultadoEvaluacion.resumenModelos);
+
+                             mostrarResumenModelos(resultadoEvaluacion.resumenModelos);
+                             // Renderizar detalle (similar a finalizarEvaluacion original, pero con datos reales)
+                             //renderizarDetalleResultados(resultadoEvaluacion.detalle);
+                             renderizarDetalleResultados(detalleCompleto);
+
+                             progressBar.style.width = '100%';
+                             mensajeEvaluacion.textContent = 'Evaluación completada.';
+                             evaluacionProgreso.style.display = 'none'; // Oculta progreso
+                             evaluacionResultado.style.display = 'block'; // Muestra resultados
+
+                            // Agregar al header del modal
+                            //document.querySelector('#modal-evaluacion .modal-header').appendChild(btnGenerarDocumento);
+                            
+                             console.log("=== INICIANDO BÚSQUEDA DEL BOTÓN PDF ==="); // ← AGREGAR ESTA LÍNEA
+
+                             // ← AGREGAR AQUÍ (cuando ya existen los resultados)
+                             const btnImprimirLocal = document.getElementById("btn-imprimir-pdf");
+                             if (btnImprimirLocal) {
+                                 btnImprimirLocal.addEventListener("click", async function() {
+                                     try {
+                                         console.log("Generando PDF completo...");
+                                         
+                                         const modalBody = document.querySelector('#modal-evaluacion .modal-body');
+                                         
+                                         // Guardar estilos originales
+                                         const originalMaxHeight = modalBody.style.maxHeight;
+                                         const originalOverflow = modalBody.style.overflow;
+                                         
+                                         // Temporalmente mostrar todo el contenido
+                                         modalBody.style.maxHeight = 'none';
+                                         modalBody.style.overflow = 'visible';
+                                         
+                                         // Esperar un momento para que se apliquen los cambios
+                                         await new Promise(resolve => setTimeout(resolve, 100));
+                                         
+                                         const canvas = await html2canvas(modalBody, {
+                                             scale: 2,
+                                             useCORS: true,
+                                             allowTaint: true,
+                                             scrollX: 0,
+                                             scrollY: 0,
+                                             width: modalBody.scrollWidth,
+                                             height: modalBody.scrollHeight,
+                                             windowWidth: modalBody.scrollWidth,
+                                             windowHeight: modalBody.scrollHeight,
+                                             letterRendering: true,  // ← AGREGAR ESTA LÍNEA
+                                             backgroundColor: '#ffffff'  // ← AGREGAR ESTA LÍNEA
+                                         });
+                                         
+                                         // Restaurar estilos originales
+                                         modalBody.style.maxHeight = originalMaxHeight;
+                                         modalBody.style.overflow = originalOverflow;
+                                         
+                                         const { jsPDF } = window.jspdf;
+                                         const pdf = new jsPDF('p', 'mm', 'a4');
+                                         
+                                         const imgData = canvas.toDataURL('image/png', 1.0);
+                                         const imgWidth = 190;
+                                         const pageHeight = 260; // Altura útil por página
+                                         const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                                         let currentY = 0; // Posición actual en el canvas
+                                         let pageNumber = 1;
+                                         
+                                         while (currentY < imgHeight) {
+                                            // Calcular la altura para esta página
+                                            const remainingHeight = imgHeight - currentY;
+                                            const pageContentHeight = Math.min(pageHeight, remainingHeight);
+                                            
+                                            // Calcular las coordenadas del canvas original
+                                            const srcY = (currentY / imgHeight) * canvas.height;
+                                            const srcHeight = (pageContentHeight / imgHeight) * canvas.height;
+                                            
+                                            // Crear canvas temporal para esta página
+                                            const tempCanvas = document.createElement('canvas');
+                                            const tempCtx = tempCanvas.getContext('2d');
+                                            tempCanvas.width = canvas.width;
+                                            tempCanvas.height = srcHeight;
+                                            
+                                            // Copiar la parte correspondiente del canvas original
+                                            tempCtx.drawImage(canvas, 0, srcY, canvas.width, srcHeight, 0, 0, canvas.width, srcHeight);
+                                            
+                                            // Crear nueva página si no es la primera
+                                            if (pageNumber > 1) {
+                                                pdf.addPage();
+                                            }
+                                            
+                                            // Agregar la imagen al PDF
+                                            const tempImgData = tempCanvas.toDataURL('image/png', 1.0);
+                                            pdf.addImage(tempImgData, 'PNG', 10, 10, imgWidth, pageContentHeight);
+                                            
+                                            // Avanzar para la siguiente página
+                                            currentY += pageContentHeight;
+                                            pageNumber++;
+                                        }
+                                        
+                                        const fileName = `evaluacion_${examenActual.idExamen}_${examenActual.idAlumno}_${new Date().toISOString().slice(0,10)}.pdf`;
+                                        pdf.save(fileName);
+                                        
+                                        alert(`✅ PDF sin cortes descargado: ${fileName}`);
+                                         
+                                     } catch (error) {
+                                         console.error('Error:', error);
+                                         alert('Error: ' + error.message);
+                                     }
+                                 });
+                             }
+
+                        } catch (error) {
+                            console.error("❌ Error en evaluación manual:", error);
+                            alert("Error al evaluar: " + error.message);
+                            cerrarModal(); // Cierra modal si hay error
+                        }
+                    } else { // Modo Webhook
+                        alert("Este examen será evaluado automáticamente por webhook.");
+                        cerrarModal(); // Cierra el modal porque no hay acción inmediata
+                    }
+                }
+             });
+
+
+            // --- RESTO DE FUNCIONES (SIN CAMBIOS EN LÓGICA) ---
+            function buscarExamenes() {
+                // Lógica original de filtrado local (SIN CAMBIOS)
+                const filtros = {
+                    idExamen: filtroExamen.value.trim(),
+                    idAlumno: filtroAlumno.value.trim(),
+                    estado: filtroEstado.value
+                };
+                let pendientesFiltrados = examenesPendientes; // Usa copia global
+                let evaluadosFiltrados = examenesEvaluados;   // Usa copia global
+
+                if (filtros.idExamen) {
+                    pendientesFiltrados = pendientesFiltrados.filter(e => e.idExamen && e.idExamen.includes(filtros.idExamen));
+                    evaluadosFiltrados = evaluadosFiltrados.filter(e => e.idExamen && e.idExamen.includes(filtros.idExamen));
+                }
+                if (filtros.idAlumno) {
+                    pendientesFiltrados = pendientesFiltrados.filter(e => e.idAlumno && e.idAlumno.includes(filtros.idAlumno));
+                    evaluadosFiltrados = evaluadosFiltrados.filter(e => e.idAlumno && e.idAlumno.includes(filtros.idAlumno));
+                }
+                if (filtros.estado) {
+                    if (filtros.estado === 'pendiente') evaluadosFiltrados = [];
+                    else if (filtros.estado === 'evaluado') pendientesFiltrados = [];
+                }
+                renderizarExamenesPendientes(pendientesFiltrados);
+                renderizarExamenesEvaluados(evaluadosFiltrados);
+            }
+
+            function limpiarFiltros() {
+                // Lógica original (SIN CAMBIOS)
+                filtroExamen.value = '';
+                filtroAlumno.value = '';
+                filtroEstado.value = '';
+                renderizarExamenesPendientes(examenesPendientes); // Renderiza listas globales
+                renderizarExamenesEvaluados(examenesEvaluados);
+            }
+
+            async function cargarExamenesDesdeAppwrite() {
+                // Lógica original fetch (SIN CAMBIOS)
+                 try {
+
+                    const data = await obtenerExamenesEvaluacion(currentUserEmail);
+        
+                    console.log("📄 Documentos recibidos:", data.documents);
+                    console.log("📄 Documentos originales:", data.documentsOriginal);
+                    console.log("TOTAL DOCUMENTOS:", data.documents.length);
+
+                    data.documents.forEach((doc, i) => {
+                        console.log(`DOC ${i}:`, doc.examen_id, "CALIFICACION:", doc.calificacion_total, "KEYS:", Object.keys(doc));
+                    });
+
+
+                    if (data.documentsOriginal.length > 0) {
+                        console.log("🔍 PRIMER DOC ORIGINAL:", data.documentsOriginal[0]);
+                        console.log("🔍 Campo email:", data.documentsOriginal[0].email);
+                        console.log("🔍 Campo nombre_profesor:", data.documentsOriginal[0].nombre_profesor);
+                        console.log("🔍 ESTRUCTURA COMPLETA DOC:", JSON.stringify(data.documentsOriginal[0], null, 2));
+                        console.log("🔍 CAMPO examen_id:", data.documentsOriginal[0].examen_id);
+                        console.log("🔍 CAMPO id_alumno:", data.documentsOriginal[0].id_alumno);
+                    }
+
+                    if (data.documents && data.documentsOriginal) {
+                        // Limpiar arrays
+                        examenesPendientes = [];
+                        examenesEvaluados = [];
+                        
+                        // 1. Cargar evaluados desde puntaje_evaluacion_examen
+                        data.documents.forEach(doc => {
+                            if (doc.hasOwnProperty('calificacion_total') && doc.calificacion_total !== null && doc.calificacion_total !== '' && doc.calificacion_total !== undefined) {
+                                examenesEvaluados.push({
+                                    idExamen: doc.id_examen,
+                                    idAlumno: doc.id_alumno,
+                                    nombreAlumno: doc.nombre_alumno,
+                                    calificacion: parseInt(doc.calificacion_total) || 0,
+                                    porcentaje: doc.porcentaje_respuesta || ((parseInt(doc.calificacion_total) || 0) / obtenerPuntajeTotal(doc.id_examen, data.documentsOriginal) * 100).toFixed(2),
+                                    fechaEvaluacion: doc.$updatedAt || doc.$createdAt,
+                                    estado: 'evaluado',
+                                    preguntas_marcar: parseFloat(doc.preguntas_marcar) || 0,
+                                    preguntas_libres: parseFloat(doc.preguntas_libres) || 0,
+                                    casos_uso: parseFloat(doc.casos_uso) || 0
+                                });
+                            }
+                        });
+                    
+                        // 2. Cargar pendientes desde la colección original, excluyendo los ya evaluados
+                        const idsEvaluados = examenesEvaluados.map(e => `${e.idExamen}-${e.idAlumno}`);
+                        
+                        data.documentsOriginal.forEach(doc => {
+                            const idCombinado = `${doc.examen_id}-${doc.id_alumno}`;
+                            console.log("🔍 Documento:", idCombinado, "¿está evaluado?", idsEvaluados.includes(idCombinado));
+                            if (!idsEvaluados.includes(idCombinado)) {
+                                examenesPendientes.push({
+                                    idExamen: doc.examen_id,
+                                    idAlumno: doc.id_alumno,
+                                    nombreAlumno: doc.nombre_alumno,
+                                    profesorId: doc.id_profesor,
+                                    profesor: doc.nombre_profesor,
+                                    fechaCarga: doc.$createdAt,
+                                    marcar: 0,
+                                    libres: 0,
+                                    casoUso: 0,
+                                    estado: 'pendiente',
+                                    docId: doc.$id
+                                });
+                            }
+                        });
+            
+                // Renderizar ambas tablas
+                renderizarExamenesPendientes(examenesPendientes);
+                renderizarExamenesEvaluados(examenesEvaluados);
+                //verificarCargasEnAppwrite();
+            }
+                } catch (error) {
+                    console.error('Error cargando exámenes desde Appwrite:', error);
+                     // Mostrar error en la tabla si falla
+                     examenesPendientesTbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:red;">Error al cargar exámenes.</td></tr>';
+                     examenesEvaluadosTbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error al cargar exámenes.</td></tr>';
+                }
+            }
+
+            // En DOMContentLoaded, después de cargarExamenesDesdeAppwrite()
+            cargarRubricasProfesor();
+
+            async function cargarRubricasProfesor() {
+                try {
+                    const response = await fetch(`http://localhost:5001/api/rubricas/${currentUserEmail}`, {
+                        method: 'GET'
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success && data.rubricas) {
+                        // Auto-llenar los campos
+                        document.getElementById('rubrica-marcar').value = data.rubricas.rubrica_marcar || '';
+                        document.getElementById('rubrica-libres').value = data.rubricas.rubrica_libres || '';
+                        document.getElementById('rubrica-casos').value = data.rubricas.rubrica_casos || '';
+                        
+                        console.log("✅ Rúbricas del profesor cargadas automáticamente");
+                    }
+                } catch (error) {
+                    console.log("ℹ️ No se encontraron rúbricas previas del profesor");
+                }
+            }
+
+            // Cargar lista de rúbricas del profesor
+            async function cargarListaRubricas() {
+                try {
+                    console.log("🔍 Cargando lista de rúbricas para:", currentUserEmail);
+                    
+                    // ✅ CAMBIAR A POST
+                    const response = await fetch('http://localhost:5001/api/rubricas/lista', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email_profesor: currentUserEmail })
+                    });
+                    
+                    console.log("📡 Respuesta recibida:", response.status);
+                    
+                    const data = await response.json();
+                    console.log("📦 Datos parseados:", data);
+                    
+                    const selector = document.getElementById('selector-rubrica');
+                    selector.innerHTML = `
+                        <option value="">-- Seleccionar rúbrica existente --</option>
+                        <option value="nueva">✨ Crear nueva rúbrica</option>
+                    `;
+                    
+                    if (data.success && data.rubricas && data.rubricas.length > 0) {
+                        console.log("📋 Rúbricas encontradas:", data.rubricas.length);
+                        
+                        data.rubricas.forEach(rubrica => {
+                            const option = document.createElement('option');
+                            option.value = rubrica.$id;
+                            option.textContent = `📁 ${rubrica.nombre_rubrica} (${rubrica.categoria})`;
+                            selector.appendChild(option);
+                        });
+                    } else {
+                        console.log("⚠️ No se encontraron rúbricas");
+                    }
+                } catch (error) {
+                    console.error("❌ Error cargando lista de rúbricas:", error);
+                }
+            }
+
+            // Cargar rúbrica seleccionada
+            async function cargarRubricaSeleccionada() {
+                const rubricaId = document.getElementById('selector-rubrica').value;
+                
+                if (!rubricaId || rubricaId === 'nueva') {
+                    // Limpiar campos para nueva rúbrica
+                    document.getElementById('rubrica-marcar').value = '';
+                    document.getElementById('rubrica-libres').value = '';
+                    document.getElementById('rubrica-casos').value = '';
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`http://localhost:5001/api/rubricas/detalle/${rubricaId}`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        document.getElementById('rubrica-marcar').value = data.rubrica.rubrica_marcar || '';
+                        document.getElementById('rubrica-libres').value = data.rubrica.rubrica_libres || '';
+                        document.getElementById('rubrica-casos').value = data.rubrica.rubrica_casos || '';
+                        
+                        alert(`✅ Rúbrica "${data.rubrica.nombre_rubrica}" cargada`);
+                    }
+                } catch (error) {
+                    alert("Error cargando rúbrica: " + error.message);
+                }
+            }
+
+            // Guardar nueva rúbrica con nombre y categoría
+            async function guardarNuevaRubrica() {
+                const datos = {
+                    email_profesor: currentUserEmail,
+                    nombre_rubrica: document.getElementById('nombre-nueva-rubrica').value.trim(),
+                    categoria: document.getElementById('categoria-nueva-rubrica').value,
+                    nivel: document.getElementById('nivel-nueva-rubrica').value,
+                    rubrica_marcar: document.getElementById('rubrica-marcar').value.trim(),
+                    rubrica_libres: document.getElementById('rubrica-libres').value.trim(),
+                    rubrica_casos: document.getElementById('rubrica-casos').value.trim()
+                };
+                
+                if (!datos.nombre_rubrica) {
+                    alert("⚠️ Por favor ingresa un nombre para la rúbrica");
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('http://localhost:5001/api/rubricas/nueva', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(datos)
+                    });
+                    
+                    const result = await response.json();
+                    if (result.success) {
+                        alert(`✅ Rúbrica "${datos.nombre_rubrica}" guardada exitosamente`);
+                        cerrarModalGuardarRubrica();
+                        cargarListaRubricas(); // Refrescar lista
+                    }
+                } catch (error) {
+                    alert("Error guardando rúbrica: " + error.message);
+                }
+            }
+
+            function obtenerPuntajeTotal(idExamen, documentosOriginales) {
+                const examenOriginal = documentosOriginales.find(doc => doc.examen_id === idExamen);
+                return examenOriginal?.puntaje_total || 20;
+            }
+
+            function renderizarExamenesPendientes(examenes) {
+                // Lógica original para renderizar pendientes (SIN CAMBIOS)
+                 examenesPendientesTbody.innerHTML = '';
+                 if (!examenes || examenes.length === 0) {
+                    examenesPendientesTbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No hay exámenes pendientes.</td></tr>';
+                    // Opcional: Ocultar contenedor si se desea
+                    // examenesPendientesContainer.style.display = 'none';
+                     return;
+                 }
+                 // examenesPendientesContainer.style.display = 'block'; // Asegurar visibilidad
+
+                 examenes.forEach((examen, index) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${examen.idExamen || 'N/A'}</td>
+                        <td>${examen.idAlumno || 'N/A'}</td>
+                        <td>${formatearFecha(examen.fechaCarga)}</td>
+                        <td style="color: ${examen.marcar ? 'green' : 'red'}; font-weight: bold;">${examen.marcar ? 'Sí' : 'No'}</td>
+                        <td style="color: ${examen.libres ? 'green' : 'red'}; font-weight: bold;">${examen.libres ? 'Sí' : 'No'}</td>
+                        <td style="color: ${examen.casoUso ? 'green' : 'red'}; font-weight: bold;">${examen.casoUso ? 'Sí' : 'No'}</td>
+                        <td style="font-weight: bold; color: ${examen.estado === 'pendiente' ? '#db2777' : 'black'};">${examen.estado || 'N/A'}</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-success btn-small" data-action="evaluar" data-index="${index}" title="Evaluar Examen">
+                                <i class="fas fa-check-circle"></i> Evaluar
+                            </button>
+                            <button class="btn btn-info btn-small" data-action="ver-pdf" data-index="${index}" title="Ver PDF (Simulado)">
+                                <i class="fas fa-file-pdf"></i> Ver PDF
+                            </button>
+                        </td>
+                    `;
+                    examenesPendientesTbody.appendChild(tr);
+                 });
+                 // NO añadir listeners aquí, se hace en la función que llama a renderizar
+            }
+
+            function renderizarExamenesEvaluados(examenes) {
+                // Lógica original para renderizar evaluados (SIN CAMBIOS)
+                 examenesEvaluadosTbody.innerHTML = '';
+                 if (!examenes || examenes.length === 0) {
+                    examenesEvaluadosTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay exámenes evaluados.</td></tr>';
+                    // examenesEvaluadosContainer.style.display = 'none';
+                    return;
+                 }
+                 // examenesEvaluadosContainer.style.display = 'block';
+
+                 examenes.forEach((examen, index) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${examen.idExamen || 'N/A'}</td>
+                        <td>${examen.idAlumno || 'N/A'}</td>
+                        <td>${examen.calificacion !== undefined ? examen.calificacion : 'N/A'}</td>
+                        <td>${formatearFecha(examen.fechaEvaluacion)}</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-info btn-small" data-action="ver-resultado" data-index="${index}" title="Ver Resultado Detallado">
+                                <i class="fas fa-poll"></i> Ver Resultado
+                            </button>
+                            <button class="btn btn-success btn-small" data-action="enviar-resultado" data-index="${index}" title="Enviar Resultado (Simulado)">
+                                <i class="fas fa-paper-plane"></i> Enviar
+                            </button>
+                        </td>
+                    `;
+                    examenesEvaluadosTbody.appendChild(tr);
+                 });
+                 // NO añadir listeners aquí
+            }
+
+            // Función para añadir listeners después de renderizar (IMPORTANTE)
+             function asignarListenersGlobales() {
+                 // Delegación de eventos en las tablas para manejar clics en botones
+                 examenesPendientesTbody.addEventListener('click', (event) => {
+                     const button = event.target.closest('button[data-action]');
+                     if (!button) return; // Salir si no se hizo clic en un botón de acción
+
+                     const action = button.dataset.action;
+                     const index = parseInt(button.dataset.index);
+
+                     if (isNaN(index) || index < 0 || index >= examenesPendientes.length) return;
+                     const examen = examenesPendientes[index];
+
+                     if (action === 'evaluar') {
+                         // La lógica de evaluar ahora está en el listener global más arriba
+                         // Aquí no se hace nada extra, solo se previene comportamiento por defecto si fuera necesario
+                     } else if (action === 'ver-pdf') {
+                         verExamen(examen); // Llama a la función original
+                     }
+                 });
+
+                 examenesEvaluadosTbody.addEventListener('click', (event) => {
+                    const button = event.target.closest('button[data-action]');
+                     if (!button) return;
+
+                     const action = button.dataset.action;
+                     const index = parseInt(button.dataset.index);
+
+                    if (isNaN(index) || index < 0 || index >= examenesEvaluados.length) return;
+                     const examen = examenesEvaluados[index];
+
+                    if (action === 'ver-resultado') {
+                         verResultadoDetallado(examen); // Llama a la función original
+                     } else if (action === 'enviar-resultado') {
+                         enviarResultado(examen); // Llama a la función original
+                     }
+                 });
+             }
+             // Llamar para asignar listeners una vez al inicio
+             asignarListenersGlobales();
+
+
+             function verExamen(examen) {
+                if (!examen.idExamen || !examen.idAlumno) {
+                    alert('Error: Faltan datos del examen o alumno');
+                    return;
+                }
+                
+                // Usar el nuevo endpoint con respuestas
+                const examenUrl = `http://localhost:5000/examen/${examen.idExamen}/${examen.idAlumno}`;
+                
+                const link = document.createElement('a');
+                link.href = examenUrl;
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            // La función evaluarExamen original simulaba el progreso,
+            // la nueva lógica dentro del listener del botón 'evaluar' la reemplaza.
+            // Mantenemos la función original por si se necesita como referencia, pero no se llama directamente.
+            /* function evaluarExamen(examen) { ... } */
+
+             // Función para renderizar detalle (reemplaza la lógica de finalizarEvaluacion)
+             function renderizarDetalleResultados(detalle = []) {
+
+                console.log("[DEBUG] renderizarDetalleResultados recibió:", detalle);
+                console.log("[DEBUG] Longitud del detalle:", detalle ? detalle.length : 'undefined');
+
+                if (detalle && detalle.length > 0) {
+                    console.log("[DEBUG] Primer elemento del detalle:", detalle[0]);
+                    detalle.forEach((resultado, index) => {
+                        console.log(`[DEBUG] Elemento ${index}:`, resultado);
+                    });
+                }
+
+                 detalleResultados.innerHTML = ''; // Limpiar
+                 if (!detalle || detalle.length === 0) {
+                     detalleResultados.innerHTML = '<p>Detalles de evaluacion disponible en documento adjunto.</p>';
+                     return;
+                 }
+
+                 detalle.forEach(resultado => {
+                     const div = document.createElement('div');
+                     div.className = 'resultado-pregunta'; // Usa clase CSS
+                     // Lógica de formato HTML (SIN CAMBIOS)
+                     let contenidoHTML = `<div class="pregunta-header"><h5>Pregunta ${resultado.numeroPregunta}</h5><div class="puntaje"><span>${resultado.puntajeObtenido}/${resultado.puntajeTotal}</span></div></div><div class="pregunta-contenido"><p><strong>Pregunta:</strong> ${resultado.textoPregunta || 'N/A'}</p>`;
+                     if (resultado.tipo === 'marcar') {
+                         contenidoHTML += `<p><strong>Respuesta correcta:</strong> ${resultado.respuestaCorrecta || 'N/A'}</p><p><strong>Respuesta del alumno:</strong> ${resultado.respuestaAlumno || 'N/A'}</p>`;
+                     } else {
+                         contenidoHTML += `<div><p><strong>Respuesta del alumno:</strong></p><div class="respuesta-texto">${resultado.respuestaAlumno || ''}</div></div>`;
+                     }
+                     if (resultado.comentario) {
+                         contenidoHTML += `<div><p><strong>Comentario:</strong></p><div class="comentario">${resultado.comentario}</div></div>`;
+                     }
+                     contenidoHTML += '</div>';
+                     div.innerHTML = contenidoHTML;
+                     detalleResultados.appendChild(div);
+                 });
+             }
+
+
+            // La función guardarEvaluacion original movía elementos entre listas locales.
+            // La nueva lógica está en el listener del botón 'Guardar Respuestas'.
+            // Se mantiene aquí como referencia.
+            /* function guardarEvaluacion() { ... } */
+
+            async function verResultadoDetallado(examen) {
+                 // Lógica original para llenar modal de resultado (SIN CAMBIOS)
+                 examenResultado = examen; // Guarda referencia
+                 console.log("EXAMEN DATOS:", examen);
+                 console.log("prorcentaje_respuesta:", examen.prorcentaje_respuesta);
+
+                 modalResultadoId.textContent = examen.idExamen || 'N/A';
+                 resultadoIdAlumno.textContent = examen.idAlumno || 'N/A';
+                 //resultadoCalificacion.textContent = `${examen.calificacion !== undefined ? examen.calificacion : 'N/A'}`;
+                 resultadoCalificacion.textContent = examen.calificacion !== undefined ? examen.calificacion : 'N/A';
+                 //resultadoPorcentaje.textContent = examen.prorcentaje_respuesta ? `${examen.prorcentaje_respuesta}%` : 'N/A';
+
+                 //---INICIO CAMBIO-----
+                 document.getElementById('resultado-display-nombre-alumno').textContent = examen.nombreAlumno || 'N/A';
+
+                 try {
+                    // ✅ BUSCAR EN guardar_evaluacion_modelos
+                    // POR ESTAS:  
+                    const data = await appwriteDatabases.listDocuments(
+                        databaseId,
+                        '682b513c001968d6cae9',
+                        [
+                            Query.equal('id_examen', examen.idExamen),
+                            Query.equal('id_alumno', examen.idAlumno),
+                            Query.equal('email', currentUserEmail) // ← AGREGAR ESTA LÍNEA email
+                        ]
+                    );
+                
+                    if (data.documents && data.documents.length > 0) {
+                        const doc = data.documents[0];
+
+                    // Mostrar puntajes por tipo de pregunta
+                    // ✅ MOSTRAR VALORES CORRECTOS DESDE guardar_evaluacion_modelos
+                    document.getElementById('resultado-marcar').textContent = doc.preguntas_marcar || '0';
+                    document.getElementById('resultado-libres').textContent = doc.preguntas_libres || '0';
+                    document.getElementById('resultado-casos').textContent = doc.casos_uso || '0';
+
+                } else {
+                    // Fallback
+                    document.getElementById('resultado-marcar').textContent = '0';
+                    document.getElementById('resultado-libres').textContent = '0';
+                    document.getElementById('resultado-casos').textContent = '0';
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                // Fallback
+                document.getElementById('resultado-marcar').textContent = '0';
+                document.getElementById('resultado-libres').textContent = '0';
+                document.getElementById('resultado-casos').textContent = '0';
+            }
+                //------FIN CAMBIO------------
+
+                 document.getElementById('resultado-display-nombre-alumno').textContent = examen.nombreAlumno || 'N/A';
+                 document.getElementById('modal-eval-display-id-alumno').textContent = examenActual.idAlumno || 'N/A';
+
+                 // Lógica para mostrar detalle (usando la función renderizarDetalleResultados)
+                 renderizarDetalleResultados(examen.detalle || []); // Reusa la función de renderizado
+
+                 modalResultado.style.display = 'flex'; // Muestra modal
+             }
+
+            function enviarResultado(examen) {
+                // Lógica original (SIN CAMBIOS)
+                alert(`Resultado del examen ${examen.idExamen} enviado al alumno ${examen.idAlumno}`);
+            }
+
+            function enviarResultadoDesdeModal() {
+                // Lógica original (SIN CAMBIOS)
+                enviarResultado(examenResultado);
+                cerrarModalResultado();
+            }
+
+            function cerrarModal() {
+                // Lógica original (SIN CAMBIOS)
+                modalEvaluacion.style.display = 'none';
+                examenActual = {};
+                resultadoEvaluacion = null; // Resetea resultado al cerrar
+            }
+
+            function cerrarModalResultado() {
+                // Lógica original (SIN CAMBIOS)
+                modalResultado.style.display = 'none';
+                examenResultado = {};
+            }
+
+            //-------INCIO CAMBIO---------------
+
+             // Función verificarCargasEnAppwrite (SIN CAMBIOS EN LÓGICA)
+             async function verificarCargasEnAppwrite() {
+                console.log("🔄 Verificando propiedades en Appwrite...");
+                
+                // Para exámenes pendientes, usar datos de la colección original
+                await Promise.all(examenesPendientes.map(async (examen) => {
+                    if (!examen.idAlumno || !examen.idExamen) return;
+                    
+                    try {
+                        // Usar la colección original (67f517c00027fc5b40be) que sí tiene esos campos
+                        const response = await fetch(
+                            `${appwriteEndpoint}/databases/${databaseId}/collections/67f517c00027fc5b40be/documents` + 
+                            `?queries[]=equal("id_alumno","${examen.idAlumno}")&queries[]=equal("examen_id","${examen.idExamen}")&queries[]=equal("email","${currentUserEmail}")`,
+                            {
+                                headers: { 
+                                    'Content-Type': 'application/json',
+                                    'X-Appwrite-Project': projectId,
+                                    'X-Appwrite-Key': apiKey 
+                                }
+                            }
+                        );
+                        
+                        const data = await response.json();
+                        
+                        if (data.documents && data.documents.length > 0) {
+                            const doc = data.documents[0];
+                            
+                            examen.marcar = (doc.preguntas_marcar !== undefined && doc.preguntas_marcar) ? 1 : 0;
+                            examen.libres = (doc.preguntas_libres !== undefined && doc.preguntas_libres) ? 1 : 0;
+                            examen.casoUso = (doc.casos_uso !== undefined && doc.casos_uso) ? 1 : 0;
+                        }
+                    } catch (error) {
+                        console.error(`Error verificando Appwrite para ${examen.idExamen} / ${examen.idAlumno}:`, error);
+                    }
+                }));
+                
+                // Re-renderizar solo si hay cambios
+                renderizarExamenesPendientes(examenesPendientes);
+                console.log("✅ Verificación completada.");
+            }
+            
+            //----------------FIN CAMBIO-----------------------------
+
+            function formatearFecha(fechaISO) {
+                // Lógica original (SIN CAMBIOS)
+                if (!fechaISO) return 'N/A';
+                try {
+                    return new Date(fechaISO).toLocaleString('es-ES');
+                } catch (e) {
+                    return fechaISO;
+                }
+            }
+
+            // La llamada a verificarCargasEnAppwrite se movió dentro de cargarExamenesDesdeAppwrite
+
+            async function enviarResultadoDesdeModal() {
+                try {
+                    // Obtener datos del resultado actual
+                    const payload = {
+                        id_examen: examenResultado.idExamen,
+                        id_alumno: examenResultado.idAlumno,
+                        nombre_alumno: examenResultado.nombreAlumno,
+                        email_profesor: currentUserEmail,
+                        calificacion_total: examenResultado.calificacion,
+                        preguntas_marcar: document.getElementById('resultado-marcar').textContent,
+                        preguntas_libres: document.getElementById('resultado-libres').textContent,
+                        casos_uso: document.getElementById('resultado-casos').textContent
+                    };
+                    
+                    const response = await fetch("http://localhost:5001/enviar_resultado_email", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.error || "Error desconocido");
+                    
+                    alert(`✅ Resultado enviado por email a: ${result.email_destino}`);
+                    cerrarModalResultado();
+                } catch (error) {
+                    console.error("❌ Error enviando email:", error);
+                    alert("Error al enviar el email: " + error.message);
+                }
+            }
+        });
+
+             // ✅ FUNCIONES FALTANTES PARA RÚBRICAS
+             function mostrarModalGuardarRubrica() {
+                document.getElementById('modal-guardar-rubrica').style.display = 'flex';
+            }
+
+            function cerrarModalGuardarRubrica() {
+                document.getElementById('modal-guardar-rubrica').style.display = 'none';
+            }
+
+            async function cargarListaRubricas() {
+                try {
+                    console.log("🔍 Cargando lista de rúbricas para:", currentUserEmail);
+                    const response = await fetch(`http://localhost:5001/api/rubricas/lista/${currentUserEmail}`);
+                    console.log("📡 Respuesta recibida:", response.status);
+                    const data = await response.json();
+                    console.log("📦 Datos parseados COMPLETOS:", JSON.stringify(data, null, 2)); // ← AGREGAR ESTA LÍNEA
+                    console.log("📦 data.success:", data.success); // ← AGREGAR ESTA LÍNEA
+                    console.log("📦 data.rubricas:", data.rubricas); // ← AGREGAR ESTA LÍNEA
+                    
+                    const selector = document.getElementById('selector-rubrica');
+                    selector.innerHTML = `
+                        <option value="">-- Seleccionar rúbrica existente --</option>
+                        <option value="nueva">✨ Crear nueva rúbrica</option>
+                    `;
+                    
+                    if (data.success && data.rubricas) {
+                        console.log("📋 Rúbricas encontradas:", data.rubricas.length);
+
+                        data.rubricas.forEach(rubrica => {
+                            console.log("➕ Agregando rúbrica:", rubrica.nombre_rubrica);
+                            const option = document.createElement('option');
+                            option.value = rubrica.$id;
+                            option.textContent = `📁 ${rubrica.nombre_rubrica} (${rubrica.categoria})`;
+                            selector.appendChild(option);
+                        });
+                    } else {
+                        console.log("⚠️ No se encontraron rúbricas");
+                        console.log("⚠️ Razón - success:", data.success, "rubricas:", data.rubricas);
+                    }
+                } catch (error) {
+                    console.log("Error cargando lista de rúbricas:", error);
+                }
+            }
+
+            async function cargarRubricaSeleccionada() {
+                const rubricaId = document.getElementById('selector-rubrica').value;
+                
+                if (!rubricaId || rubricaId === 'nueva') {
+                    document.getElementById('rubrica-marcar').value = '';
+                    document.getElementById('rubrica-libres').value = '';
+                    document.getElementById('rubrica-casos').value = '';
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`http://localhost:5001/api/rubricas/detalle/${rubricaId}`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        document.getElementById('rubrica-marcar').value = data.rubrica.rubrica_marcar || '';
+                        document.getElementById('rubrica-libres').value = data.rubrica.rubrica_libres || '';
+                        document.getElementById('rubrica-casos').value = data.rubrica.rubrica_casos || '';
+                        
+                        alert(`✅ Rúbrica "${data.rubrica.nombre_rubrica}" cargada`);
+                    }
+                } catch (error) {
+                    alert("Error cargando rúbrica: " + error.message);
+                }
+            }
+
+            async function guardarNuevaRubrica() {
+                const datos = {
+                    email_profesor: currentUserEmail,
+                    nombre_rubrica: document.getElementById('nombre-nueva-rubrica').value.trim(),
+                    categoria: document.getElementById('categoria-nueva-rubrica').value,
+                    nivel: document.getElementById('nivel-nueva-rubrica').value,
+                    rubrica_marcar: document.getElementById('rubrica-marcar').value.trim(),
+                    rubrica_libres: document.getElementById('rubrica-libres').value.trim(),
+                    rubrica_casos: document.getElementById('rubrica-casos').value.trim()
+                };
+                
+                console.log("🚀 INICIO - Datos a enviar:", datos);
+                
+                if (!datos.nombre_rubrica) {
+                    alert("⚠️ Por favor ingresa un nombre para la rúbrica");
+                    return;
+                }
+                
+                try {
+                    console.log("📡 ENVIANDO petición...");
+                    
+                    const response = await fetch('http://localhost:5001/api/rubricas/nueva', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(datos)
+                    });
+                    
+                    console.log("📨 RESPUESTA recibida - Status:", response.status);
+                    console.log("📨 RESPUESTA - OK:", response.ok);
+                    
+                    const result = await response.json();
+                    console.log("📦 RESULTADO parseado:", result);
+                    
+                    if (result.success) {
+                        console.log("✅ ÉXITO - Mostrando alert");
+                        alert(`✅ Rúbrica "${datos.nombre_rubrica}" guardada exitosamente`);
+                        
+                        console.log("🔄 Cerrando modal...");
+                        cerrarModalGuardarRubrica();
+                        
+                        console.log("📋 Recargando lista...");
+                        cargarListaRubricas();
+                    } else {
+                        console.log("❌ ERROR en result:", result.error);
+                        alert("❌ Error: " + result.error);
+                    }
+                } catch (error) {
+                    console.error("🚨 ERROR en catch:", error);
+                    alert("Error guardando rúbrica: " + error.message);
+                }
+            }
+    </script>
+</body>
+</html>

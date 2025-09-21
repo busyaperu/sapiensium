@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Central - ExamPro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .nav-bar {
+            background: white;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-brand {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: #e2e8f0;
+            color: #4a5568;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #cbd5e0;
+            transform: translateY(-1px);
+        }
+
+        .nav-btn.primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .nav-btn.primary:hover {
+            background: #5a67d8;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .admin-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admin-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .admin-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-description {
+            color: #718096;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .card-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+        }
+
+        .btn-warning {
+            background: #ed8936;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #dd6b20;
+        }
+
+        .quick-stats {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .quick-stat {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+            background: #f7fafc;
+        }
+
+        .quick-stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-stat-label {
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .recent-activity {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .activity-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            transition: background 0.3s ease;
+        }
+
+        .activity-item:hover {
+            background: #f7fafc;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .activity-icon.success {
+            background: rgba(72, 187, 120, 0.1);
+            color: #38a169;
+        }
+
+        .activity-icon.info {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .activity-icon.warning {
+            background: rgba(237, 137, 54, 0.1);
+            color: #dd6b20;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            color: #2d3748;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-time {
+            color: #718096;
+            font-size: 0.8rem;
+        }
+
+        .iframe-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            display: none;
+        }
+
+        .iframe-content {
+            width: 95%;
+            height: 95%;
+            margin: 2.5%;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .iframe-header {
+            background: #2d3748;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .iframe-close {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .iframe-frame {
+            width: 100%;
+            height: calc(100% - 60px);
+            border: none;
+            background: white;
+        }
+
+        .card:nth-child(2) .card-actions .action-btn {
+            width: 80px;
+            height: 32px;
+            font-size: 12px;
+            padding: 6px 8px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-bar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .iframe-content {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                border-radius: 0;
+            }
+
+            #admin-grid .admin-card:nth-child(2) .card-actions .action-btn {
+                width: 80px !important;
+                height: 32px !important;
+                font-size: 12px !important;
+                padding: 6px 8px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1><i class="fas fa-cogs"></i> Panel Administrativo Central</h1>
+        <p>Control total de tu plataforma ExamPro</p>
+    </header>
+
+    <nav class="nav-bar">
+        <div class="nav-brand">
+            <i class="fas fa-tachometer-alt"></i> Dashboard Admin
+        </div>
+        <div class="nav-actions">
+            <a href="../index.html" class="nav-btn">
+                <i class="fas fa-home"></i> Ir al sitio
+            </a>
+            <button class="nav-btn primary" onclick="refreshAllData()">
+                <i class="fas fa-sync-alt"></i> Actualizar Todo
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Estadísticas Rápidas -->
+        <div class="quick-stats">
+            <h2 style="margin-bottom: 1.5rem; color: #2d3748;"><i class="fas fa-chart-line"></i> Resumen General</h2>
+            <div class="stats-grid">
+                <div class="quick-stat">
+                    <div class="quick-stat-number" id="totalUsers">156</div>
+                    <div class="quick-stat-label">Usuarios Totales</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="quick-stat-number" id="pendingRequests">8</div>
+                    <div class="quick-stat-label">Solicitudes Pendientes</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="quick-stat-number" id="totalFunds">$24.00</div>
+                    <div class="quick-stat-label">Fondos Together.ai</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="quick-stat-number" id="activeCredits">12,450</div>
+                    <div class="quick-stat-label">Créditos Activos</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Módulos Administrativos -->
+        <div class="admin-grid">
+            <!-- Solicitudes Demo -->
+            <div class="admin-card">
+                <div class="card-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h3 class="card-title">Solicitudes de Demo</h3>
+                <p class="card-description">
+                    Gestiona las solicitudes de demo de usuarios interesados. Aprueba o rechaza solicitudes y genera códigos promocionales automáticamente.
+                </p>
+                <div class="card-stats">
+                    <div class="stat">
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">Pendientes</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">24</div>
+                        <div class="stat-label">Aprobadas</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Rechazadas</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="action-btn btn-primary" onclick="openInFrame('admin.html', 'Gestión de Solicitudes')">
+                        <i class="fas fa-cog"></i> Gestionar
+                    </button>
+                    <a href="admin.html" target="_blank" class="action-btn btn-secondary">
+                        <i class="fas fa-external-link-alt"></i> Abrir
+                    </a>
+                </div>
+            </div>
+
+            <!-- Robot Together.ai -->
+            <div class="admin-card">
+                <div class="card-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3 class="card-title">Robot Together.ai</h3>
+                <p class="card-description">
+                    Monitorea el robot automático que convierte pagos de $20 en $4 para comprar créditos de Together.ai. Ve estadísticas y logs en tiempo real.
+                </p>
+                <div class="card-stats">
+                    <div class="stat">
+                        <div class="stat-number">$24</div>
+                        <div class="stat-label">Disponible</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Transacciones</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">Online</div>
+                        <div class="stat-label">Estado</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="action-btn btn-success" onclick="openInFrame('toguether-dashboard.html', 'Robot Together.ai')">
+                        <i class="fas fa-chart-bar"></i> Monitor
+                    </a>
+                    <a href="toguether-dashboard.html" target="_blank" class="action-btn btn-secondary">
+                        <i class="fas fa-external-link-alt"></i> Abrir
+                    </a>
+                </div>
+            </div>
+
+            <!-- Gestión de Usuarios -->
+            <div class="admin-card">
+                <div class="card-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="card-title">Gestión de Usuarios</h3>
+                <p class="card-description">
+                    Administra usuarios registrados, créditos promocionales, historial de pagos y acceso a la plataforma.
+                </p>
+                <div class="card-stats">
+                    <div class="stat">
+                        <div class="stat-number">156</div>
+                        <div class="stat-label">Usuarios</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">89</div>
+                        <div class="stat-label">Activos</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Beta</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="action-btn btn-primary" onclick="openInFrame('gestion-usuarios.html', 'Gestión de Usuarios')">
+                        <i class="fas fa-users-cog"></i> Gestionar
+                    </button>
+                    <button class="action-btn btn-secondary" onclick="openInFrame('reportes-usuarios.html', 'Reportes de Usuarios')">
+                        <i class="fas fa-chart-pie"></i> Reportes
+                    </button>
+                </div>
+            </div>
+
+            <!-- Analytics -->
+            <div class="admin-card">
+                <div class="card-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="card-title">Analytics & Reportes</h3>
+                <p class="card-description">
+                    Análisis detallado de uso de la plataforma, métricas de conversión, ingresos y rendimiento general del sistema.
+                </p>
+                <div class="card-stats">
+                    <div class="stat">
+                        <div class="stat-number">85%</div>
+                        <div class="stat-label">Conversión</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">$1,240</div>
+                        <div class="stat-label">Ingresos</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">2.3k</div>
+                        <div class="stat-label">Exámenes</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="action-btn btn-warning" onclick="openInFrame('analytics-reportes.html', 'Analytics & Reportes')">
+                        <i class="fas fa-analytics"></i> Ver Analytics
+                    </button>
+                    <button class="action-btn btn-secondary" onclick="exportarDatosGeneral()">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+
+            <!-- Configuración Sistema -->
+            <div class="admin-card">
+                <div class="card-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <h3 class="card-title">Configuración</h3>
+                <p class="card-description">
+                    Configuración general del sistema, precios, políticas de créditos, integraciones y parámetros operativos.
+                </p>
+                <div class="card-stats">
+                    <div class="stat">
+                        <div class="stat-number">5</div>
+                        <div class="stat-label">APIs</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Configs</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">OK</div>
+                        <div class="stat-label">Estado</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="action-btn btn-primary" onclick="openInFrame('configuracion-sistema.html', 'Configuración del Sistema')">
+                        <i class="fas fa-sliders-h"></i> Configurar
+                    </button>
+                    <button class="action-btn btn-secondary" onclick="openInFrame('seguridad-sistema.html', 'Seguridad del Sistema')">
+                        <i class="fas fa-shield-alt"></i> Seguridad
+                    </button>
+                </div>
+            </div>
+
+            <!-- Notificaciones -->
+            <div class="admin-card">
+                <div class="card-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <h3 class="card-title">Notificaciones</h3>
+                <p class="card-description">
+                    Centro de notificaciones, alertas del sistema, emails automáticos y comunicación con usuarios.
+                </p>
+                <div class="card-stats">
+                    <div class="stat">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Nuevas</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">15</div>
+                        <div class="stat-label">Hoy</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">89%</div>
+                        <div class="stat-label">Entregadas</div>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="action-btn btn-primary" onclick="openInFrame('notificaciones.html', 'Centro de Notificaciones')">
+                        <i class="fas fa-envelope"></i> Ver Todas
+                    </button>
+                    <button class="action-btn btn-secondary" onclick="enviarNotificacionLocal()">
+                        <i class="fas fa-paper-plane"></i> Enviar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actividad Reciente -->
+        <div class="recent-activity">
+            <div class="activity-header">
+                <h2 class="activity-title"><i class="fas fa-history"></i> Actividad Reciente</h2>
+                <button class="nav-btn" onclick="refreshActivity()">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+            </div>
+            <div id="activityList">
+                <div class="activity-item">
+                    <div class="activity-icon success">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-text">Solicitud de demo aprobada para usuario@empresa.com</div>
+                        <div class="activity-time">Hace 5 minutos</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon info">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-text">Robot Together.ai procesó nueva transacción: $20.00 → $4.00</div>
+                        <div class="activity-time">Hace 12 minutos</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon success">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-text">Nuevo usuario registrado: test@ejemplo.com</div>
+                        <div class="activity-time">Hace 1 hora</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-text">Fondos Together.ai alcanzaron $20 - Considerar compra</div>
+                        <div class="activity-time">Hace 2 horas</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Iframe Container -->
+    <div class="iframe-container" id="iframeContainer">
+        <div class="iframe-content">
+            <div class="iframe-header">
+                <h3 id="iframeTitle">Cargando...</h3>
+                <button class="iframe-close" onclick="closeFrame()">
+                    <i class="fas fa-times"></i> Cerrar
+                </button>
+            </div>
+            <iframe class="iframe-frame" id="adminFrame" src=""></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Funciones para gestión de iframe
+        function openInFrame(url, title) {
+            document.getElementById('iframeTitle').textContent = title;
+            document.getElementById('adminFrame').src = url;
+            document.getElementById('iframeContainer').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeFrame() {
+            document.getElementById('iframeContainer').style.display = 'none';
+            document.getElementById('adminFrame').src = '';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Funciones de actualización
+        function refreshAllData() {
+            // Simular actualización de datos
+            const stats = [
+                { id: 'totalUsers', value: Math.floor(Math.random() * 200) + 150 },
+                { id: 'pendingRequests', value: Math.floor(Math.random() * 15) + 5 },
+                { id: 'totalFunds', value: '$' + (Math.random() * 50 + 10).toFixed(2) },
+                { id: 'activeCredits', value: (Math.floor(Math.random() * 5000) + 10000).toLocaleString() }
+            ];
+
+            stats.forEach(stat => {
+                const element = document.getElementById(stat.id);
+                if (element) {
+                    element.style.transform = 'scale(1.1)';
+                    element.style.color = '#667eea';
+                    setTimeout(() => {
+                        element.textContent = stat.value;
+                        element.style.transform = 'scale(1)';
+                    }, 200);
+                }
+            });
+            // Agregar actualización de Together.ai
+            updateTogetherAiStats();
+            // Mostrar notificación
+            showNotification('Datos actualizados correctamente', 'success');
+        }
+
+        function refreshActivity() {
+            const activities = [
+                {
+                    icon: 'success',
+                    iconClass: 'fas fa-check',
+                    text: 'Nueva solicitud de demo aprobada',
+                    time: 'Justo ahora'
+                },
+                {
+                    icon: 'info',
+                    iconClass: 'fas fa-robot',
+                    text: 'Robot Together.ai en línea y funcionando',
+                    time: 'Hace 1 minuto'
+                },
+                {
+                    icon: 'warning',
+                    iconClass: 'fas fa-exclamation-triangle',
+                    text: 'Revisión de seguridad completada',
+                    time: 'Hace 3 minutos'
+                }
+            ];
+
+            const activityList = document.getElementById('activityList');
+            const newActivity = activities[Math.floor(Math.random() * activities.length)];
+            
+            const activityHTML = `
+                <div class="activity-item" style="background: #f0fff4; border-left: 3px solid #48bb78;">
+                    <div class="activity-icon ${newActivity.icon}">
+                        <i class="${newActivity.iconClass}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-text">${newActivity.text}</div>
+                        <div class="activity-time">${newActivity.time}</div>
+                    </div>
+                </div>
+            `;
+            
+            activityList.insertAdjacentHTML('afterbegin', activityHTML);
+            showNotification('Actividad actualizada', 'info');
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#48bb78' : type === 'warning' ? '#ed8936' : '#667eea'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1001;
+                font-weight: 500;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        function enviarNotificacionLocal() {
+            // Usar la función correcta que sí existe
+            showNotification('Notificación enviada a todos los usuarios activos', 'success');
+        }
+
+        // Cerrar iframe con Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeFrame();
+            }
+        });
+
+        // Actualizar datos periódicamente
+        setInterval(refreshAllData, 300000); // Cada 5 minutos
+
+        function exportarDatosGeneral() {
+            const data = {
+                fecha_exportacion: new Date().toISOString(),
+                usuarios_totales: document.getElementById('stat-assigned')?.textContent || '0',
+                solicitudes_pendientes: document.getElementById('stat-pending')?.textContent || '0',
+                fondos_together: '$10.00', // Datos actuales del dashboard
+                sistema: 'ExamPro Admin Dashboard'
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `exampro_export_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification('Datos exportados correctamente', 'success');
+        }
+
+        // Agregar función para actualizar datos del Robot Together.ai
+        async function updateTogetherAiStats() {
+            try {
+                const response = await fetch('http://127.0.0.1:5003/api/together-dashboard');
+                const data = await response.json();
+                
+                // Actualizar fondos en resumen general
+                document.getElementById('totalFunds').textContent = `$${data.fondos_disponibles.toFixed(2)}`;
+                
+                // Actualizar estadísticas en la tarjeta Robot Together.ai
+                const robotCard = document.querySelector('.admin-card:nth-child(2)'); // Segunda tarjeta
+                const stats = robotCard.querySelectorAll('.stat-number');
+                stats[0].textContent = `$${data.fondos_disponibles.toFixed(2)}`;
+                stats[1].textContent = data.transacciones_procesadas;
+                stats[2].textContent = data.fondos_disponibles >= 4 ? 'Ready' : 'Waiting';
+                
+                // Cambiar color del estado según disponibilidad
+                stats[2].style.color = data.ready_for_purchase ? '#48bb78' : '#ed8936';
+                
+            } catch (error) {
+                console.error('Error actualizando datos Together.ai:', error);
+            }
+        }
+
+        // Actualizar datos Together.ai al cargar y cada 30 segundos
+        updateTogetherAiStats();
+        setInterval(updateTogetherAiStats, 30000);
+
+        // Mostrar bienvenida
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                showNotification('Panel administrativo cargado correctamente', 'success');
+            }, 1000);
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTogetherAiStats();
+            // Actualizar cada 30 segundos
+            setInterval(updateTogetherAiStats, 30000);
+        });
+
+    </script>
+</body>
+</html>

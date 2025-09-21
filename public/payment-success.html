@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Pago Exitoso! - ExamPro</title>
+    <link rel="stylesheet" href="landing-styles.css">
+    <style>
+        .success-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+        }
+        
+        .success-card {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            color: white;
+            font-size: 3rem;
+        }
+        
+        .btn-dashboard {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-card">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h1>¡Pago Exitoso!</h1>
+            <p>Tu cuenta ExamPro ha sido activada correctamente.</p>
+            <div id="transaction-info"></div>
+            <a href="loging.html" class="btn-dashboard">Acceder a ExamPro</a>
+        </div>
+    </div>
+    
+    <script>
+        // Mostrar información de la transacción si existe
+        const transactionData = JSON.parse(sessionStorage.getItem('examProTransaction') || '{}');
+        if (transactionData.transactionId) {
+            document.getElementById('transaction-info').innerHTML = `
+                <div style="background: #f0f9f4; padding: 1rem; border-radius: 10px; margin: 1rem 0; font-size: 0.875rem;">
+                    <strong>ID Transacción:</strong> ${transactionData.transactionId}<br>
+                    <strong>Plan:</strong> ${transactionData.plan}<br>
+                    <strong>Método:</strong> ${transactionData.paymentMethod.toUpperCase()}
+                </div>
+            `;
+        }
+        
+        // Limpiar datos después de 30 segundos
+        setTimeout(() => {
+            sessionStorage.removeItem('examProTransaction');
+        }, 30000);
+    </script>
+</body>
+</html>

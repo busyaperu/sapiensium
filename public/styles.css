@@ -1,0 +1,379 @@
+
+:root {
+    --primary-color: #4361ee;
+    --secondary-color: #3a0ca3;
+    --bg-color: #f8f9fa;
+    --text-color: #2b2d42;
+    --sidebar-bg: #2b2d42;
+    --sidebar-text: #f8f9fa;
+    --border-color: #e9ecef;
+    --success-color: #4cc9f0;
+    --warning-color: #f8961e;
+    --danger-color: #f72585;
+    --info-color: #4895ef;
+    --profesor-color: #7209b7;
+    --estudiante-color: #4cc9f0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+#app {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    padding: 20px 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 20px;
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar nav a {
+    padding: 12px 20px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.sidebar nav a:hover, .sidebar nav a.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-left: 4px solid var(--primary-color);
+}
+
+.main-content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.section {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1, h2, h3 {
+    margin-bottom: 20px;
+    color: var(--text-color);
+}
+
+.card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: var(--secondary-color);
+}
+
+.btn-success {
+    background-color: var(--success-color);
+}
+
+.btn-success:hover {
+    background-color: #219653;
+}
+
+.btn-warning {
+    background-color: var(--warning-color);
+}
+
+.btn-warning:hover {
+    background-color: #e67e22;
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.tab-container {
+    margin-bottom: 20px;
+}
+
+.tab-buttons {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-btn.active {
+    border-bottom: 3px solid var(--primary-color);
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.tab-content {
+    padding: 20px 0;
+}
+
+.question {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: white;
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.options label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.options input[type="radio"] {
+    width: auto;
+    margin-right: 10px;
+}
+
+.btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th, td {
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    text-align: left;
+}
+
+th {
+    background-color: #f1f1f1;
+    font-weight: 600;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.file-upload {
+    border: 2px dashed var(--border-color);
+    padding: 30px;
+    text-align: center;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.file-upload:hover {
+    border-color: var(--primary-color);
+}
+
+.totals {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.tool-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.tool-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.tool-links a {
+    padding: 10px 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.3s;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.tool-links a:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Estilos específicos para modo profesor/estudiante */
+.modo-profesor .card {
+    border-left: 4px solid var(--profesor-color);
+}
+
+.modo-estudiante .card {
+    border-left: 4px solid var(--estudiante-color);
+}
+
+.btn-info {
+    background-color: var(--info-color);
+}
+
+.btn-info:hover {
+    background-color: #3a7bd5;
+}
+
+/* Mejoras para inputs en modo estudiante */
+.modo-estudiante input:not(:disabled),
+.modo-estudiante textarea:not(:disabled) {
+    background-color: #f0f8ff;
+    border-color: var(--estudiante-color);
+}
+
+/* Estilos para subida de archivos */
+.file-upload-container {
+    margin-top: 10px;
+}
+
+.file-upload-label {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.file-upload-input {
+    display: none;
+}
+
+.file-upload-button {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: var(--info-color);
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.file-upload-button:hover {
+    background-color: #3a7bd5;
+    transform: translateY(-2px);
+}
+
+.file-upload-info {
+    margin-top: 8px;
+    padding: 8px;
+    background-color: #f0f8ff;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.btn-small {
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+/* Estilos para alertas */
+.alert {
+    padding: 15px;
+    border-radius: 4px;
+    margin: 15px 0;
+    font-weight: 500;
+}
+
+.alert.success {
+    background-color: rgba(76, 201, 240, 0.2);
+    color: var(--success-color);
+    border-left: 4px solid var(--success-color);
+}
+
+.alert.error {
+    background-color: rgba(247, 37, 133, 0.2);
+    color: var(--danger-color);
+    border-left: 4px solid var(--danger-color);
+}
+
+.alert.info {
+    background-color: rgba(72, 149, 239, 0.2);
+    color: var(--info-color);
+    border-left: 4px solid var(--info-color);
+}
+
+

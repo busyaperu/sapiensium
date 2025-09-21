@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito - ExamPro</title>
+    <link rel="stylesheet" href="../../landing-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .checkout-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .checkout-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 1rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            overflow: hidden;
+            min-height: 600px;
+        }
+        
+        .order-summary {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .order-summary h2 {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .plan-details {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .plan-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .plan-price {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .plan-features {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .plan-features li {
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .plan-features i {
+            color: #10b981;
+        }
+        
+        .price-breakdown {
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 1rem;
+        }
+        
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .total-row {
+            font-size: 1.25rem;
+            font-weight: 700;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .checkout-form {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .checkout-form h2 {
+            color: #1f2937;
+            margin-bottom: 2rem;
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+        }
+        
+        .form-section h3 {
+            color: #374151;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .payment-method {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .payment-method:hover {
+            border-color: #4f46e5;
+        }
+        
+        .payment-method.active {
+            border-color: #4f46e5;
+            background: rgba(79, 70, 229, 0.05);
+        }
+        
+        .payment-method i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #4f46e5;
+        }
+        
+        .payment-method span {
+            display: block;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .security-badges {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(16, 185, 129, 0.05);
+            border-radius: 10px;
+        }
+        
+        .security-badges i {
+            color: #10b981;
+            font-size: 1.2rem;
+        }
+        
+        .security-badges span {
+            color: #065f46;
+            font-size: 0.875rem;
+        }
+        
+        .checkout-btn {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6b7280;
+            text-decoration: none;
+            margin-bottom: 2rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            color: #4f46e5;
+        }
+        
+        .guarantee {
+            text-align: center;
+            margin-top: 1rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .guarantee i {
+            color: #10b981;
+            margin-right: 0.25rem;
+        }
+        
+        @media (max-width: 768px) {
+            .checkout-content {
+                grid-template-columns: 1fr;
+                margin: 0 0.5rem;
+            }
+            
+            .order-summary,
+            .checkout-form {
+                padding: 2rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .payment-methods {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .loading .checkout-btn {
+            background: #9ca3af;
+        }
+
+        /* Mejorar fuente y tamaños */
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .order-summary h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        .plan-price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+        }
+
+        .plan-features li {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .checkout-form h2 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        .form-section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        .form-group label {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .checkout-btn {
+            font-size: 1.125rem;
+            font-weight: 700;
+            letter-spacing: 0.025em;
+        }
+
+        .checkout-content {
+            max-width: 1000px; /* Reducido de 1200px */
+            min-height: 500px; /* Reducido de 600px */
+        }
+        
+        .order-summary,
+        .checkout-form {
+            padding: 2rem; /* Reducido de 3rem */
+        }
+        
+        .form-section {
+            margin-bottom: 1.5rem; /* Reducido de 2rem */
+        }
+        
+        .form-group {
+            margin-bottom: 0.75rem; /* Reducido de 1rem */
+        }
+        
+        .form-group input,
+        .form-group select {
+            padding: 0.625rem; /* Reducido de 0.75rem */
+            font-size: 0.9rem; /* Reducido de 1rem */
+        }
+        
+        .form-group label {
+            margin-bottom: 0.375rem; /* Reducido de 0.5rem */
+            font-size: 0.9rem; /* Reducido de 1rem */
+        }
+        
+        .form-section h3 {
+            margin-bottom: 0.75rem; /* Reducido de 1rem */
+            font-size: 1.125rem; /* Reducido de 1.25rem */
+        }
+        
+        .checkout-form h2 {
+            margin-bottom: 1.5rem; /* Reducido de 2rem */
+            font-size: 1.625rem; /* Reducido de 1.875rem */
+        }
+        
+        .payment-methods {
+            margin: 0.75rem 0; /* Reducido de 1rem 0 */
+        }
+        
+        .payment-method {
+            padding: 0.75rem; /* Reducido de 1rem */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+        <div class="checkout-content">
+            <!-- Resumen del Pedido -->
+            <div class="order-summary">
+                <div>
+                    <h2>
+                        <i class="fas fa-shopping-cart"></i>
+                        Resumen del pedido
+                    </h2>
+                    
+                    <div class="plan-details" id="plan-details">
+                        <div class="plan-name" id="plan-name">Plan Profesional</div>
+                        <div class="plan-price" id="plan-price">$20/mes</div>
+                        <ul class="plan-features" id="plan-features">
+                            <li><i class="fas fa-check"></i> Hasta 100 exámenes/mes</li>
+                            <li><i class="fas fa-check"></i> Todos los tipos de preguntas</li>
+                            <li><i class="fas fa-check"></i> Evaluación IA avanzada</li>
+                            <li><i class="fas fa-check"></i> Análisis detallado</li>
+                            <li><i class="fas fa-check"></i> Integración con LMS</li>
+                            <li><i class="fas fa-check"></i> Soporte prioritario</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="price-breakdown">
+                    <div id="tipo-cambio-info"></div>
+                    <div class="price-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">$20.00</span>
+                    </div>
+                    <div class="price-row">
+                        <span>IGV (18%):</span>
+                        <span id="tax">$3.60</span>
+                    </div>
+                    <div class="price-row total-row">
+                        <span>Total:</span>
+                        <span id="total">$23.60</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Formulario de Checkout -->
+            <div class="checkout-form">
+            <!-- Cambiar el botón "Volver a planes" en carrito.html -->
+            <a href="../landing.html#pricing" class="back-btn" onclick="return confirm('¿Deseas volver a elegir otro plan? Se perderán los datos ingresados.')">
+                <i class="fas fa-arrow-left"></i>
+                Volver a planes
+            </a>
+                <h2>Finalizar compra</h2>
+                
+                <form id="checkout-form">
+                    <!-- Información Personal -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-user"></i> Información personal</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">Nombre</label>
+                                <input type="text" id="firstName" name="firstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Apellido</label>
+                                <input type="text" id="lastName" name="lastName" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Correo electrónico</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Teléfono</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Información de la Institución -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-building"></i> Información institucional</h3>
+                        <div class="form-group">
+                            <label for="institution">Nombre de la institución</label>
+                            <input type="text" id="institution" name="institution" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="country">País</label>
+                                <select id="country" name="country" required>
+                                    <option value="">Seleccionar país</option>
+                                    <option value="PE">Perú</option>
+                                    <option value="CO">Colombia</option>
+                                    <option value="EC">Ecuador</option>
+                                    <option value="CL">Chile</option>
+                                    <option value="MX">México</option>
+                                    <option value="AR">Argentina</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="city">Ciudad</label>
+                                <input type="text" id="city" name="city" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Método de Pago -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-credit-card"></i> Método de pago</h3>
+                        <div class="payment-methods">
+                            <div class="payment-method active" data-method="card">
+                                <i class="fas fa-credit-card"></i>
+                                <span>Tarjeta</span>
+                            </div>
+                            <div class="payment-method" data-method="yape">
+                                <i class="fas fa-mobile-alt" style="color: #722ed1;"></i>
+                                <span>Yape</span>
+                            </div>
+                            <div class="payment-method" data-method="plin">
+                                <i class="fas fa-mobile-alt" style="color: #00a8cc;"></i>
+                                <span>Plin</span>
+                            </div>
+                            <div class="payment-method" data-method="paypal">
+                                <i class="fab fa-paypal"></i>
+                                <span>PayPal</span>
+                            </div>
+                            <div class="payment-method" data-method="bank">
+                                <i class="fas fa-university"></i>
+                                <span>Transferencia</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Formulario de tarjeta (por defecto visible) -->
+                        <div id="card-form" class="payment-form">
+                            <div class="form-group">
+                                <label for="cardNumber">Número de tarjeta</label>
+                                <input type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="expiryDate">Fecha de expiración</label>
+                                    <input type="text" id="expiryDate" name="expiryDate" placeholder="MM/AA" maxlength="5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cvv">CVV</label>
+                                    <input type="text" id="cvv" name="cvv" placeholder="123" maxlength="4">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cardName">Nombre en la tarjeta</label>
+                                <input type="text" id="cardName" name="cardName" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Badges de seguridad -->
+                    <div class="security-badges">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Pago 100% seguro con cifrado SSL</span>
+                        <i class="fas fa-lock"></i>
+                        <span>Datos protegidos</span>
+                    </div>
+                    
+                    <!-- Botón de compra -->
+                    <button type="submit" class="checkout-btn" id="checkout-btn">
+                        <i class="fas fa-lock"></i>
+                        Procesar pago
+                    </button>
+                    
+                    <div class="guarantee">
+                        <i class="fas fa-undo"></i>
+                        Garantía de devolución de 14 días
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Obtener parámetros de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedPlan = urlParams.get('plan') || 'profesional';
+        
+        // Datos de los planes
+        const plans = {
+            basico: {
+                name: 'Plan Básico',
+                price: 15,
+                period: '/mes',
+                features: [
+                    'Hasta 50 exámenes/mes',
+                    '3 tipos de preguntas',
+                    'Evaluación automática básica',
+                    'Reportes simples',
+                    'Soporte por email'
+                ]
+            },
+            profesional: {
+                name: 'Plan Profesional',
+                price: 20,
+                period: '/mes',
+                features: [
+                    'Hasta 100 exámenes/mes',
+                    'Todos los tipos de preguntas',
+                    'Evaluación IA avanzada',
+                    'Análisis detallado',
+                    'Integración con LMS',
+                    'Soporte prioritario'
+                ]
+            },
+            empresarial: {
+                name: 'Plan Empresarial',
+                price: 0,
+                period: 'Personalizado',
+                features: [
+                    'Todo lo de Profesional',
+                    'IA personalizada',
+                    'API completa',
+                    'Marca blanca',
+                    'Cumplimiento normativo',
+                    'Gestor de cuenta dedicado'
+                ]
+            }
+        };
+        
+        // Cargar datos del plan seleccionado
+        function loadPlanData() {
+            const plan = plans[selectedPlan];
+            if (!plan) return;
+            
+            document.getElementById('plan-name').textContent = plan.name;
+            
+            if (plan.price === 0) {
+                document.getElementById('plan-price').textContent = plan.period;
+                document.getElementById('subtotal').textContent = 'Consultar';
+                document.getElementById('tax').textContent = 'Consultar';
+                document.getElementById('total').textContent = 'Consultar';
+            } else {
+                document.getElementById('plan-price').textContent = `$${plan.price}${plan.period}`;
+                
+                const subtotal = plan.price;
+                const tax = subtotal * 0.18;
+                const total = subtotal + tax;
+                
+                document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+                document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+                document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+            }
+            
+            const featuresHTML = plan.features.map(feature => 
+                `<li><i class="fas fa-check"></i> ${feature}</li>`
+            ).join('');
+            
+            document.getElementById('plan-features').innerHTML = featuresHTML;
+        }
+        
+        // Formatear número de tarjeta
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ');
+            if (formattedValue) {
+                e.target.value = formattedValue;
+            }
+        });
+        
+        // Formatear fecha de expiración
+        document.getElementById('expiryDate').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+        
+        // Formatear CVV
+        document.getElementById('cvv').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+        
+        // Manejo de métodos de pago
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', function() {
+                document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
+                this.classList.add('active');
+                
+                const selectedMethod = this.dataset.method;
+                
+                // Mostrar/ocultar formularios según el método
+                const cardForm = document.getElementById('card-form');
+                if (selectedMethod === 'card') {
+                    cardForm.style.display = 'block';
+                } else {
+                    cardForm.style.display = 'none';
+                }
+            });
+        });
+        
+        // Manejo del formulario
+        document.getElementById('checkout-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validar formulario
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Validaciones básicas
+            if (!data.firstName || !data.lastName || !data.email || !data.phone) {
+                alert('Por favor completa todos los campos personales');
+                return;
+            }
+            
+            if (!data.institution || !data.country || !data.city) {
+                alert('Por favor completa la información institucional');
+                return;
+            }
+            
+            const selectedMethod = document.querySelector('.payment-method.active').dataset.method;
+            
+            if (selectedMethod === 'card') {
+                if (!data.cardNumber || !data.expiryDate || !data.cvv || !data.cardName) {
+                    alert('Por favor completa todos los datos de la tarjeta');
+                    return;
+                }
+            }
+            
+            // Simular procesamiento
+            processPayment(data, selectedMethod);
+        });
+        
+        function processPayment(data, method) {
+            const form = document.getElementById('checkout-form');
+            const btn = document.getElementById('checkout-btn');
+            
+            // Mostrar estado de carga
+            form.classList.add('loading');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+            
+            // Simular proceso de pago
+            setTimeout(() => {
+                // En un escenario real, aquí integrarías con Culqi, PayU, etc.
+                alert('¡Pago procesado exitosamente! Bienvenido a ExamPro.');
+                
+                // Redirigir al dashboard o página de éxito
+                window.location.href = 'public/loging.html';
+            }, 3000);
+        }
+        
+        // Cargar datos del plan al iniciar
+        loadPlanData();
+
+        // carrito.js - Funcionalidad adicional para el carrito de compras
+        class CarritoExamPro {
+            constructor() {
+                this.init();
+                this.loadPlanData();
+                this.setupEventListeners();
+            }
+
+            init() {
+                // Configuraciones iniciales
+                this.urlParams = new URLSearchParams(window.location.search);
+                this.selectedPlan = this.urlParams.get('plan') || 'profesional';
+                this.isProcessing = false;
+                
+                // Datos de los planes
+                this.plans = {
+                    basico: {
+                        name: 'Plan Básico',
+                        price: 15,
+                        period: '/mes',
+                        originalPrice: 18,
+                        features: [
+                            'Hasta 50 exámenes/mes',
+                            '3 tipos de preguntas',
+                            'Evaluación automática básica', 
+                            'Reportes simples',
+                            'Soporte por email'
+                        ],
+                        color: '#10b981'
+                    },
+                    profesional: {
+                        name: 'Plan Profesional',
+                        price: 20,
+                        period: '/mes',
+                        originalPrice: 25,
+                        features: [
+                            'Hasta 100 exámenes/mes',
+                            'Todos los tipos de preguntas',
+                            'Evaluación IA avanzada',
+                            'Análisis detallado',
+                            'Integración con LMS',
+                            'Soporte prioritario'
+                        ],
+                        color: '#4f46e5',
+                        popular: true
+                    },
+                    empresarial: {
+                        name: 'Plan Empresarial', 
+                        price: 0,
+                        period: 'Personalizado',
+                        features: [
+                            'Todo lo de Profesional',
+                            'IA personalizada',
+                            'API completa',
+                            'Marca blanca',
+                            'Cumplimiento normativo',
+                            'Gestor de cuenta dedicado'
+                        ],
+                        color: '#7c3aed',
+                        isCustom: true
+                    }
+                };
+
+                // Configuración de impuestos por país
+                this.taxRates = {
+                    'PE': 0.18, // Perú - IGV
+                    'CO': 0.19, // Colombia - IVA
+                    'EC': 0.12, // Ecuador - IVA
+                    'CL': 0.19, // Chile - IVA
+                    'MX': 0.16, // México - IVA
+                    'AR': 0.21  // Argentina - IVA
+                };
+            }
+
+            loadPlanData() {
+                const plan = this.plans[this.selectedPlan];
+                if (!plan) {
+                    console.error('Plan no encontrado:', this.selectedPlan);
+                    return;
+                }
+
+                // Actualizar elementos del DOM
+                this.updatePlanDisplay(plan);
+                this.updatePricing(plan);
+                this.addPlanStyling(plan);
+            }
+
+            updatePlanDisplay(plan) {
+                const planNameEl = document.getElementById('plan-name');
+                const planPriceEl = document.getElementById('plan-price');
+                const planFeaturesEl = document.getElementById('plan-features');
+
+                if (planNameEl) planNameEl.textContent = plan.name;
+                
+                if (planPriceEl) {
+                    if (plan.isCustom) {
+                        planPriceEl.innerHTML = `<span class="custom-badge">💼</span> ${plan.period}`;
+                    } else {
+                        planPriceEl.innerHTML = `
+                            ${plan.originalPrice ? `<span class="original-price">$${plan.originalPrice}</span>` : ''}
+                            <span class="current-price">$${plan.price}</span>
+                            <span class="period">${plan.period}</span>
+                        `;
+                    }
+                }
+
+                if (planFeaturesEl) {
+                    const featuresHTML = plan.features.map(feature => 
+                        `<li><i class="fas fa-check" style="color: ${plan.color}"></i> ${feature}</li>`
+                    ).join('');
+                    planFeaturesEl.innerHTML = featuresHTML;
+                }
+            }
+
+            updatePricing(plan) {
+                const country = document.getElementById('country')?.value || 'PE';
+                const taxRate = this.taxRates[country] || 0.18;
+                
+                if (plan.isCustom) {
+                    document.getElementById('subtotal').textContent = 'Consultar';
+                    document.getElementById('tax').textContent = 'Consultar';
+                    document.getElementById('total').textContent = 'Consultar';
+                    return;
+                }
+
+                const subtotal = plan.price;
+                const tax = subtotal * taxRate;
+                const total = subtotal + tax;
+
+                document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+                document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+                document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+            }
+
+            addPlanStyling(plan) {
+                const planDetails = document.querySelector('.plan-details');
+                if (planDetails && plan.color) {
+                    planDetails.style.borderLeft = `4px solid ${plan.color}`;
+                }
+
+                if (plan.popular) {
+                    const badge = document.createElement('div');
+                    badge.className = 'popular-badge-cart';
+                    badge.innerHTML = '<i class="fas fa-star"></i> Más Popular';
+                    badge.style.cssText = `
+                        position: absolute;
+                        top: -10px;
+                        right: 15px;
+                        background: linear-gradient(45deg, #ff6b6b, #ffa500);
+                        color: white;
+                        padding: 5px 15px;
+                        border-radius: 15px;
+                        font-size: 0.75rem;
+                        font-weight: 600;
+                        box-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
+                    `;
+                    
+                    const planDetails = document.querySelector('.plan-details');
+                    if (planDetails) {
+                        planDetails.style.position = 'relative';
+                        planDetails.appendChild(badge);
+                    }
+                }
+            }
+
+            setupEventListeners() {
+                // Formateo de campos de entrada
+                this.setupInputFormatting();
+                
+                // Manejo de métodos de pago
+                this.setupPaymentMethods();
+                
+                // Validación en tiempo real
+                this.setupRealTimeValidation();
+                
+                // Manejo del formulario
+                this.setupFormSubmission();
+                
+                // Actualización de precios por país
+                this.setupCountryChange();
+            }
+
+            setupInputFormatting() {
+                const cardNumberInput = document.getElementById('cardNumber');
+                const expiryDateInput = document.getElementById('expiryDate');
+                const cvvInput = document.getElementById('cvv');
+
+                if (cardNumberInput) {
+                    cardNumberInput.addEventListener('input', (e) => {
+                        let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+                        let formattedValue = value.match(/.{1,4}/g)?.join(' ');
+                        if (formattedValue) {
+                            e.target.value = formattedValue;
+                        }
+                        this.validateCardNumber(value);
+                    });
+                }
+
+                if (expiryDateInput) {
+                    expiryDateInput.addEventListener('input', (e) => {
+                        let value = e.target.value.replace(/\D/g, '');
+                        if (value.length >= 2) {
+                            value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                        }
+                        e.target.value = value;
+                        this.validateExpiryDate(value);
+                    });
+                }
+
+                if (cvvInput) {
+                    cvvInput.addEventListener('input', (e) => {
+                        e.target.value = e.target.value.replace(/\D/g, '');
+                    });
+                }
+            }
+
+            validateCardNumber(cardNumber) {
+                const cardNumberInput = document.getElementById('cardNumber');
+                const isValid = this.luhnCheck(cardNumber) && cardNumber.length >= 13;
+                
+                cardNumberInput.style.borderColor = isValid ? '#10b981' : '#ef4444';
+                
+                // Detectar tipo de tarjeta
+                const cardType = this.getCardType(cardNumber);
+                this.updateCardTypeDisplay(cardType);
+                
+                return isValid;
+            }
+
+            luhnCheck(cardNumber) {
+                let sum = 0;
+                let isEven = false;
+                
+                for (let i = cardNumber.length - 1; i >= 0; i--) {
+                    let digit = parseInt(cardNumber.charAt(i));
+                    
+                    if (isEven) {
+                        digit *= 2;
+                        if (digit > 9) {
+                            digit -= 9;
+                        }
+                    }
+                    
+                    sum += digit;
+                    isEven = !isEven;
+                }
+                
+                return sum % 10 === 0;
+            }
+
+            getCardType(cardNumber) {
+                const patterns = {
+                    visa: /^4/,
+                    mastercard: /^5[1-5]/,
+                    amex: /^3[47]/,
+                    discover: /^6(?:011|5)/
+                };
+
+                for (const [type, pattern] of Object.entries(patterns)) {
+                    if (pattern.test(cardNumber)) {
+                        return type;
+                    }
+                }
+                return 'unknown';
+            }
+
+            updateCardTypeDisplay(cardType) {
+                // Aquí puedes agregar iconos de tipos de tarjeta
+                const cardIcons = {
+                    visa: '💳',
+                    mastercard: '💳',
+                    amex: '💳',
+                    discover: '💳',
+                    unknown: '💳'
+                };
+
+                // Actualizar display si tienes un elemento para mostrar el tipo
+                const cardDisplay = document.querySelector('.card-type-display');
+                if (cardDisplay) {
+                    cardDisplay.textContent = cardIcons[cardType] || cardIcons.unknown;
+                }
+            }
+
+            validateExpiryDate(date) {
+                const expiryInput = document.getElementById('expiryDate');
+                const [month, year] = date.split('/');
+                
+                if (month && year && month.length === 2 && year.length === 2) {
+                    const currentDate = new Date();
+                    const currentYear = currentDate.getFullYear() % 100;
+                    const currentMonth = currentDate.getMonth() + 1;
+                    
+                    const expYear = parseInt(year);
+                    const expMonth = parseInt(month);
+                    
+                    const isValid = expMonth >= 1 && expMonth <= 12 && 
+                                (expYear > currentYear || (expYear === currentYear && expMonth >= currentMonth));
+                    
+                    expiryInput.style.borderColor = isValid ? '#10b981' : '#ef4444';
+                    return isValid;
+                }
+                
+                return false;
+            }
+
+            setupPaymentMethods() {
+                const paymentMethods = document.querySelectorAll('.payment-method');
+                const cardForm = document.getElementById('card-form');
+
+                paymentMethods.forEach(method => {
+                    method.addEventListener('click', () => {
+                        paymentMethods.forEach(m => m.classList.remove('active'));
+                        method.classList.add('active');
+                        
+                        const selectedMethod = method.dataset.method;
+                        
+                        if (cardForm) {
+                            cardForm.style.display = selectedMethod === 'card' ? 'block' : 'none';
+                        }
+                        
+                        this.updateCheckoutButton(selectedMethod);
+                    });
+                });
+            }
+
+            updateCheckoutButton(method) {
+                const btn = document.getElementById('checkout-btn');
+                const methodTexts = {
+                    card: '<i class="fas fa-lock"></i> Procesar pago',
+                    yape: '<i class="fas fa-mobile-alt"></i> Pagar con Yape',
+                    plin: '<i class="fas fa-mobile-alt"></i> Pagar con Plin',
+                    paypal: '<i class="fab fa-paypal"></i> Pagar con PayPal',
+                    bank: '<i class="fas fa-university"></i> Transferencia bancaria'
+                };
+
+                if (btn && methodTexts[method]) {
+                    btn.innerHTML = methodTexts[method];
+                }
+            }
+
+            setupRealTimeValidation() {
+                const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'institution', 'country', 'city'];
+                
+                requiredFields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (field) {
+                        field.addEventListener('blur', () => this.validateField(field));
+                        field.addEventListener('input', () => this.clearError(field));
+                    }
+                });
+            }
+
+            validateField(field) {
+                const value = field.value.trim();
+                let isValid = true;
+                let errorMessage = '';
+
+                if (!value) {
+                    isValid = false;
+                    errorMessage = 'Este campo es obligatorio';
+                } else if (field.type === 'email') {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(value)) {
+                        isValid = false;
+                        errorMessage = 'Ingresa un email válido';
+                    }
+                } else if (field.id === 'phone') {
+                    const phoneRegex = /^[\+]?[0-9]{8,15}$/;
+                    if (!phoneRegex.test(value.replace(/\s/g, ''))) {
+                        isValid = false;
+                        errorMessage = 'Ingresa un teléfono válido';
+                    }
+                }
+
+                this.showFieldValidation(field, isValid, errorMessage);
+                return isValid;
+            }
+
+            showFieldValidation(field, isValid, errorMessage) {
+                field.style.borderColor = isValid ? '#10b981' : '#ef4444';
+                
+                // Remover mensaje de error anterior
+                const existingError = field.parentNode.querySelector('.error-message');
+                if (existingError) {
+                    existingError.remove();
+                }
+
+                // Mostrar mensaje de error si es necesario
+                if (!isValid && errorMessage) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'error-message';
+                    errorDiv.style.cssText = 'color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;';
+                    errorDiv.textContent = errorMessage;
+                    field.parentNode.appendChild(errorDiv);
+                }
+            }
+
+            clearError(field) {
+                field.style.borderColor = '#e5e7eb';
+                const errorMessage = field.parentNode.querySelector('.error-message');
+                if (errorMessage) {
+                    errorMessage.remove();
+                }
+            }
+
+            setupFormSubmission() {
+                const form = document.getElementById('checkout-form');
+                if (form) {
+                    form.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.handleFormSubmission(form);
+                    });
+                }
+            }
+
+            setupCountryChange() {
+                const countrySelect = document.getElementById('country');
+                if (countrySelect) {
+                    countrySelect.addEventListener('change', () => {
+                        const plan = this.plans[this.selectedPlan];
+                        this.updatePricing(plan);
+                    });
+                }
+            }
+
+            async handleFormSubmission(form) {
+                if (this.isProcessing) return;
+
+                // Validar formulario
+                if (!this.validateForm(form)) {
+                    this.showNotification('Por favor corrige los errores en el formulario', 'error');
+                    return;
+                }
+
+                this.isProcessing = true;
+                this.showProcessingState();
+
+                try {
+                    const formData = new FormData(form);
+                    const data = Object.fromEntries(formData);
+                    const selectedMethod = document.querySelector('.payment-method.active')?.dataset.method;
+                    
+                    // Redirigir a páginas específicas para Yape/Plin
+                    if (selectedMethod === 'yape' || selectedMethod === 'plin') {
+                        const amount = document.getElementById('total').textContent.replace('$', '');
+                        const plan = this.selectedPlan || 'profesional';
+                        const customerData = {
+                            name: document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value,
+                            email: document.getElementById('email').value,
+                            institution: document.getElementById('institution').value
+                        };
+                        
+                        // Guardar datos en sessionStorage para recuperar después
+                        sessionStorage.setItem('examProOrder', JSON.stringify({
+                            plan: plan,
+                            amount: amount,
+                            customer: customerData,
+                            timestamp: Date.now()
+                        }));
+                        
+                        window.location.href = `${selectedMethod}-payment.html?plan=${plan}&amount=${amount}`;
+                        return;
+                    }
+
+                    // Simular procesamiento
+                    await this.processPayment(data, selectedMethod);
+                    
+                } catch (error) {
+                    console.error('Error en el pago:', error);
+                    this.showNotification('Error al procesar el pago. Inténtalo nuevamente.', 'error');
+                    this.hideProcessingState();
+                }
+            }
+
+            validateForm(form) {
+                const requiredFields = form.querySelectorAll('[required]');
+                let isValid = true;
+
+                requiredFields.forEach(field => {
+                    if (!this.validateField(field)) {
+                        isValid = false;
+                    }
+                });
+
+                // Validación específica para tarjeta si está seleccionada
+                const selectedMethod = document.querySelector('.payment-method.active')?.dataset.method;
+                if (selectedMethod === 'card') {
+                    const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+                    if (!this.validateCardNumber(cardNumber)) {
+                        isValid = false;
+                    }
+                }
+
+                return isValid;
+            }
+            
+
+                        
+            async processPayment(data, method) {
+                // Mantener otros métodos intactos (Yape, Plin, etc.)
+                if (method !== 'card') {
+                    return new Promise((resolve) => {
+                        setTimeout(() => {
+                            this.showSuccessState();
+                            resolve();
+                        }, 3000);
+                    });
+                }
+
+                // Solo para tarjetas: Integración OpenPay
+                const plan = this.plans[this.selectedPlan];
+                const country = data.country || 'PE';
+                const taxRate = this.taxRates[country] || 0.18;
+                const subtotal = plan.price;
+                const total = subtotal + (subtotal * taxRate);
+
+                const openPayData = {
+                    method: "card",
+                    amount: total,
+                    currency: "PEN", 
+                    description: `${plan.name} - ExamPro`,
+                    order_id: `examPro-${Date.now()}`,
+                    confirm: "false",
+                    redirect_url: `${window.location.origin}/success.html`,
+                    customer: {
+                        name: `${data.firstName} ${data.lastName}`,
+                        email: data.email
+                    }
+                };
+
+                try {
+                    const response = await fetch('https://sandbox-api.openpay.pe/v1/m7ojrufagfim9mp1lpko/charges', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Basic ' + btoa('sk_c076f431a9c74f019f18390a43aba3dc:'),
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(openPayData)
+                    });
+
+                    const result = await response.json();
+                    
+                    if (result.payment_method?.url) {
+                        window.location.href = result.payment_method.url;
+                    } else {
+                        throw new Error('No se pudo obtener la URL de pago');
+                    }
+                } catch (error) {
+                    console.error('Error OpenPay:', error);
+                    throw error;
+                }
+            }
+
+            showProcessingState() {
+                const form = document.getElementById('checkout-form');
+                const btn = document.getElementById('checkout-btn');
+                
+                form.classList.add('loading');
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando pago...';
+                btn.disabled = true;
+            }
+
+            hideProcessingState() {
+                const form = document.getElementById('checkout-form');
+                const btn = document.getElementById('checkout-btn');
+                
+                form.classList.remove('loading');
+                btn.innerHTML = '<i class="fas fa-lock"></i> Procesar pago';
+                btn.disabled = false;
+                this.isProcessing = false;
+            }
+
+            showSuccessState() {
+                const btn = document.getElementById('checkout-btn');
+                btn.innerHTML = '<i class="fas fa-check"></i> ¡Pago exitoso!';
+                btn.style.background = '#10b981';
+                
+                setTimeout(() => {
+                    this.showNotification('¡Bienvenido a ExamPro! Redirigiendo...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'public/loging.html';
+                    }, 2000);
+                }, 1000);
+            }
+
+            showNotification(message, type = 'info') {
+                // Crear notificación toast
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : '#4f46e5'};
+                    color: white;
+                    padding: 1rem 2rem;
+                    border-radius: 10px;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+                    z-index: 1000;
+                    transform: translateX(400px);
+                    transition: transform 0.3s ease;
+                `;
+                notification.textContent = message;
+
+                document.body.appendChild(notification);
+
+                // Animar entrada
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(0)';
+                }, 100);
+
+                // Remover después de 5 segundos
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(400px)';
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 300);
+                }, 5000);
+            }
+        }
+
+        function obtenerTipoCambio() {
+            console.log('Tipo de cambio cargado');
+        }
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', () => {
+            // AGREGAR: Verificar si es pago requerido
+            const urlParams = new URLSearchParams(window.location.search);
+            const required = urlParams.get('required');
+            
+            if (required === 'true') {
+                // Mostrar mensaje de créditos requeridos
+                const alertDiv = document.createElement('div');
+                alertDiv.style.cssText = `
+                    background: #fee2e2;
+                    border: 1px solid #fecaca;
+                    color: #991b1b;
+                    padding: 1rem;
+                    border-radius: 8px;
+                    margin-bottom: 2rem;
+                    text-align: center;
+                    font-weight: 600;
+                `;
+                alertDiv.innerHTML = `
+                    <strong>⚠️ Créditos requeridos</strong><br>
+                    Necesitas comprar un plan para acceder a la plataforma
+                `;
+                
+                const container = document.querySelector('.carrito-container') || document.querySelector('.container');
+                if (container) {
+                    container.insertBefore(alertDiv, container.firstChild);
+                }
+            }
+            // Código existente
+            obtenerTipoCambio();
+            new CarritoExamPro();
+        });
+
+        // Funciones de utilidad adicionales
+        const CarritoUtils = {
+            // Formatear moneda
+            formatCurrency(amount, currency = 'USD') {
+                return new Intl.NumberFormat('es-PE', {
+                    style: 'currency',
+                    currency: currency
+                }).format(amount);
+            },
+
+            // Detectar si es dispositivo móvil
+            isMobile() {
+                return window.innerWidth <= 768;
+            },
+
+            // Animación de scroll suave
+            smoothScroll(element) {
+                element.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }
+        };
+
+        // Agregar función para volver al landing
+        function goBackToPlans() {
+            if (confirm('¿Deseas volver a elegir otro plan? Se perderán los datos ingresados.')) {
+                window.location.href = '../landing.html#pricing';
+            }
+        }
+
+    </script>
+</body>
+</html>

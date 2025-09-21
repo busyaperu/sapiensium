@@ -1,0 +1,745 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Exámenes en Línea</title>
+    <link rel="stylesheet" href="/styles.css"><!-- O la ruta correcta -->
+    <link rel="icon" href="data:image/x-icon;base64,AAABAAEAEB...">
+    <!-- Enlace a Font Awesome (si no está ya en styles.css) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- 1. CDN de Appwrite (primero) -->
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.1"></script>
+    <!-- 2. Configuración de Appwrite (con defer) -->
+    <!--<script src="appwrite-config.js" defer></script>-->
+    <script type="module" src="appwrite-config.js"></script>
+    
+
+    <!-- FullCalendar CSS y JS con CDN actualizado -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.global.min.js"></script>
+    <link rel="icon" href="data:,">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js",
+            "vue-router": "https://unpkg.com/vue-router@4/dist/vue-router.esm-browser.js"
+        }
+    }
+    </script>
+    <script>
+        // Comprobar autenticación inmediatamente (antes de que se renderice cualquier contenido)
+        if (localStorage.getItem('isAuthenticated') !== 'true') {
+            window.location.replace("loging.html");
+        }
+    </script>
+    <script>
+        // Detectar cuando se cierra la página o navegador
+        window.addEventListener('beforeunload', async function() {
+            try {
+                // Importar account para cerrar sesión en Appwrite
+                const { account } = await import('./appwrite-config.js');
+                await account.deleteSession('current');
+            } catch (error) {
+                console.log('Error cerrando sesión:', error);
+            }
+            
+            // Limpiar datos de autenticación
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('isAuthenticated');
+        });
+        </script>
+
+  <style>
+    /* --- ESTILOS ESPECÍFICOS SOLO PARA EL COMPONENTE PROFESOR --- */
+
+    /* Hereda variables de :root si están definidas globalmente en styles.css */
+    /* Si no, puedes definirlas aquí también, pero prefiero que vengan de styles.css */
+
+    /* Estilo general dentro del componente */
+    .profesor-component-wrapper .section {
+        /* Quitar margen si viene del global y no se necesita aquí */
+        /* margin: 0; */
+        max-width: 1100px; /* Ajustar ancho si es necesario */
+        margin: 0 auto; /* Centrar */
+    }
+
+    .profesor-component-wrapper h1,
+    .profesor-component-wrapper h2 {
+        text-align: center;
+        color: var(--primary-color, #4f46e5); /* Color primario del tema */
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+    }
+    .profesor-component-wrapper h1 { font-size: 1.8rem; margin-bottom: 2rem; }
+    .profesor-component-wrapper h2 {
+        font-size: 1.5rem;
+        margin-top: 2rem;
+        text-align: left;
+        color: #334155;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    /* Estilo Card (consistente) */
+    .profesor-component-wrapper .card {
+        background-color: #fff;
+        padding: 1.5rem 2rem; /* Ajustar padding si es necesario */
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem; /* Espacio entre cards */
+    }
+
+     /* Estilo Formularios (consistente) */
+     .profesor-component-wrapper .form-group { margin-bottom: 1.25rem; }
+     .profesor-component-wrapper .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #444; font-size: 0.9rem; }
+     .profesor-component-wrapper .form-group input[type="text"],
+     .profesor-component-wrapper .form-group input[type="date"],
+     .profesor-component-wrapper .form-group input[type="number"],
+     .profesor-component-wrapper .form-group textarea,
+     .profesor-component-wrapper .form-group select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        background-color: #fff;
+        color: #333;
+        font-family: inherit; /* Heredar fuente */
+     }
+    .profesor-component-wrapper .form-group input:focus,
+    .profesor-component-wrapper .form-group textarea:focus,
+    .profesor-component-wrapper .form-group select:focus {
+        border-color: var(--primary-color, #4f46e5);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+     }
+     .profesor-component-wrapper .form-group input:disabled,
+     .profesor-component-wrapper .form-group textarea:disabled,
+     .profesor-component-wrapper .form-group select:disabled {
+        background-color: #e9ecef; /* Fondo gris para deshabilitados */
+        cursor: not-allowed;
+        opacity: 0.7;
+     }
+     .profesor-component-wrapper .form-group textarea {
+        min-height: 60px; /* Altura mínima para textareas */
+        resize: vertical; /* Permitir redimensionar verticalmente */
+     }
+
+    /* Estilo Botones (consistente) */
+    .profesor-component-wrapper .btn {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        padding: 0.7rem 1.2rem; border-radius: 5px; cursor: pointer;
+        font-size: 0.95rem; font-weight: 500; text-decoration: none;
+        border: 1px solid transparent; transition: all 0.2s ease;
+        white-space: nowrap; margin: 0; /* Resetear margen por defecto del tag button */
+        line-height: 1.5; /* Asegurar altura de línea consistente */
+    }
+    .profesor-component-wrapper .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .profesor-component-wrapper .btn-primary { background-color: var(--primary-color, #4f46e5); border-color: var(--primary-color, #4f46e5); color: white; }
+    .profesor-component-wrapper .btn-primary:hover:not(:disabled) { background-color: var(--primary-dark-color, #4338ca); border-color: var(--primary-dark-color, #4338ca); }
+    .profesor-component-wrapper .btn-secondary { background-color: #e2e8f0; border-color: #cbd5e1; color: #475569; }
+    .profesor-component-wrapper .btn-secondary:hover:not(:disabled) { background-color: #cbd5e1; border-color: #94a3b8; }
+    .profesor-component-wrapper .btn-success { background-color: #22c55e; border-color: #22c55e; color: white; }
+    .profesor-component-wrapper .btn-success:hover:not(:disabled) { background-color: #16a34a; border-color: #16a34a; }
+    .profesor-component-wrapper .btn-danger { background-color: #ef4444; border-color: #ef4444; color: white; padding: 5px 10px; /* Más pequeño para 'X' */ font-size: 0.8rem;}
+    .profesor-component-wrapper .btn-danger:hover:not(:disabled) { background-color: #dc2626; border-color: #dc2626; }
+    .profesor-component-wrapper .btn-warning { background-color: #f59e0b; border-color: #f59e0b; color: white; }
+    .profesor-component-wrapper .btn-warning:hover:not(:disabled) { background-color: #d97706; border-color: #d97706; }
+    .profesor-component-wrapper .btn-info { background-color: #3b82f6; border-color: #3b82f6; color: white; }
+    .profesor-component-wrapper .btn-info:hover:not(:disabled) { background-color: #2563eb; border-color: #2563eb; }
+
+    /* Grupo de botones */
+    .profesor-component-wrapper .btn-group {
+        display: flex; flex-wrap: wrap; /* Permitir envolver */
+        gap: 1rem; margin-top: 1.5rem;
+    }
+
+    /* Estilo Tabs (consistente) */
+    .profesor-component-wrapper .tab-container { margin-bottom: 1.5rem; }
+    .profesor-component-wrapper .tab-buttons {
+        display: flex;
+        border-bottom: 2px solid #e2e8f0; /* Borde inferior más grueso */
+        margin-bottom: 1.5rem;
+    }
+    .profesor-component-wrapper .tab-btn {
+        padding: 0.8rem 1.5rem; /* Ajustar padding */
+        background: none; border: none; cursor: pointer;
+        font-size: 1rem; /* Ligeramente más grande */
+        font-weight: 500;
+        color: #64748b; /* Color inactivo */
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px; /* Alinear con borde inferior */
+        transition: color 0.2s ease, border-color 0.2s ease;
+    }
+    .profesor-component-wrapper .tab-btn:hover { color: #334155; }
+    .profesor-component-wrapper .tab-btn.active {
+        color: var(--primary-color, #4f46e5);
+        border-bottom-color: var(--primary-color, #4f46e5);
+    }
+    .profesor-component-wrapper .tab-content { padding-top: 1rem; }
+
+    /* Estilo Preguntas (consistente) */
+    .profesor-component-wrapper .question {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        background-color: #fdfdfd; /* Fondo muy ligero para preguntas */
+    }
+    .profesor-component-wrapper .question-header {
+        display: flex;
+        gap: 1.5rem; /* Espacio entre número y puntaje */
+        margin-bottom: 1rem;
+        flex-wrap: wrap; /* Envolver si no caben */
+    }
+     .profesor-component-wrapper .question-header .form-group {
+         margin-bottom: 0; /* Quitar margen si están en fila */
+         min-width: 100px; /* Ancho mínimo */
+     }
+    .profesor-component-wrapper .options { margin-top: 1rem; }
+    .profesor-component-wrapper .options .form-group {
+        margin-bottom: 0.8rem; /* Menos espacio entre opciones */
+    }
+     /* Estilo específico para input radio en modo estudiante */
+    .profesor-component-wrapper .options input[type="radio"] {
+        width: auto; /* Tamaño por defecto */
+        margin-right: 0.8rem;
+        accent-color: var(--primary-color, #4f46e5); /* Color del radio */
+        cursor: pointer;
+        transform: scale(1.1); /* Ligeramente más grande */
+        vertical-align: middle;
+    }
+    /* Estilo para label asociado al radio */
+     .profesor-component-wrapper .options label {
+         display: flex;
+         align-items: center;
+         margin-bottom: 0.5rem; /* Espacio entre labels de opciones */
+         cursor: pointer;
+         font-weight: 400; /* Fuente normal para opciones */
+     }
+
+
+    /* Estilo Totales (consistente) */
+    .profesor-component-wrapper .totals {
+        display: flex;
+        justify-content: space-around; /* Distribuir espacio */
+        background-color: #f1f5f9; /* Fondo gris muy claro */
+        padding: 1rem 1.5rem;
+        border-radius: 6px;
+        margin: 1.5rem 0;
+        font-size: 0.95rem;
+    }
+    .profesor-component-wrapper .totals strong {
+        font-weight: 600;
+        color: #334155;
+    }
+
+    /* Estilo Tool Links (consistente) */
+    .profesor-component-wrapper .tool-links {
+        display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1.5rem;
+        padding-top: 1.5rem; border-top: 1px dashed #e2e8f0; /* Separador */
+    }
+    .profesor-component-wrapper .tool-links a {
+        padding: 0.5rem 1rem;
+        background-color: #e2e8f0; /* Fondo gris */
+        border-radius: 4px; text-decoration: none;
+        color: #475569; /* Color texto gris */
+        font-size: 0.85rem;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .profesor-component-wrapper .tool-links a:hover {
+        background-color: #cbd5e1; color: #1e293b;
+    }
+
+    /* Estilo Alertas (consistente) */
+    .profesor-component-wrapper .alert {
+        padding: 0.8rem 1.2rem; margin-top: 1.5rem; border-radius: 5px;
+        font-size: 0.9rem; border: 1px solid transparent;
+    }
+    .profesor-component-wrapper .alert.success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
+    .profesor-component-wrapper .alert.error { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+    .profesor-component-wrapper .alert.info { color: #0c5460; background-color: #d1ecf1; border-color: #bee5eb; }
+    .profesor-component-wrapper .alert.warning { color: #856404; background-color: #fff3cd; border-color: #ffeeba; }
+
+
+    /* Estilos para Upload Progress (consistente) */
+    .profesor-component-wrapper .upload-progress-bar {
+         width: 100%; height: 10px; background-color: #e9ecef;
+         border-radius: 5px; position: relative; overflow: hidden; margin-top: 0.8rem;
+     }
+     .profesor-component-wrapper .progress-fill {
+         height: 100%; background-color: var(--success-color, #22c55e); /* Verde éxito */
+         border-radius: 5px; transition: width 0.3s ease-out; width: 0%;
+     }
+     .profesor-component-wrapper .progress-text {
+         position: absolute; top: 0; left: 0; width: 100%; text-align: center;
+         line-height: 10px; /* Igual a la altura de la barra */
+         font-size: 0.7rem; color: #333; font-weight: 500;
+     }
+
+
+    /* Estilos específicos para elementos que solo aparecen en un modo */
+    .profesor-component-wrapper .modo-estudiante #prompt-input,
+    .profesor-component-wrapper .modo-estudiante #modelo-ia,
+    .profesor-component-wrapper .modo-estudiante label[for="prompt-input"],
+    .profesor-component-wrapper .modo-estudiante label[for="modelo-ia"],
+    .profesor-component-wrapper .modo-estudiante button[v-if='!modoEstudiante'] /* Ocultar botones de profesor */
+     {
+        display: none !important;
+    }
+
+</style>
+  
+</head>
+<body>
+    <script src="clear-session.js"></script>
+    <script>
+        // Agregar esto al inicio del body en index.html
+        if (!localStorage.getItem('currentUser')) {
+          window.location.replace("loging.html");
+        }
+      </script>
+    <!-- Contenido principal de la aplicación Vue -->
+    <div id="app">
+        <div class="sidebar">
+                <!-- **** REEMPLAZA ESTE DIV class="logo" **** -->
+                <div class="logo" style="padding: 1.2rem 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.15);">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 0.8rem;">
+                        <!-- Círculo principal blanco sobre fondo morado -->
+                        <path d="M16 2C8.268 2 2 8.268 2 16C2 23.732 8.268 30 16 30C23.732 30 30 23.732 30 16C30 8.268 23.732 2 16 2Z" fill="#ffffff"/>
+                        <!-- Icono interno morado -->
+                        <path d="M22 10H10C9.448 10 9 10.448 9 11V21C9 21.552 9.448 22 10 22H22C22.552 22 23 21.552 23 21V11C23 10.448 22.552 10 22 10Z" fill="#4f46e5"/>
+                        <!-- Líneas internas blancas -->
+                        <path d="M13 14H19V16H13V14Z" fill="#ffffff"/>
+                        <path d="M13 17H19V19H13V17Z" fill="#ffffff"/>
+                    </svg>
+                    <span style="font-size: 1.4rem; font-weight: 600; color: white; vertical-align: middle;">ExamPro</span>
+                </div>
+                <!-- **** FIN REEMPLAZO **** -->
+            <nav>
+                <a 
+                @click="!globalState.isModoEstudiante && navigateTo('profesor')"  
+                :class="{
+                    'active': currentSection === 'profesor', 
+                   'disabled': globalState.isModoEstudiante 
+                }"
+                >
+                🏫 Profesor
+                </a>
+                
+                <a href="alumno.html" class="active">
+                👨‍🎓 Alumno
+                </a>
+                
+                <a href="examen.html">📝 Examen</a>
+                
+                <a href="cargar.html">📁 Cargar</a>
+
+                <a href="publicar-examen.html">📢 Publicar Examen</a>  
+                
+                <a href="evaluacion.html">✅ Evaluación</a>
+
+                <a href="../chaea.html">🧠 Test CHAEA</a>
+
+                <a href="dashboard.html" v-if="user && user.role === 'cliente_externo'">
+                    💳 Mi Dashboard
+                </a>
+
+                <!-- Mostrar créditos para todos los usuarios -->
+                <div id="saldo-creditos" style="color: #4CAF50; font-weight: bold; padding: 8px;">
+                    🔋 Cargando créditos...
+                </div>
+
+                <!-- Enlaces para Admin, Supervisor y Operador -->
+                <a href="admin.html" v-if="user && (user.role === 'admin' || user.role === 'supervisor' || user.role === 'operador')">
+                    🚀 Solicitud Demo
+                </a>
+                
+                <a href="dashboard-admin.html" v-if="user && (user.role === 'admin' || user.role === 'supervisor' || user.role === 'operador')">
+                    📊 Dashboard Admin
+                </a>
+                
+                <a href="toguether-dashboard.html" v-if="user && (user.role === 'admin' || user.role === 'supervisor' || user.role === 'operador')">
+                    🤖 Together Dashboard
+                </a>
+
+                <!-- Gestión de Roles solo para Admin y Validador -->
+                <a href="#" @click="mostrarModalAuthRoles()" onclick="mostrarModalAuthRoles()" v-if="user && (user.role === 'admin' || user.role === 'validador')">
+                    👤 Gestión de Roles
+                </a>
+                    
+                <!-- *** FIN ENLACES ADMIN *** -->
+                
+                <a href="#" @click="cerrarSesion()" style="margin-top: auto; color: #ef4444; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                    🚪 Cerrar Sesión
+                </a>
+                
+            </nav>
+        </div>
+        
+        <div class="main-content">
+            <component :is="currentComponent"></component>
+        </div>
+    </div>
+    
+    <script type="module" src="app.js"></script>
+    <!-- Modal -->
+    <div id="modal-respuestas" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarVentanaEmergente()">&times;</span>
+            <h2>Respuestas del Examen</h2>
+            <div id="respuestas-container"></div> <!-- Aquí se mostrarán las preguntas y respuestas -->
+            <button onclick="obtenerRespuestasIA()">Obtener Respuestas Automáticas</button>
+        </div>
+    </div>
+
+<!-- INICIO: Modal para Plantilla de Respuestas -->
+<div id="modalPlantillaRespuestas" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+    <div style="background-color: #fefefe; margin: auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 800px; max-height: 90vh; border-radius: 8px; position: relative; display: flex; flex-direction: column;">
+        <span style="color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer;" onclick="cerrarModalPlantilla()">×</span>
+        <h2>Plantilla de Respuestas Generada</h2>
+        <div id="modalPlantillaBody" style="overflow-y: auto; flex-grow: 1; margin-bottom: 15px; font-family: Arial, sans-serif;">
+            <!-- El contenido se pondrá aquí -->
+        </div>
+        <div id="modalPlantillaError" style="color: red; margin-top: 15px; font-weight: bold;"></div>
+        <button style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; align-self: center; margin-top: 10px;" onclick="imprimirContenidoModal('modalPlantillaBody')">Imprimir Plantilla</button>
+    </div>
+</div>
+
+<script>
+    
+    function cerrarModalPlantilla() {
+        const modal = document.getElementById('modalPlantillaRespuestas');
+        if (modal) modal.style.display = 'none';
+        const modalBody = document.getElementById('modalPlantillaBody');
+        if (modalBody) modalBody.innerHTML = '';
+        const modalError = document.getElementById('modalPlantillaError');
+         if (modalError) modalError.textContent = '';
+    }
+
+    function imprimirContenidoModal(elementId) {
+        const contenidoElemento = document.getElementById(elementId);
+        if (!contenidoElemento) return;
+        // Excluir botones de copia del contenido a imprimir
+        const contenidoClonado = contenidoElemento.cloneNode(true);
+        contenidoClonado.querySelectorAll('.copy-btn').forEach(btn => btn.remove());
+        const contenidoHTML = contenidoClonado.innerHTML;
+
+        const ventanaImpresion = window.open('', '_blank');
+         if (!ventanaImpresion) {
+            alert('El navegador bloqueó la ventana de impresión. Por favor, habilite las ventanas emergentes para imprimir.');
+            return;
+        }
+        ventanaImpresion.document.write(`
+            <html>
+             <head>
+                <title>Imprimir Plantilla</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    h1, h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+                    .pregunta { margin-bottom: 15px; border: 1px solid #eee; padding: 10px; page-break-inside: avoid; }
+                    /* Aplicar justificado TAMBIÉN en impresión */
+                    div.modelo-respuesta p { text-align: justify !important; }
+                    .respuesta-correcta { background-color: #d4edda !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                    .modelo-respuesta { background-color: #f8f9fa !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; border: 1px dashed #ccc; margin-top: 10px; padding: 5px; }
+                    /* Ocultar botones de copia al imprimir (ya lo hicimos antes, pero por si acaso) */
+                    .copy-btn { display: none; }
+                </style>
+             </head>
+             <body>${contenidoHTML}</body>
+            </html>`);
+        ventanaImpresion.document.close();
+        ventanaImpresion.focus();
+        setTimeout(() => {
+            ventanaImpresion.print();
+            ventanaImpresion.close();
+         }, 500);
+    }
+
+    // ***** COPIARTEXTO AHORA ESTÁ AQUÍ FUERA, AL MISMO NIVEL *****
+    function copiarTexto(elementId) {
+        console.log("Intentando copiar desde ID:", elementId);
+
+        const elemento = document.getElementById(elementId);
+        console.log("Elemento encontrado:", elemento);
+
+        if (!elemento) {
+            console.error("¡Error! Elemento con ID", elementId, "no encontrado.");
+            alert("Error interno: No se pudo encontrar el texto a copiar.");
+            return;
+        }
+
+        // Usar textContent para obtener texto sin formato
+        const texto = elemento.textContent || ""; // Usar "" como fallback
+        console.log("Texto extraído para copiar:", texto.trim()); // trim() quita espacios extra
+
+        if (!navigator.clipboard) {
+            console.error("navigator.clipboard no está disponible.");
+            alert("La función de copiar no está disponible en este navegador o contexto.");
+            return;
+        }
+
+        navigator.clipboard.writeText(texto.trim()).then(() => { // Copiar texto sin espacios extra
+            console.log("Texto copiado al portapapeles.");
+            const boton = elemento.nextElementSibling;
+            if (boton && boton.classList.contains('copy-btn')) {
+                const originalText = boton.innerHTML;
+                boton.innerHTML = '✅';
+                setTimeout(() => {
+                    boton.innerHTML = originalText;
+                }, 1500);
+            }
+        }).catch(err => {
+            console.error('Error al usar navigator.clipboard.writeText: ', err);
+            alert('Error al intentar copiar el texto.');
+        });
+    }
+
+    // ***** FIN DE COPIARTEXTO *****
+    
+    //======================Inicio Validar Saldo Creditos===============================================
+    async function cargarSaldoCreditos() {
+        try {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                localStorage.removeItem('isAuthenticated');
+                window.location.replace('/public/loging.html');
+                return;
+            }
+    
+            const creditosClient = new Appwrite.Client()
+                .setEndpoint("https://appwrite.sapiensium.com/v1")
+                .setProject("68b9b7dd98304d1d2268");
+                
+                const creditosDatabases = new Appwrite.Databases(creditosClient);
+            
+            const response = await creditosDatabases.listDocuments(
+                "68b9b80f1fae24f27525",
+                "68c19ba15c0d1a8461b3",
+                [`equal("email", "${currentUser.email}")`]
+            );
+            
+            if (response.documents.length > 0) {
+                const saldo = response.documents[0].saldo_actual || 0;
+                
+                // Validar créditos suficientes
+                if (saldo < 10) {
+                    localStorage.removeItem('isAuthenticated');
+                    localStorage.removeItem('currentUser');
+                    window.location.replace('/public/loging.html');
+                    return;
+                }
+                
+                // Mostrar saldo en el elemento correcto
+                document.getElementById('saldo-creditos').textContent = `🔋 ${saldo.toLocaleString()} créditos`;
+            } else {
+                // Usuario no encontrado en base de créditos
+                localStorage.removeItem('isAuthenticated');
+                localStorage.removeItem('currentUser');
+                window.location.replace('/public/loging.html');
+                return;
+            }
+        } catch (error) {
+            console.error('Error cargando créditos:', error);
+            document.getElementById('saldo-creditos').textContent = '🔋 Error cargando créditos';
+            localStorage.removeItem('isAuthenticated');
+            localStorage.removeItem('currentUser');
+            window.location.replace('/public/loging.html');
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', async function() {
+        // Verificar si está autenticado
+        const isAuthenticated = localStorage.getItem('isAuthenticated');
+        
+        if (!isAuthenticated) {
+            window.location.replace('/public/loging.html');
+            return;
+        }
+    
+        // Cargar y validar saldo de créditos
+        await cargarSaldoCreditos();
+    });
+    //======================FIN Validar Saldo Creditos===============================================
+
+</script>
+<!-- FIN: Modal para Plantilla de Respuestas -->
+ <!-- Modal de Autenticación para Gestión de Roles -->
+<div id="modalAuthRoles" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+    <div style="background-color: #ffffff; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative;">
+        <!-- Botón cerrar -->
+        <span style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #999;" onclick="cerrarModalAuthRoles()">&times;</span>
+        
+        <!-- Encabezado -->
+        <div style="text-align: center; margin-bottom: 25px;">
+            <div style="font-size: 48px; margin-bottom: 10px;">🔐</div>
+            <h2 style="margin: 0; color: #333; font-size: 24px;">Acceso a Gestión de Roles</h2>
+            <p style="color: #666; font-size: 14px; margin: 5px 0 0 0;">Solo Administradores y Validadores</p>
+        </div>
+        
+        <!-- Formulario -->
+        <form id="formAuthRoles" onsubmit="return false;">
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Email Corporativo</label>
+                <input type="email" id="emailAuthRoles" placeholder="usuario@sapiensium.com" required
+                       style="width: 100%; padding: 12px; border: 2px solid #e1e5e9; border-radius: 6px; font-size: 16px; box-sizing: border-box;">
+            </div>
+            
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Contraseña</label>
+                <input type="password" id="passwordAuthRoles" required
+                       style="width: 100%; padding: 12px; border: 2px solid #e1e5e9; border-radius: 6px; font-size: 16px; box-sizing: border-box;">
+            </div>
+            
+            <!-- Botones -->
+            <div style="display: flex; gap: 10px;">
+                <button type="button" onclick="cerrarModalAuthRoles()" 
+                        style="flex: 1; padding: 12px; background-color: #6c757d; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer;">
+                    Cancelar
+                </button>
+                <button type="button" onclick="autenticarGestionRoles()" 
+                        style="flex: 1; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer;">
+                    Acceder
+                </button>
+            </div>
+        </form>
+        
+        <!-- Indicador de carga -->
+        <div id="loadingAuthRoles" style="display: none; text-align: center; margin-top: 15px; color: #007bff;">
+            Verificando credenciales...
+        </div>
+    </div>
+</div>
+
+<script>
+// Función para mostrar modal de autenticación de roles
+function mostrarModalAuthRoles() {
+    document.getElementById('modalAuthRoles').style.display = 'flex';
+    document.getElementById('emailAuthRoles').focus();
+}
+
+// Función para cerrar modal
+function cerrarModalAuthRoles() {
+    document.getElementById('modalAuthRoles').style.display = 'none';
+    document.getElementById('formAuthRoles').reset();
+    document.getElementById('loadingAuthRoles').style.display = 'none';
+}
+
+// Función para autenticar acceso a gestión de roles
+async function autenticarGestionRoles() {
+    const email = document.getElementById('emailAuthRoles').value;
+    const password = document.getElementById('passwordAuthRoles').value;
+    
+    if (!email || !password) {
+        alert('Por favor completa todos los campos');
+        return;
+    }
+    
+    // Validar dominio corporativo
+    if (!email.endsWith('@sapiensium.com')) {
+        alert('Solo se permite acceso a usuarios con email @sapiensium.com');
+        return;
+    }
+    
+    document.getElementById('loadingAuthRoles').style.display = 'block';
+    
+    try {
+        // Importar configuración de Appwrite
+        const { account, databases, config } = await import('./appwrite-config.js');
+        const { Query } = await import("https://cdn.jsdelivr.net/npm/appwrite@13.0.1/+esm");
+        
+        // Cerrar sesión actual si existe
+        try {
+            await account.deleteSession('current');
+        } catch (error) {
+            // Ignorar si no hay sesión
+        }
+        
+        // Crear nueva sesión
+        await account.createEmailSession(email, password);
+        
+        // Obtener datos del usuario
+        const currentUser = await account.get();
+        
+        // Obtener rol del usuario
+        const roleQuery = await databases.listDocuments(
+            config.databaseId,
+            config.collectionUserRoles,
+            [Query.equal('user_id', currentUser.$id)]
+        );
+        
+        const userRole = roleQuery.documents.length > 0 ? roleQuery.documents[0].role : null;
+        
+        // Verificar que el usuario tenga permisos para gestión de roles
+        if (userRole !== 'admin' && userRole !== 'validador') {
+            alert('No tienes permisos para acceder a la gestión de roles. Solo Administradores y Validadores pueden acceder.');
+            await account.deleteSession('current'); // Cerrar sesión
+            return;
+        }
+        
+        // Actualizar datos en localStorage
+        localStorage.setItem('currentUser', JSON.stringify({
+            email: email,
+            nombre: currentUser.name || 'Usuario',
+            role: userRole,
+            userId: currentUser.$id
+        }));
+        localStorage.setItem('isAuthenticated', 'true');
+        
+        // Guardar credenciales temporalmente para re-autenticación
+        localStorage.setItem('tempCredentials', JSON.stringify({
+            email: email,
+            password: password
+        }));
+        
+        // Cerrar modal y navegar
+        cerrarModalAuthRoles();
+        window.location.href = 'gestion-roles.html';
+        
+    } catch (error) {
+        console.error('Error en autenticación:', error);
+        if (error.message.includes('Invalid credentials')) {
+            alert('Email o contraseña incorrectos. Verifica tus datos.');
+        } else {
+            alert('Error en la autenticación: ' + error.message);
+        }
+    } finally {
+        document.getElementById('loadingAuthRoles').style.display = 'none';
+    }
+}
+
+// Manejar Enter en los campos
+document.addEventListener('DOMContentLoaded', function() {
+    const emailField = document.getElementById('emailAuthRoles');
+    const passwordField = document.getElementById('passwordAuthRoles');
+    
+    if (emailField && passwordField) {
+        emailField.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                passwordField.focus();
+            }
+        });
+        
+        passwordField.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                autenticarGestionRoles();
+            }
+        });
+    }
+});
+
+// Cerrar modal con Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        cerrarModalAuthRoles();
+    }
+});
+</script>
+</body>
+</html>
+
+
+

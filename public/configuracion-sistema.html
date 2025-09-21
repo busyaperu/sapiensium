@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración del Sistema - ExamPro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #2d3748;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: #4a5568;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .header p {
+            color: #718096;
+            margin-top: 0.5rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .nav-tabs {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-list {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #718096;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-button.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-button:hover:not(.active) {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .config-section {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .config-section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .config-group {
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .config-group h4 {
+            color: #4a5568;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-input[type="checkbox"] {
+            width: auto;
+            margin-right: 0.5rem;
+        }
+
+        .input-help {
+            font-size: 0.8rem;
+            color: #718096;
+            margin-top: 0.25rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ed8936;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #718096;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: #f0fff4;
+            border-color: #48bb78;
+            color: #22543d;
+        }
+
+        .alert-warning {
+            background: #fffbf0;
+            border-color: #ed8936;
+            color: #744210;
+        }
+
+        .alert-error {
+            background: #fff5f5;
+            border-color: #f56565;
+            color: #742a2a;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .status-card {
+            background: #f7fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .status-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .status-label {
+            font-size: 0.9rem;
+            color: #718096;
+            margin-top: 0.25rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #718096;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .json-viewer {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .backup-section {
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px dashed #cbd5e0;
+        }
+
+        .backup-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            padding: 0.75rem 1.5rem;
+            background: #667eea;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .file-label:hover {
+            background: #5a6fd8;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-list {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1><i class="fas fa-cogs"></i> Configuración del Sistema</h1>
+        <p>Configuración general del sistema, precios, políticas de créditos, integraciones y parámetros operativos</p>
+    </header>
+
+    <div class="container">
+        <!-- Navegación por pestañas -->
+        <div class="nav-tabs">
+            <div class="tab-list">
+                <button class="tab-button active" onclick="showTab('creditos')">
+                    <i class="fas fa-coins"></i> Créditos
+                </button>
+                <button class="tab-button" onclick="showTab('precios')">
+                    <i class="fas fa-dollar-sign"></i> Precios
+                </button>
+                <button class="tab-button" onclick="showTab('together')">
+                    <i class="fas fa-robot"></i> Together.ai
+                </button>
+                <button class="tab-button" onclick="showTab('evaluacion')">
+                    <i class="fas fa-clipboard-check"></i> Evaluación
+                </button>
+                <button class="tab-button" onclick="showTab('sistema')">
+                    <i class="fas fa-server"></i> Sistema
+                </button>
+                <button class="tab-button" onclick="showTab('notificaciones')">
+                    <i class="fas fa-bell"></i> Notificaciones
+                </button>
+                <button class="tab-button" onclick="showTab('integraciones')">
+                    <i class="fas fa-plug"></i> Integraciones
+                </button>
+                <button class="tab-button" onclick="showTab('backup')">
+                    <i class="fas fa-archive"></i> Backup
+                </button>
+            </div>
+        </div>
+
+        <!-- Sección Créditos -->
+        <div id="creditos" class="config-section active">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-coins"></i> Configuración de Créditos</h2>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="saveSection('creditos')">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                </div>
+            </div>
+            
+            <div class="config-grid">
+                <div class="config-group">
+                    <h4>Parámetros Básicos</h4>
+                    <div class="form-group">
+                        <label for="credito_por_token">Crédito por Token</label>
+                        <input type="number" id="credito_por_token" class="form-input" min="1">
+                        <div class="input-help">Cuántos tokens equivalen a 1 crédito</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="limite_creditos_mensual">Límite Mensual por Defecto</label>
+                        <input type="number" id="limite_creditos_mensual" class="form-input" min="1000">
+                        <div class="input-help">Créditos asignados a nuevos usuarios</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="costo_evaluar_por_modelo">Costo por Modelo</label>
+                        <input type="number" id="costo_evaluar_por_modelo" class="form-input" min="1000">
+                        <div class="input-help">Tokens necesarios para evaluar con 1 modelo</div>
+                    </div>
+                </div>
+                
+                <div class="config-group">
+                    <h4>Cuentas Demo</h4>
+                    <div class="form-group">
+                        <label for="creditos_demo">Créditos Demo</label>
+                        <input type="number" id="creditos_demo" class="form-input" min="1000">
+                        <div class="input-help">Créditos otorgados en cuentas demo</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="validez_demo_dias">Validez Demo (días)</label>
+                        <input type="number" id="validez_demo_dias" class="form-input" min="1" max="365">
+                        <div class="input-help">Duración de las cuentas demo</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección Precios -->
+        <div id="precios" class="config-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-dollar-sign"></i> Configuración de Precios</h2>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="saveSection('precios')">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                </div>
+            </div>
+            
+            <div class="config-grid">
+                <div class="config-group">
+                    <h4>Planes de Suscripción</h4>
+                    <div class="form-group">
+                        <label for="plan_basico_usd">Plan Básico (USD)</label>
+                        <input type="number" id="plan_basico_usd" class="form-input" min="1" step="0.01">
+                        <div class="input-help">Precio mensual del plan básico</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="plan_premium_usd">Plan Premium (USD)</label>
+                        <input type="number" id="plan_premium_usd" class="form-input" min="1" step="0.01">
+                        <div class="input-help">Precio mensual del plan premium</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="plan_empresarial_usd">Plan Empresarial (USD)</label>
+                        <input type="number" id="plan_empresarial_usd" class="form-input" min="1" step="0.01">
+                        <div class="input-help">Precio mensual del plan empresarial</div>
+                    </div>
+                </div>
+                
+                <div class="config-group">
+                    <h4>Descuentos</h4>
+                    <div class="form-group">
+                        <label for="descuento_anual_porcentaje">Descuento Anual (%)</label>
+                        <input type="number" id="descuento_anual_porcentaje" class="form-input" min="0" max="50" step="0.1">
+                        <div class="input-help">Descuento para suscripciones anuales</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección Together.ai -->
+        <div id="together" class="config-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-robot"></i> Configuración Together.ai</h2>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="saveSection('together_ai')">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                </div>
+            </div>
+            
+            <div class="config-grid">
+                <div class="config-group">
+                    <h4>Parámetros de Conversión</h4>
+                    <div class="form-group">
+                        <label for="trigger_amount">Monto de Activación (USD)</label>
+                        <input type="number" id="trigger_amount" class="form-input" min="1" step="0.01">
+                        <div class="input-help">Monto mínimo para generar fondos</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="together_amount">Fondos Generados (USD)</label>
+                        <input type="number" id="together_amount" class="form-input" min="0.01" step="0.01">
+                        <div class="input-help">Fondos Together.ai por cada activación</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="conversion_rate">Tasa de Conversión (%)</label>
+                        <input type="number" id="conversion_rate" class="form-input" min="1" max="100" step="0.1" readonly>
+                        <div class="input-help">Calculado automáticamente</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección Evaluación -->
+        <div id="evaluacion" class="config-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-clipboard-check"></i> Configuración de Evaluación</h2>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="saveSection('evaluacion')">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                </div>
+            </div>
+            
+            <div class="config-grid">
+                <div class="config-group">
+                    <h4>Límites de Evaluación</h4>
+                    <div class="form-group">
+                        <label for="max_estudiantes_por_evaluacion">Máx. Estudiantes por Evaluación</label>
+                        <input type="number" id="max_estudiantes_por_evaluacion" class="form-input" min="1" max="10000">
+                        <div class="input-help">Límite de estudiantes por evaluación</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="max_modelos_simultaneos">Máx. Modelos Simultáneos</label>
+                        <input type="number" id="max_modelos_simultaneos" class="form-input" min="1" max="20">
+                        <div class="input-help">Modelos máximos por evaluación</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="timeout_evaluacion_segundos">Timeout Evaluación (seg)</label>
+                        <input type="number" id="timeout_evaluacion_segundos" class="form-input" min="30" max="3600">
+                        <div class="input-help">Tiempo máximo de evaluación</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección Sistema -->
+        <div id="sistema" class="config-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-server"></i> Configuración del Sistema</h2>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="saveSection('sistema')">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                </div>
+            </div>
+            
+            <div class="config-grid">
+                <div class="config-group">
+                    <h4>Estado del Sistema</h4>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="mantenimiento_activo" class="form-input">
+                            Modo Mantenimiento
+                        </label>
+                        <div class="input-help">Activar modo mantenimiento</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="mensaje_mantenimiento">Mensaje de Mantenimiento</label>
+                        <input type="text" id="mensaje_mantenimiento" class="form-input">
+                        <div class="input-help">Mensaje mostrado durante mantenimiento</div>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="debug_mode" class="form-input">
+                            Modo Debug
+                        </label>
+                        <div class="input-help">Activar logs detallados</div>
+                    </div>
+                </div>
+                
+                <div class="config-group">
+                    <h4>Retención de Datos</h4>
+                    <div class="form-group">
+                        <label for="logs_retention_days">Retención de Logs (días)</label>
+                        <input type="number" id="logs_retention_days" class="form-input" min="1" max="365">
+                        <div class="input-help">Días para mantener logs del sistema</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="backup_frequency_hours">Frecuencia Backup (horas)</label>
+                        <input type="number" id="backup_frequency_hours" class="form-input" min="1" max="168">
+                        <div class="input-help">Intervalo entre backups automáticos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección Notificaciones -->
+        <div id="notificaciones" class="config-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-bell"></i> Configuración de Notificaciones</h2>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="saveSection('notificaciones')">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                </div>
+            </div>
+            
+            <div class="config-grid">
+                <div class="config-group">
+                    <h4>Configuración General</h4>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="email_enabled" class="form-input">
+                            Habilitar Emails
+                        </label>
+                        <div class="input-help">Activar envío de notificaciones por email</div>
+                    </div>
+                </div>
+                
+                <div class="config-group">
+                    <h4>Alertas Automáticas</h4>
+                    <div class="form-group">
+                        <label for="notif_creditos_bajos_porcentaje">Alerta Créditos Bajos (%)</label>
+                        <input type="number" id="notif_creditos_bajos_porcentaje" class="form-input" min="1" max="50">
+                        <div class="input-help">% de créditos para enviar alerta</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="notif_demo_expiracion_dias">Alerta Demo (días antes)</label>
+                        <input type="number" id="notif_demo_expiracion_dias" class="form-input" min="1" max="30">
+                        <div class="input-help">Días antes de expirar demo para alertar</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="notif_inactividad_dias">Alerta Inactividad (días)</label>
+                        <input type="number" id="notif_inactividad_dias" class="form-input" min="1" max="90">
+                        <div class="input-help">Días sin actividad para enviar alerta</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección Integraciones -->
+        <div id="integraciones" class="config-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-plug"></i> Integraciones</h2>
+                <div class="section-actions">
+                    <button class="btn btn-warning" onclick="loadEnvironmentVariables()">
+                        <i class="fas fa-sync-alt"></i> Verificar Variables
+                    </button>
+                </div>
+            </div>
+            
+            <div id="environmentStatus" class="status-grid">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Cargando estado de integraciones...</p>
+                </div>
+            </div>
+            
+            <div class="config-grid">
+                <div class="config-group">
+                    <h4>Configuración de Integraciones</h4>
+                    <div class="form-group">
+                        <label for="email_provider">Proveedor de Email</label>
+                        <select id="email_provider" class="form-input">
+                            <option value="smtp">SMTP</option>
+                            <option value="sendgrid">SendGrid</option>
+                            <option value="mailgun">Mailgun</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="analytics_enabled" class="form-input">
+                            Analytics Habilitado
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="backup_provider">Proveedor de Backup</label>
+                        <select id="backup_provider" class="form-input">
+                            <option value="local">Local</option>
+                            <option value="aws">AWS S3</option>
+                            <option value="gcp">Google Cloud</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección Backup -->
+        <div id="backup" class="config-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-archive"></i> Backup y Restauración</h2>
+            </div>
+            
+            <div class="backup-section">
+                <h4 style="margin-bottom: 1rem;">Gestión de Configuración</h4>
+                <div class="backup-actions">
+                    <button class="btn btn-success" onclick="createBackup()">
+                        <i class="fas fa-download"></i> Descargar Backup
+                    </button>
+                    
+                    <label for="backupFile" class="file-label">
+                        <i class="fas fa-upload"></i> Seleccionar Backup
+                    </label>
+                    <input type="file" id="backupFile" class="file-input" accept=".json" onchange="handleBackupFile(event)">
+                    
+                    <button class="btn btn-warning" id="restoreBtn" onclick="restoreBackup()" disabled>
+                        <i class="fas fa-undo"></i> Restaurar
+                    </button>
+                    
+                    <button class="btn btn-danger" onclick="resetConfiguration()">
+                        <i class="fas fa-refresh"></i> Resetear a Defaults
+                    </button>
+                </div>
+                
+                <div id="backupStatus" style="margin-top: 1rem;"></div>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <h4>Configuración Actual (JSON)</h4>
+                <div id="currentConfigViewer" class="json-viewer">
+                    Cargando configuración...
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado global -->
+        <div id="globalStatus"></div>
+    </div>
+
+    <script>
+        let currentConfig = null;
+        let selectedBackupData = null;
+
+        // Cargar configuración al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConfiguration();
+            loadEnvironmentVariables();
+        });
+
+        /*async function loadConfiguration() {
+            try {
+                showGlobalLoading('Cargando configuración...');
+                
+                const response = await fetch('http://127.0.0.1:5007/api/config');
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                currentConfig = data.configuracion;
+                populateConfigurationForm(currentConfig);
+                updateConfigViewer(currentConfig);
+                
+                showGlobalSuccess('Configuración cargada correctamente');
+                
+            } catch (error) {
+                console.error('Error cargando configuración:', error);
+                showGlobalError('Error cargando configuración: ' + error.message);
+            }
+        }*/
+
+        function handleBackupFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    selectedBackupData = JSON.parse(e.target.result);
+                    document.getElementById('restoreBtn').disabled = false;
+                    showBackupStatus(`Backup "${file.name}" cargado correctamente`, 'success');
+                } catch (error) {
+                    showBackupStatus('Error: Archivo de backup inválido', 'error');
+                    document.getElementById('restoreBtn').disabled = true;
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        /*async function restoreBackup() {
+            if (!selectedBackupData) {
+                showBackupStatus('Error: No hay backup seleccionado', 'error');
+                return;
+            }
+
+            if (!confirm('¿Estás seguro de restaurar la configuración? Esto sobrescribirá la configuración actual.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('http://127.0.0.1:5007/api/config/restore', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        backup: selectedBackupData,
+                        actualizado_por: 'Admin Panel'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showBackupStatus('Configuración restaurada correctamente', 'success');
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    throw new Error(result.error || 'Error restaurando backup');
+                }
+
+            } catch (error) {
+                console.error('Error restaurando backup:', error);
+                showBackupStatus('Error restaurando: ' + error.message, 'error');
+            }
+        }*/
+
+        /*async function resetConfiguration() {
+            if (!confirm('¿Estás seguro de resetear toda la configuración a valores por defecto?')) {
+                return;
+            }
+
+            if (!confirm('Esta acción NO se puede deshacer. ¿Continuar?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('http://127.0.0.1:5007/api/config/reset', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        confirmar_reset: true,
+                        actualizado_por: 'Admin Panel'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showBackupStatus('Configuración reseteada a valores por defecto', 'success');
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    throw new Error(result.error || 'Error reseteando configuración');
+                }
+
+            } catch (error) {
+                console.error('Error reseteando configuración:', error);
+                showBackupStatus('Error reseteando: ' + error.message, 'error');
+            }
+        }*/
+
+        function updateConfigViewer(config) {
+            document.getElementById('currentConfigViewer').textContent = JSON.stringify(config, null, 2);
+        }
+
+        function showBackupStatus(message, type) {
+            const container = document.getElementById('backupStatus');
+            container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+
+        function showGlobalLoading(message) {
+            document.getElementById('globalStatus').innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        function showGlobalSuccess(message) {
+            document.getElementById('globalStatus').innerHTML = `
+                <div class="alert alert-success">${message}</div>
+            `;
+            setTimeout(() => document.getElementById('globalStatus').innerHTML = '', 3000);
+        }
+
+        function showGlobalError(message) {
+            document.getElementById('globalStatus').innerHTML = `
+                <div class="alert alert-error">${message}</div>
+            `;
+        }
+
+        // Guardar automáticamente al cambiar valores importantes
+        document.addEventListener('change', function(e) {
+            if (e.target.id === 'mantenimiento_activo') {
+                const isActive = e.target.checked;
+                if (isActive) {
+                    if (confirm('¿Activar modo mantenimiento? Los usuarios no podrán acceder al sistema.')) {
+                        saveSection('sistema');
+                    } else {
+                        e.target.checked = false;
+                    }
+                } else {
+                    saveSection('sistema');
+                }
+            }
+        });
+
+
+        function populateConfigurationForm(config) {
+            // Event listeners para calcular automáticamente la tasa de conversión
+            document.getElementById('trigger_amount').addEventListener('input', updateConversionRate);
+            document.getElementById('together_amount').addEventListener('input', updateConversionRate);
+
+            // Créditos
+            document.getElementById('credito_por_token').value = config.creditos?.credito_por_token || 5000;
+            document.getElementById('limite_creditos_mensual').value = config.creditos?.limite_creditos_mensual || 12000;
+            document.getElementById('costo_evaluar_por_modelo').value = config.creditos?.costo_evaluar_por_modelo || 15500;
+            document.getElementById('creditos_demo').value = config.creditos?.creditos_demo || 5000;
+            document.getElementById('validez_demo_dias').value = config.creditos?.validez_demo_dias || 30;
+
+            // Precios
+            document.getElementById('plan_basico_usd').value = config.precios?.plan_basico_usd || 20;
+            document.getElementById('plan_premium_usd').value = config.precios?.plan_premium_usd || 50;
+            document.getElementById('plan_empresarial_usd').value = config.precios?.plan_empresarial_usd || 100;
+            document.getElementById('descuento_anual_porcentaje').value = config.precios?.descuento_anual_porcentaje || 15;
+
+            // Together.ai
+            document.getElementById('trigger_amount').value = config.together_ai?.trigger_amount || 20;
+            document.getElementById('together_amount').value = config.together_ai?.together_amount || 4;
+            updateConversionRate();
+
+            // Evaluación
+            document.getElementById('max_estudiantes_por_evaluacion').value = config.evaluacion?.max_estudiantes_por_evaluacion || 1000;
+            document.getElementById('max_modelos_simultaneos').value = config.evaluacion?.max_modelos_simultaneos || 5;
+            document.getElementById('timeout_evaluacion_segundos').value = config.evaluacion?.timeout_evaluacion_segundos || 300;
+
+            // Sistema
+            document.getElementById('mantenimiento_activo').checked = config.sistema?.mantenimiento_activo || false;
+            document.getElementById('mensaje_mantenimiento').value = config.sistema?.mensaje_mantenimiento || '';
+            document.getElementById('debug_mode').checked = config.sistema?.debug_mode || false;
+            document.getElementById('logs_retention_days').value = config.sistema?.logs_retention_days || 30;
+            document.getElementById('backup_frequency_hours').value = config.sistema?.backup_frequency_hours || 24;
+
+            // Notificaciones
+            document.getElementById('email_enabled').checked = config.notificaciones?.email_enabled !== false;
+            document.getElementById('notif_creditos_bajos_porcentaje').value = config.notificaciones?.notif_creditos_bajos_porcentaje || 20;
+            document.getElementById('notif_demo_expiracion_dias').value = config.notificaciones?.notif_demo_expiracion_dias || 7;
+            document.getElementById('notif_inactividad_dias').value = config.notificaciones?.notif_inactividad_dias || 30;
+
+            // Integraciones
+            document.getElementById('email_provider').value = config.integraciones?.email_provider || 'smtp';
+            document.getElementById('analytics_enabled').checked = config.integraciones?.analytics_enabled !== false;
+            document.getElementById('backup_provider').value = config.integraciones?.backup_provider || 'local';
+        }
+
+
+        function updateConversionRate() {
+            const trigger = parseFloat(document.getElementById('trigger_amount').value) || 20;
+            const together = parseFloat(document.getElementById('together_amount').value) || 4;
+            const rate = (together / trigger * 100).toFixed(1);
+            document.getElementById('conversion_rate').value = rate;
+        }
+
+        function showTab(tabName) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.config-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remover clase active de todos los botones
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Mostrar sección seleccionada
+            document.getElementById(tabName).classList.add('active');
+            
+            // Activar botón correspondiente
+            event.target.classList.add('active');
+        }
+
+        /*async function saveSection(sectionName) {
+            try {
+                const button = event.target;
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+                button.disabled = true;
+
+                // Recopilar datos de la sección
+                const sectionConfig = collectSectionData(sectionName);
+                
+                // Actualizar configuración local
+                currentConfig[sectionName] = sectionConfig;
+
+                // Enviar actualización
+                const response = await fetch(`http://127.0.0.1:5007/api/config/seccion/${sectionName}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        configuracion: sectionConfig,
+                        actualizado_por: 'Admin Panel'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showGlobalSuccess(`Sección ${sectionName} guardada correctamente`);
+                    updateConfigViewer(currentConfig);
+                } else {
+                    throw new Error(result.error || 'Error guardando sección');
+                }
+
+            } catch (error) {
+                console.error('Error guardando sección:', error);
+                showGlobalError('Error guardando: ' + error.message);
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }*/
+
+        function collectSectionData(sectionName) {
+            switch(sectionName) {
+                case 'creditos':
+                    return {
+                        credito_por_token: parseInt(document.getElementById('credito_por_token').value),
+                        limite_creditos_mensual: parseInt(document.getElementById('limite_creditos_mensual').value),
+                        costo_evaluar_por_modelo: parseInt(document.getElementById('costo_evaluar_por_modelo').value),
+                        creditos_demo: parseInt(document.getElementById('creditos_demo').value),
+                        validez_demo_dias: parseInt(document.getElementById('validez_demo_dias').value)
+                    };
+                
+                case 'precios':
+                    return {
+                        plan_basico_usd: parseFloat(document.getElementById('plan_basico_usd').value),
+                        plan_premium_usd: parseFloat(document.getElementById('plan_premium_usd').value),
+                        plan_empresarial_usd: parseFloat(document.getElementById('plan_empresarial_usd').value),
+                        descuento_anual_porcentaje: parseFloat(document.getElementById('descuento_anual_porcentaje').value)
+                    };
+                
+                case 'together_ai':
+                    return {
+                        trigger_amount: parseFloat(document.getElementById('trigger_amount').value),
+                        together_amount: parseFloat(document.getElementById('together_amount').value),
+                        conversion_rate: parseFloat(document.getElementById('conversion_rate').value)
+                    };
+                
+                case 'evaluacion':
+                    return {
+                        max_estudiantes_por_evaluacion: parseInt(document.getElementById('max_estudiantes_por_evaluacion').value),
+                        max_modelos_simultaneos: parseInt(document.getElementById('max_modelos_simultaneos').value),
+                        timeout_evaluacion_segundos: parseInt(document.getElementById('timeout_evaluacion_segundos').value)
+                    };
+                
+                case 'sistema':
+                    return {
+                        mantenimiento_activo: document.getElementById('mantenimiento_activo').checked,
+                        mensaje_mantenimiento: document.getElementById('mensaje_mantenimiento').value,
+                        debug_mode: document.getElementById('debug_mode').checked,
+                        logs_retention_days: parseInt(document.getElementById('logs_retention_days').value),
+                        backup_frequency_hours: parseInt(document.getElementById('backup_frequency_hours').value)
+                    };
+                
+                case 'notificaciones':
+                    return {
+                        email_enabled: document.getElementById('email_enabled').checked,
+                        notif_creditos_bajos_porcentaje: parseInt(document.getElementById('notif_creditos_bajos_porcentaje').value),
+                        notif_demo_expiracion_dias: parseInt(document.getElementById('notif_demo_expiracion_dias').value),
+                        notif_inactividad_dias: parseInt(document.getElementById('notif_inactividad_dias').value)
+                    };
+                
+                default:
+                    return {};
+            }
+        }
+
+        /*async function loadEnvironmentVariables() {
+            try {
+                const response = await fetch('http://127.0.0.1:5007/api/config/variables-entorno');
+                const data = await response.json();
+                
+                displayEnvironmentStatus(data);
+                
+            } catch (error) {
+                console.error('Error cargando variables de entorno:', error);
+                document.getElementById('environmentStatus').innerHTML = `
+                    <div class="alert alert-error">
+                        Error cargando variables de entorno: ${error.message}
+                    </div>
+                `;
+            }
+        }*/
+
+        function displayEnvironmentStatus(data) {
+            const container = document.getElementById('environmentStatus');
+            
+            let statusHTML = `
+                <div class="status-card">
+                    <div class="status-value">${data.configuracion_completa ? '✅' : '❌'}</div>
+                    <div class="status-label">Configuración</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-value">${data.variables.appwrite.endpoint !== 'No configurado' ? '✅' : '❌'}</div>
+                    <div class="status-label">Appwrite</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-value">${data.variables.email.user !== 'No configurado' ? '✅' : '❌'}</div>
+                    <div class="status-label">Email</div>
+                </div>
+            `;
+            
+            if (data.variables_faltantes.length > 0) {
+                statusHTML += `
+                    <div class="alert alert-warning" style="grid-column: 1 / -1;">
+                        <strong>Variables faltantes:</strong> ${data.variables_faltantes.join(', ')}
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = statusHTML;
+        }
+
+        /*async function createBackup() {
+            try {
+                const response = await fetch('http://127.0.0.1:5007/api/config/backup');
+                const data = await response.json();
+                
+                // Crear y descargar archivo
+                const blob = new Blob([JSON.stringify(data.backup, null, 2)], { type: 'application/json' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = data.filename;
+                a.click();
+                window.URL.revokeObjectURL(url);
+                
+                showBackupStatus('Backup descargado correctamente', 'success');
+                
+            } catch (error) {
+                console.error('Error creando backup:', error);
+                showBackupStatus('Error creando backup: ' + error.message, 'error');
+            }
+        }*/
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,831 @@
+:root {
+    --primary-color: #4f46e5;
+    --secondary-color: #d807f3;
+    --bg-color: #f8f9fa;
+    --text-color: #333;
+    --sidebar-bg: #4f46e5;
+    --sidebar-text: #ffffff;
+    --border-color: #ddd;
+    --success-color: #22c55e;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+#app {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px; /* Mantén el ancho que tenías */
+    background-color: #4f46e5; /* <<< ¡COLOR MORADO DIRECTAMENTE! */
+    color: #ffffff; /* <<< ¡COLOR DE TEXTO BLANCO DIRECTAMENTE! */
+    padding: 0; /* Quita padding general si lo había, lo aplicaremos dentro */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Mantén la sombra */
+    display: flex; /* Mejor usar flex para alinear logo y nav */
+    flex-direction: column; /* Apilar logo y nav */
+}
+
+/* Estilo específico para el contenedor del logo dentro del sidebar */
+.sidebar .logo {
+    /* El padding y border-bottom ya están aplicados inline en index.html, mantenlos ahí */
+    /* Aseguramos color de texto por si acaso */
+    color: #ffffff;
+}
+
+.logo {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 20px;
+}
+
+/* Estilo para el contenedor de navegación */
+.sidebar nav {
+    padding-top: 1rem; /* Espacio opcional arriba de los links */
+    flex-grow: 1; /* Para que ocupe espacio restante */
+ }
+
+/* Estilo para los enlaces DENTRO del sidebar */
+.sidebar nav a {
+    padding: 12px 20px;
+    color: #ffffff; /* <<< ¡ASEGURAR TEXTO BLANCO! */
+    text-decoration: none;
+    display: block; /* Ocupar todo el ancho */
+    border-left: 4px solid transparent; /* Borde inicial transparente */
+    transition: background-color 0.2s ease, border-color 0.2s ease; /* Transición suave */
+}
+
+/* Estilo hover y active para enlaces del sidebar */
+.sidebar nav a:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Resaltado blanco sutil */
+    border-left-color: #ffffff; /* Borde blanco */
+}
+
+.sidebar nav a.active {
+    background-color: rgba(255, 255, 255, 0.15); /* Un poco más oscuro para el activo */
+    border-left-color: #ffffff; /* Borde blanco */
+    font-weight: 500; /* Opcional: hacerlo un poco más grueso */
+}
+
+/* Estilo para enlaces deshabilitados */
+.sidebar nav a.disabled {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+    pointer-events: none;
+    background-color: transparent !important; /* Sin fondo especial */
+    border-left-color: transparent !important; /* Sin borde */
+}
+
+.main-content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.section {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1, h2, h3 {
+    margin-bottom: 20px;
+    color: var(--text-color);
+}
+
+.card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: var(--secondary-color);
+}
+
+.btn-success {
+    background-color: var(--success-color);
+}
+
+.btn-success:hover {
+    background-color: #219653;
+}
+
+.btn-warning {
+    background-color: var(--warning-color);
+}
+
+.btn-warning:hover {
+    background-color: #e67e22;
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.tab-container {
+    margin-bottom: 20px;
+}
+
+.tab-buttons {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-btn.active {
+    border-bottom: 3px solid var(--primary-color);
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.tab-content {
+    padding: 20px 0;
+}
+
+.question {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: white;
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.options label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.options input[type="radio"] {
+    width: auto;
+    margin-right: 10px;
+}
+
+.btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th, td {
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    text-align: left;
+}
+
+th {
+    background-color: #f1f1f1;
+    font-weight: 600;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.file-upload {
+    border: 2px dashed var(--border-color);
+    padding: 30px;
+    text-align: center;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.file-upload:hover {
+    border-color: var(--primary-color);
+}
+
+.totals {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.tool-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.tool-links a {
+    padding: 10px 15px;
+    background-color: #f1f1f1;
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: background-color 0.3s;
+}
+
+.tool-links a:hover {
+    background-color: #e0e0e0;
+}
+
+.upload-progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: #eee;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #4CAF50;
+    border-radius: 4px;
+    transition: width 0.2s;
+}
+
+.progress-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    line-height: 20px;
+    color: #333;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
+/* Estilos para enlaces deshabilitados */
+a.disabled {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+    pointer-events: none;
+    text-decoration: none;
+    background-color: #f0f0f0; /* Fondo gris para mayor claridad */
+}
+
+button {
+    background: none;
+    border: none;
+    color: #2196F3;
+    cursor: pointer;
+    padding: 10px;
+    margin: 10px 0;
+}
+button:hover {
+    text-decoration: underline;
+}
+
+/* En tu archivo styles.css */
+/* Ocultar prompt en modo estudiante o examen bloqueado */
+#prompt-input:disabled {
+    display: none; /* Oculta completamente el campo */
+}
+
+/* O si prefieres mantener el espacio pero mostrarlo vacío */
+/*
+#prompt-input:disabled {
+    opacity: 0;
+    height: 0;
+    padding: 0;
+    border: 0;
+    pointer-events: none;
+}
+*/
+
+/* Ocultar label asociado al prompt */
+#prompt-input:disabled + label {
+    display: none;
+}
+
+/* Agregar estos estilos a tu archivo styles.css */
+
+.tabla-examenes {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tabla-examenes th {
+    background-color: #4A89DC;
+    color: white;
+    padding: 12px 15px;
+}
+
+.tabla-examenes td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.tabla-examenes tbody tr:hover {
+    background-color: #f5f7fa;
+}
+
+.btn-small {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+.badge-cargado {
+    background-color: #f1c40f;
+    color: #000;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.badge-noexiste {
+    background-color: #e74c3c;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.modal-close {
+    display: block !important;
+    font-size: 24px;
+    color: #000;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    z-index: 999;
+}
+
+.modal-header {
+    position: relative;
+    overflow: visible;
+}
+
+/* Basic Modal Styling (customize as needed) */
+.modal-overlay {
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+    display: flex; /* Use flexbox for centering */
+    align-items: center; /* Vertical center */
+    justify-content: center; /* Horizontal center */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto; /* Auto margin with flexbox */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Adjust width */
+    max-width: 800px; /* Max width */
+    max-height: 90vh; /* Max height */
+    border-radius: 8px;
+    position: relative; /* For positioning the close button */
+    display: flex; /* Use flex for internal layout */
+    flex-direction: column; /* Stack items vertically */
+}
+
+.modal-body {
+    overflow-y: auto; /* Add scroll to body if content overflows */
+    flex-grow: 1; /* Allow body to take available space */
+    margin-bottom: 15px; /* Space before buttons */
+    /* Add the same styles you had inside the popup's body if needed */
+    font-family: Arial, sans-serif;
+}
+
+.modal-body h1 { text-align: center; margin-bottom: 20px; }
+.modal-body h2 { margin-top: 25px; border-bottom: 1px solid #ddd; padding-bottom: 5px; color: #444; }
+.modal-body .pregunta { margin-bottom: 20px; border: 1px solid #eee; padding: 15px; border-radius: 5px; }
+.modal-body .numero { font-weight: bold; }
+.modal-body .opcion { margin: 5px 0; padding: 5px; }
+.modal-body .respuesta-correcta { background-color: #d4edda; border-left: 4px solid #28a745; padding-left: 10px; }
+.modal-body .modelo-respuesta { background-color: #f8f9fa; padding: 10px; border: 1px dashed #ccc; margin-top: 10px; }
+.modal-body .ia-generada { font-style: italic; color: #6c757d; font-size: 0.9em; margin-top: 5px; }
+
+
+.modal-close-button {
+    color: #aaa;
+    position: absolute; /* Position relative to modal-content */
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-close-button:hover,
+.modal-close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-print-button {
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: center; /* Center button */
+    margin-top: 10px;
+}
+
+.modal-print-button:hover {
+    background: #0056b3;
+}
+
+.modal-error-message {
+    color: red;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+/* Justificar texto de las respuestas modelo - MÁS ESPECÍFICO */
+div#modalPlantillaBody div.modelo-respuesta p {
+    text-align: justify !important; /* Usamos !important temporalmente para asegurar que se aplique */
+}
+
+
+
+/* Estilo básico para el botón de copiar */
+.copy-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1em; /* Ajusta el tamaño del icono/emoji */
+    padding: 0 5px;
+    vertical-align: middle; /* Intenta alinear verticalmente con el texto */
+    margin-left: 5px; /* Espacio a la izquierda del botón */
+}
+
+/* Efecto visual al pasar el mouse */
+.copy-btn:hover {
+    opacity: 0.7;
+}
+
+/* Diseño específico para el modal de resultado - MÁS ESPECÍFICO */
+#modal-resultado .resultado-summary { 
+    background-color: #f1f5f9 !important;
+    border-radius: 6px !important;
+    padding: 1rem 1.5rem !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1.5rem !important;
+    margin-bottom: 2rem !important;
+    flex-wrap: nowrap !important; /* Anular flex-wrap si existe */
+}
+
+#modal-resultado .resultado-item { 
+    display: flex !important; 
+    flex-direction: column !important; 
+    text-align: center !important;
+    min-width: auto !important; /* Anular min-width si existe */
+}
+
+#modal-resultado .resultado-item span { 
+    font-size: 0.85rem !important; 
+    color: #64748b !important; 
+    margin-bottom: 0.2rem !important; 
+}
+
+#modal-resultado .resultado-item strong { 
+    font-size: 1.2rem !important; 
+    font-weight: 600 !important; 
+    color: #4f46e5 !important; 
+}
+
+/* ... tus otros estilos ... */
+
+.model-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.model-table td {
+    padding: 0.5rem;
+    text-align: left; 
+    border: 1px solid #eee;
+}
+
+
+.model-table td {
+    padding: 0.5rem;
+    text-align: center; /* Centra el texto */
+    border: 1px solid #eee;
+}
+
+/* ... resto de tus estilos ... */
+
+.archivo-card {
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+}
+
+.archivo-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.archivo-card.selected {
+    border-color: #007bff;
+    background-color: #f8f9ff;
+}
+
+.archivo-card.selected .card-body {
+    background-color: transparent;
+}
+
+/* AGREGAR A STYLES.CSS */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.selector-modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.selector-modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.selector-close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.selector-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.selector-loading {
+    text-align: center;
+    padding: 40px;
+}
+
+.selector-archivos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.archivo-card {
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.archivo-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.archivo-card.selected {
+    border-color: #007bff;
+    background-color: #f8f9ff;
+}
+
+.archivo-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.archivo-icono {
+    font-size: 2em;
+}
+
+.archivo-detalles {
+    flex-grow: 1;
+}
+
+.archivo-nombre {
+    font-weight: bold;
+    margin: 0 0 5px 0;
+}
+
+.archivo-tamaño, .archivo-fecha {
+    margin: 0;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.selector-vacio, .selector-error {
+    text-align: center;
+    padding: 40px;
+}
+
+.selector-error {
+    color: red;
+}
+
+.selector-modal-footer {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-cancelar, .btn-seleccionar {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-cancelar {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-seleccionar {
+    background: #007bff;
+    color: white;
+}
+
+.btn-seleccionar:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.selector-modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    padding: 0;
+}
+
+.selector-modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+}
+
+.selector-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex-grow: 1;
+    background: white;
+}
+
+.selector-modal-footer {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background: white;
+}
+
+.selector-close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+#modal-archivos {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.archivo-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.archivo-icono {
+    font-size: 1.5em;
+}
+
+.archivo-detalles p {
+    margin: 2px 0;
+}
+
+.archivo-nombre {
+    font-weight: bold;
+}
+
+.archivo-tamaño, .archivo-fecha {
+    font-size: 0.9em;
+    color: #666;
+}

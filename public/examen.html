@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Examen</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .student-info {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .student-info h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #495057;
+            font-size: 1rem;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: #495057;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .alert.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-clipboard-list"></i> Panel de Examen</h1>
+            <p>Configuración del examen en línea</p>
+        </div>
+
+        <div id="mensaje" class="alert"></div>
+
+        <!-- Información del Alumno (oculta inicialmente) -->
+        <div class="student-info" id="seccion-alumno" style="display: none;">
+            <h3><i class="fas fa-user-graduate"></i> Información del Alumno</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Nombre Completo</span>
+                    <span id="alumno-nombre" class="info-value">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">ID Alumno</span>
+                    <span id="alumno-id" class="info-value">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Email</span>
+                    <span id="alumno-email" class="info-value">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Curso</span>
+                    <span id="alumno-curso" class="info-value">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario del Profesor -->
+        <div class="form-section">
+            <h3 class="section-title"><i class="fas fa-chalkboard-teacher"></i> Datos del Profesor</h3>
+            
+            <div class="form-group">
+                <label for="id-examen">ID del Examen <span class="required">*</span></label>
+                <input type="text" id="id-examen" placeholder="Ej: MAT001, HIST2024, etc.">
+            </div>
+
+            <div class="form-group">
+                <label for="nombre-profesor">Nombre del Profesor <span class="required">*</span></label>
+                <input type="text" id="nombre-profesor" placeholder="Ingrese el nombre completo">
+            </div>
+
+            <div class="form-group">
+                <label for="id-profesor">ID del Profesor <span class="required">*</span></label>
+                <input type="text" id="id-profesor" placeholder="Ingrese el ID o código del profesor">
+            </div>
+
+            <div class="form-group">
+                <label for="fecha-examen">Fecha del Examen</label>
+                <input type="text" id="fecha-examen" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="url-examen">URL del Examen <span class="required">*</span></label>
+                <textarea id="url-examen" rows="3" placeholder="Pegue aquí la URL completa del examen en línea"></textarea>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button id="btn-iniciar" class="btn btn-primary">
+                <i class="fas fa-play"></i> Iniciar Examen
+            </button>
+            <button id="btn-limpiar" class="btn btn-secondary">
+                <i class="fas fa-eraser"></i> Limpiar
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Función para mostrar mensajes
+        function showMessage(text, type) {
+            const mensaje = document.getElementById('mensaje');
+            if (mensaje) {
+                mensaje.textContent = text;
+                mensaje.className = 'alert ' + type;
+                setTimeout(() => {
+                    mensaje.className = 'alert';
+                }, 5000);
+            }
+        }
+
+        // Determinar si es profesor o alumno
+        function esProfesor() {
+            return !localStorage.getItem('currentAlumno');
+        }
+
+        // Cargar datos del alumno desde localStorage
+        function cargarDatosAlumno() {
+            if (esProfesor()) {
+                // Es el profesor - mantener sección de alumno oculta
+                document.getElementById('seccion-alumno').style.display = 'none';
+                document.querySelector('.header h1').innerHTML = '<i class="fas fa-chalkboard-teacher"></i> Configuración del Examen';
+                document.querySelector('.header p').textContent = 'Complete los datos para configurar el examen';
+                return;
+            }
+
+            // Es un alumno - preparar sus datos pero NO mostrarlos aún
+            const alumnoData = localStorage.getItem('currentAlumno');
+            
+            if (!alumnoData) {
+                showMessage('No se encontraron datos del alumno. Redirigiendo al login...', 'error');
+                setTimeout(() => {
+                    window.location.href = 'alumno.html';
+                }, 2000);
+                return;
+            }
+
+            try {
+                const alumno = JSON.parse(alumnoData);
+                
+                // Preparar datos del alumno (pero no mostrar la sección aún)
+                document.getElementById('alumno-nombre').textContent = alumno.nombre_alumno || '-';
+                document.getElementById('alumno-id').textContent = alumno.id_alumno || '-';
+                document.getElementById('alumno-email').textContent = alumno.email || '-';
+                document.getElementById('alumno-curso').textContent = alumno.curso || '-';
+                
+            } catch (error) {
+                console.error('Error al cargar datos del alumno:', error);
+                showMessage('Error al cargar datos del alumno', 'error');
+            }
+        }
+
+        // Mostrar datos del alumno (llamada al hacer clic en Iniciar Examen)
+        function mostrarDatosAlumno() {
+            document.getElementById('seccion-alumno').style.display = 'block';
+        }
+
+        // Cargar datos del examen (configurados por el profesor)
+        async function cargarDatosExamen() {
+            if (esProfesor()) {
+                document.getElementById('btn-iniciar').innerHTML = '<i class="fas fa-save"></i> Guardar Configuración';
+                return;
+            }
+            
+            // Alumno: buscar configuración guardada
+            try {
+                const response = await fetch('http://localhost:9000/api/obtener-configuracion-examen?url_examen=http://localhost:8080/chaea.html');
+                
+                if (response.ok) {
+                    const resultado = await response.json();
+                    
+                    if (resultado.success) {
+                        const config = resultado.configuracion;
+                        
+                        document.getElementById('id-examen').value = config.id_examen || '';
+                        document.getElementById('nombre-profesor').value = config.nombre_profesor || '';
+                        document.getElementById('id-profesor').value = config.id_profesor || '';
+                        document.getElementById('url-examen').value = config.url_examen || '';
+                        
+                        // Deshabilitar campos para alumno
+                        document.querySelectorAll('#id-examen, #nombre-profesor, #id-profesor, #url-examen').forEach(field => {
+                            field.disabled = true;
+                            field.style.backgroundColor = '#f8f9fa';
+                        });
+                        
+                        document.getElementById('btn-iniciar').innerHTML = '<i class="fas fa-external-link-alt"></i> Iniciar Examen';
+                        document.getElementById('btn-limpiar').style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                // Silencioso - no mostrar errores molestos
+            }
+        }
+
+        // Guardar configuración del examen
+        function guardarConfiguracionExamen(datos) {
+            localStorage.setItem('configuracionExamen', JSON.stringify(datos));
+        }
+
+        // Establecer fecha actual
+        function establecerFechaActual() {
+            const ahora = new Date();
+            const fechaFormateada = ahora.toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('fecha-examen').value = fechaFormateada;
+        }
+
+        // Validar URL
+        function esURLValida(url) {
+            try {
+                new URL(url);
+                return url.startsWith('http://') || url.startsWith('https://');
+            } catch {
+                return false;
+            }
+        }
+
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarDatosAlumno();
+            cargarDatosExamen();
+            establecerFechaActual();
+
+            // Botón Iniciar/Configurar Examen
+            document.getElementById('btn-iniciar').addEventListener('click', async () => {
+                const idExamen = document.getElementById('id-examen').value.trim();
+                const nombreProfesor = document.getElementById('nombre-profesor').value.trim();
+                const idProfesor = document.getElementById('id-profesor').value.trim();
+                const urlExamen = document.getElementById('url-examen').value.trim();
+
+                // Validaciones
+                if (!idExamen) {
+                    showMessage('Por favor, ingrese el ID del examen', 'error');
+                    return;
+                }
+
+                if (!nombreProfesor) {
+                    showMessage('Por favor, ingrese el nombre del profesor', 'error');
+                    return;
+                }
+
+                if (!idProfesor) {
+                    showMessage('Por favor, ingrese el ID del profesor', 'error');
+                    return;
+                }
+
+                if (!urlExamen) {
+                    showMessage('Por favor, ingrese la URL del examen', 'error');
+                    return;
+                }
+
+                if (!esURLValida(urlExamen)) {
+                    showMessage('La URL ingresada no es válida. Debe comenzar con http:// o https://', 'error');
+                    return;
+                }
+
+                if (esProfesor()) {
+                    // Profesor configurando el examen
+                    try {
+                        const response = await fetch('http://localhost:9000/api/guardar-configuracion-examen', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                id_examen: idExamen,
+                                nombre_profesor: nombreProfesor,
+                                id_profesor: idProfesor,
+                                fecha_examen: document.getElementById('fecha-examen').value,
+                                url_examen: urlExamen
+                            })
+                        });
+                        
+                        const resultado = await response.json();
+                        if (resultado.success) {
+                            showMessage('¡Examen configurado exitosamente! Los alumnos ya pueden acceder.', 'success');
+                        } else {
+                            showMessage('Error: ' + resultado.error, 'error');
+                        }
+                    } catch (error) {
+                        showMessage('Error al guardar configuración', 'error');
+                    }
+            
+                    // Cambiar interfaz para mostrar que está configurado
+                    setTimeout(() => {
+                        document.querySelectorAll('#id-examen, #nombre-profesor, #id-profesor, #url-examen').forEach(field => {
+                            field.disabled = true;
+                            field.style.backgroundColor = '#f8f9fa';
+                        });
+                        document.getElementById('btn-iniciar').innerHTML = '<i class="fas fa-check"></i> Configurado';
+                        document.getElementById('btn-iniciar').disabled = true;
+                    }, 1500);
+                    
+                } else {
+                    // Alumno accediendo al examen
+                    
+                    // PRIMERO: Mostrar datos del alumno
+                    mostrarDatosAlumno();
+                    showMessage('Preparando acceso al examen...', 'success');
+                    
+                    // SEGUNDO: Registrar asistencia
+                    try {
+                        const alumnoData = JSON.parse(localStorage.getItem('currentAlumno'));
+                        await fetch('/api/registrar-asistencia', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                nombre_alumno: alumnoData.nombre_alumno,
+                                id_alumno: alumnoData.id_alumno,
+                                email_alumno: alumnoData.email,
+                                curso: alumnoData.curso,
+                                institucion: alumnoData.institucion,
+                                nombre_profesor: nombreProfesor,
+                                id_profesor: idProfesor,
+                                id_examen: idExamen,
+                                fecha_examen: document.getElementById('fecha-examen').value,
+                                url_examen: urlExamen
+                            })
+                        });
+                    } catch (error) {
+                        console.error('Error registrando asistencia:', error);
+                    }
+                    
+                    // TERCERO: Abrir examen después de un momento
+                    setTimeout(() => {
+                        showMessage('¡Accediendo al examen...', 'success');
+                        setTimeout(() => {
+                            window.open(urlExamen, '_blank');
+                        }, 1000);
+                    }, 2000);
+                }
+            });
+
+            // Botón Limpiar (solo para profesor)
+            document.getElementById('btn-limpiar').addEventListener('click', () => {
+                if (esProfesor()) {
+                    document.getElementById('id-examen').value = '';
+                    document.getElementById('nombre-profesor').value = '';
+                    document.getElementById('id-profesor').value = '';
+                    document.getElementById('url-examen').value = '';
+                    document.getElementById('mensaje').className = 'alert';
+                    
+                    // Limpiar configuración guardada
+                    localStorage.removeItem('configuracionExamen');
+                    
+                    showMessage('Configuración limpiada', 'success');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

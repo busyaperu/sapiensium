@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes de Usuarios - ExamPro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .charts-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1.2rem;
+            border: 2px dashed #ccc;
+        }
+
+        .recent-activity {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.3s ease;
+        }
+
+        .activity-item:hover {
+            background: #f8f9fa;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .activity-time {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .filters {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            font-size: 0.9rem;
+            min-width: 120px;
+        }
+
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-left: auto;
+        }
+
+        .refresh-btn:hover {
+            background: #5a67d8;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .refresh-btn {
+                margin-left: 0;
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-chart-bar"></i> Reportes de Usuarios</h1>
+    </div>
+
+    <div class="container">
+        <!-- Filtros -->
+        <div class="filters">
+            <div class="filter-group">
+                <label class="filter-label">Período</label>
+                <select class="filter-select">
+                    <option>Últimos 7 días</option>
+                    <option>Últimos 30 días</option>
+                    <option>Últimos 3 meses</option>
+                    <option>Este año</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Tipo de Usuario</label>
+                <select class="filter-select">
+                    <option>Todos</option>
+                    <option>Administradores</option>
+                    <option>Validadores</option>
+                    <option>Operadores</option>
+                    <option>Clientes Externos</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Estado</label>
+                <select class="filter-select">
+                    <option>Todos</option>
+                    <option>Activos</option>
+                    <option>Inactivos</option>
+                    <option>Pendientes</option>
+                </select>
+            </div>
+            <button class="refresh-btn">
+                <i class="fas fa-sync-alt"></i> Actualizar
+            </button>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-number">156</div>
+                <div class="stat-label">Total Usuarios</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="stat-number">89</div>
+                <div class="stat-label">Usuarios Activos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <div class="stat-number">12</div>
+                <div class="stat-label">Nuevos (Este mes)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="stat-number">12,450</div>
+                <div class="stat-label">Créditos Totales</div>
+            </div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="charts-section">
+            <h2 class="section-title">
+                <i class="fas fa-chart-line"></i>
+                Análisis de Actividad
+            </h2>
+            <div class="chart-placeholder">
+                <div>
+                    <i class="fas fa-chart-area"></i>
+                    <p>Gráfico de actividad de usuarios por tiempo</p>
+                    <small>Implementación pendiente</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actividad Reciente -->
+        <div class="recent-activity">
+            <h2 class="section-title">
+                <i class="fas fa-clock"></i>
+                Actividad Reciente
+            </h2>
+            
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Nuevo usuario registrado</div>
+                    <div class="activity-time">Jorge Luis Camus - hace 2 horas</div>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-user-cog"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Rol asignado</div>
+                    <div class="activity-time">Cliente externo asignado - hace 3 horas</div>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Créditos promocionales otorgados</div>
+                    <div class="activity-time">1000 créditos - hace 5 horas</div>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Solicitud de demo aprobada</div>
+                    <div class="activity-time">smartlabelperu@gmail.com - hace 1 día</div>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Nueva factura procesada</div>
+                    <div class="activity-time">Together.ai $10.00 - hace 2 días</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funcionalidad básica
+        document.querySelector('.refresh-btn').addEventListener('click', function() {
+            // Simular actualización
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
+            
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar';
+                
+                // Simular cambio en números
+                const statNumbers = document.querySelectorAll('.stat-number');
+                statNumbers.forEach(num => {
+                    const current = parseInt(num.textContent.replace(',', ''));
+                    const change = Math.floor(Math.random() * 10) - 5;
+                    const newValue = Math.max(0, current + change);
+                    num.textContent = newValue.toLocaleString();
+                });
+            }, 2000);
+        });
+
+        // Cambios en filtros
+        document.querySelectorAll('.filter-select').forEach(select => {
+            select.addEventListener('change', function() {
+                console.log('Filtro cambiado:', this.value);
+                // Aquí se implementaría la lógica de filtrado
+            });
+        });
+
+        // Actualizar timestamps
+        function updateTimestamps() {
+            const timeElements = document.querySelectorAll('.activity-time');
+            // Implementar actualización de tiempos relativos
+        }
+
+        // Actualizar cada minuto
+        setInterval(updateTimestamps, 60000);
+    </script>
+</body>
+</html>

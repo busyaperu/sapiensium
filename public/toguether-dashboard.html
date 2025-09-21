@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Robot Together.ai</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 3px solid #22d3ee;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #22d3ee;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #374151;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #22d3ee, #06b6d4);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            color: #22d3ee;
+            margin-bottom: 1rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #22d3ee;
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        .stat-change {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .positive {
+            color: #10b981;
+        }
+
+        .negative {
+            color: #ef4444;
+        }
+
+        .section {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 12px;
+            border: 1px solid #374151;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #374151, #4b5563);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #4b5563;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #22d3ee;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #22d3ee, #06b6d4);
+            color: #0f172a;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(34, 211, 238, 0.3);
+        }
+
+        .funds-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .funds-table th,
+        .funds-table td {
+            padding: 1rem 2rem;
+            text-align: left;
+            border-bottom: 1px solid #374151;
+        }
+
+        .funds-table th {
+            background: #2d3748;
+            color: #22d3ee;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .funds-table td {
+            color: #e2e8f0;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-available {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid #10b981;
+        }
+
+        .status-used {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .amount {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            color: #22d3ee;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #64748b;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #475569;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .robot-status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 12px;
+            border: 1px solid #374151;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.offline {
+            background: #ef4444;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .robot-info h3 {
+            color: #22d3ee;
+            margin-bottom: 0.25rem;
+        }
+
+        .robot-info p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #4338ca, #5b21b6);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 56, 202, 0.3);
+        }
+
+        .logs-section {
+            background: #0f172a;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+
+        .log-entry.error {
+            color: #ef4444;
+        }
+
+        .log-entry.success {
+            color: #10b981;
+        }
+
+        .log-entry.info {
+            color: #22d3ee;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                flex-direction: column;
+            }
+            
+            .funds-table {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1><i class="fas fa-robot"></i> Robot Together.ai</h1>
+        <p>Monitor de fondos automáticos para compra de créditos AI</p>
+    </header>
+
+    <div class="container">
+        <!-- Estado del Robot -->
+        <div class="robot-status">
+            <div class="status-indicator" id="statusIndicator"></div>
+            <div class="robot-info">
+                <h3 id="robotStatus">Verificando estado...</h3>
+                <p id="lastUpdate">Última actualización: --</p>
+            </div>
+        </div>
+
+        <!-- Acciones Rápidas -->
+        <div class="quick-actions">
+            <button class="action-btn" onclick="refreshData()">
+                <i class="fas fa-sync-alt"></i> Actualizar Datos
+            </button>
+            <button class="action-btn" onclick="viewLogs()">
+                <i class="fas fa-file-alt"></i> Ver Logs
+            </button>
+            <button class="action-btn" onclick="simulateTransaction()">
+                <i class="fas fa-play"></i> Simular Transacción
+            </button>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+                <div class="stat-number" id="totalFunds">$0.00</div>
+                <div class="stat-label">Fondos Disponibles</div>
+                <div class="stat-change positive" id="fundsChange">+$0.00 esta semana</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-credit-card"></i></div>
+                <div class="stat-number" id="totalTransactions">0</div>
+                <div class="stat-label">Transacciones Procesadas</div>
+                <div class="stat-change positive" id="transactionChange">+0 hoy</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                <div class="stat-number" id="lastTransaction">--</div>
+                <div class="stat-label">Última Transacción</div>
+                <div class="stat-change" id="timeAgo">--</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="stat-number" id="conversionRate">--</div>
+                <div class="stat-label">Tasa de Conversión</div>
+                <div class="stat-change positive">20% → Together.ai</div>
+            </div>
+        </div>
+
+        <!-- Tabla de Fondos -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-piggy-bank"></i> Historial de Fondos</h2>
+                <button class="refresh-btn" onclick="loadFunds()">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+            </div>
+            
+            <div id="fundsContainer">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Cargando fondos...
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs del Sistema -->
+        <div class="section" id="logsSection" style="display: none;">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-terminal"></i> Logs del Robot</h2>
+                <button class="refresh-btn" onclick="loadLogs()">
+                    <i class="fas fa-sync-alt"></i> Actualizar Logs
+                </button>
+            </div>
+            
+            <div class="logs-section" id="logsContainer">
+                <div class="log-entry info">[INFO] Robot Together.ai iniciado</div>
+                <div class="log-entry">Esperando transacciones...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos simulados (en producción, estos vendrían de una API)
+        let robotData = {};
+
+        // AGREGAR nueva función para cargar datos reales:
+        async function loadRealData() {
+            try {
+                const response = await fetch('http://127.0.0.1:5003/api/together-dashboard');
+                const data = await response.json();
+                
+                robotData = {
+                    isOnline: true,
+                    totalFunds: data.fondos_disponibles,
+                    totalTransactions: data.transacciones_procesadas,
+                    conversionRate: data.tasa_conversion + '%',
+                    readyForPurchase: data.ready_for_purchase,
+                    lastTransaction: data.fondos_history[0]?.created || null,
+                    funds: data.fondos_history || []
+                };
+                
+                updateDashboard();
+                loadFunds();
+            } catch (error) {
+                console.error('Error:', error);
+                robotData = { isOnline: false };
+                updateDashboard();
+            }
+        }
+
+        // Inicializar dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRealData(); // Ejecutar inmediatamente al cargar
+            loadFunds();
+            // Actualizar cada 30 segundos
+            setInterval(loadRealData, 30000);
+        });
+
+        function updateDashboard() {
+            // Estado del robot
+            const statusIndicator = document.getElementById('statusIndicator');
+            const robotStatus = document.getElementById('robotStatus');
+            const lastUpdate = document.getElementById('lastUpdate');
+            
+            if (robotData.isOnline) {
+                statusIndicator.className = 'status-indicator';
+                robotStatus.textContent = 'Robot Online - Monitoreando transacciones';
+            } else {
+                statusIndicator.className = 'status-indicator offline';
+                robotStatus.textContent = 'Robot Offline - Verificar conexión';
+            }
+            
+            lastUpdate.textContent = `Última actualización: ${new Date().toLocaleString('es-ES')}`;
+
+            // Estadísticas
+            document.getElementById('totalFunds').textContent = `$${robotData.totalFunds.toFixed(2)}`;
+            document.getElementById('totalTransactions').textContent = robotData.totalTransactions;
+            document.getElementById('lastTransaction').textContent = formatTimeAgo(robotData.lastTransaction);
+            document.getElementById('conversionRate').textContent = robotData.conversionRate;
+            
+            // Cambios simulados
+            document.getElementById('fundsChange').textContent = '+$12.00 esta semana';
+            document.getElementById('transactionChange').textContent = '+3 hoy';
+            document.getElementById('timeAgo').textContent = formatTimeAgo(robotData.lastTransaction);
+        }
+
+        function loadFunds() {
+            const container = document.getElementById('fundsContainer');
+            
+            if (!robotData || !robotData.funds || robotData.funds.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No hay fondos registrados</h3>
+                        <p>Los fondos aparecerán aquí cuando se procesen transacciones de $20 o más.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const tableHTML = `
+                <table class="funds-table">
+                    <thead>
+                        <tr>
+                            <th>ID Fondo</th>
+                            <th>Origen</th>
+                            <th>Monto</th>
+                            <th>Estado</th>
+                            <th>Creado</th>
+                            <th>Notas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${robotData.funds.map(fund => `
+                            <tr>
+                                <td><code>${fund.id}</code></td>
+                                <td><code>${fund.source}</code></td>
+                                <td class="amount">$${fund.amount.toFixed(2)}</td>
+                                <td><span class="status-badge status-${fund.status}">${fund.status}</span></td>
+                                <td>${formatDate(fund.created)}</td>
+                                <td>${fund.notes}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = tableHTML;
+        }
+
+        function viewLogs() {
+            const logsSection = document.getElementById('logsSection');
+            logsSection.style.display = logsSection.style.display === 'none' ? 'block' : 'none';
+            if (logsSection.style.display !== 'none') {
+                loadLogs();
+            }
+        }
+
+        function loadLogs() {
+            const container = document.getElementById('logsContainer');
+            
+            const logsHTML = robotData.logs.map(log => `
+                <div class="log-entry ${log.level.toLowerCase()}">
+                    [${formatTime(log.time)}] [${log.level}] ${log.message}
+                </div>
+            `).join('');
+            
+            container.innerHTML = logsHTML;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function simulateTransaction() {
+            // Simular nueva transacción
+            const newFund = {
+                id: `fund_${Date.now()}`,
+                source: `TXN_${new Date().toISOString().slice(0,10).replace(/-/g,'')}_${Math.floor(Math.random() * 100).toString().padStart(3, '0')}`,
+                amount: 4.00,
+                status: 'available',
+                created: new Date().toISOString(),
+                notes: `Generado desde pago $20.00 de test@example.com`
+            };
+            
+            robotData.funds.unshift(newFund);
+            robotData.totalFunds += 4.00;
+            robotData.totalTransactions += 1;
+            robotData.lastTransaction = new Date().toISOString();
+            
+            // Agregar log
+            robotData.logs.unshift({
+                time: new Date().toISOString(),
+                level: 'SUCCESS',
+                message: `Simulación: Nueva transacción procesada, fondos generados: $4.00`
+            });
+            
+            updateDashboard();
+            loadFunds();
+            
+            alert('Transacción simulada correctamente!');
+        }
+
+        function refreshData() {
+            // En producción, esto haría una llamada a la API real
+            updateDashboard();
+            loadFunds();
+            alert('Datos actualizados');
+        }
+
+        // Funciones auxiliares
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function formatTime(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleTimeString('es-ES');
+        }
+
+        function formatTimeAgo(dateString) {
+            if (!dateString || dateString === null) {
+                return 'Nunca';
+            }
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffMinutes = Math.floor(diffMs / (1000 * 60));
+            
+            if (diffHours > 24) {
+                return `${Math.floor(diffHours / 24)} días`;
+            } else if (diffHours > 0) {
+                return `${diffHours}h`;
+            } else {
+                return `${diffMinutes}m`;
+            }
+        }
+    </script>
+</body>
+</html>

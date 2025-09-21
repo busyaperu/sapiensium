@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto - ExamPro</title>
+    <link rel="stylesheet" href="landing-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .contact-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 8rem 0 4rem;
+            color: white;
+            text-align: center;
+        }
+
+        .contact-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -0.025em;
+        }
+
+        .contact-hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .contact-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .contact-form {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .contact-form h2 {
+            color: #1f2937;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-form .subtitle {
+            color: #6b7280;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.875rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        .contact-info {
+            padding: 2rem 0;
+        }
+
+        .contact-info h2 {
+            color: #1f2937;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .contact-info p {
+            color: #6b7280;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        .contact-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .contact-method {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .contact-method:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .contact-method-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .contact-method-content h3 {
+            color: #1f2937;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 1.1rem;
+        }
+
+        .contact-method-content p {
+            color: #6b7280;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .contact-method-content a {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .contact-method-content a:hover {
+            text-decoration: underline;
+        }
+
+        .enterprise-info {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-top: 2rem;
+        }
+
+        .enterprise-info h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .enterprise-info p {
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .enterprise-features {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .enterprise-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+            opacity: 0.9;
+        }
+
+        .enterprise-features i {
+            color: #10b981;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6b7280;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .back-btn:hover {
+            color: #4f46e5;
+        }
+
+        .success-message {
+            background: #10b981;
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .contact-hero {
+                padding: 6rem 0 3rem;
+            }
+
+            .contact-hero h1 {
+                font-size: 2rem;
+            }
+
+            .contact-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                padding: 2rem 1rem;
+            }
+
+            .contact-form {
+                padding: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-method {
+                padding: 1rem;
+            }
+
+            .contact-method-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+        }
+
+        /* Corregir navegación */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #6b7280;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #4f46e5;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            color: #6b7280;
+            background: transparent;
+            border: 1px solid #e5e7eb;
+        }
+
+        .btn-primary {
+            color: white;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            border: none;
+        }
+
+        .menu-toggle {
+            display: none;
+        }
+
+        /* Ajustar padding del body para el header fijo */
+        body {
+            padding-top: 80px;
+        }
+
+        .contact-hero {
+            padding: 6rem 0 4rem;
+        }
+
+        footer {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 3rem 0 1rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-col h4 {
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-col ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-col ul li a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-col ul li a:hover {
+            color: #f9fafb;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid #374151;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-links a {
+            color: #9ca3af;
+            font-size: 1.25rem;
+            transition: color 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            color: #4f46e5;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 2C8.268 2 2 8.268 2 16C2 23.732 8.268 30 16 30C23.732 30 30 23.732 30 16C30 8.268 23.732 2 16 2Z" fill="#4f46e5"/>
+                    <path d="M22 10H10C9.448 10 9 10.448 9 11V21C9 21.552 9.448 22 10 22H22C22.552 22 23 21.552 23 21V11C23 10.448 22.552 10 22 10Z" fill="white"/>
+                    <path d="M13 14H19V16H13V14Z" fill="#4f46e5"/>
+                    <path d="M13 17H19V19H13V17Z" fill="#4f46e5"/>
+                </svg>
+                <span>ExamPro</span>
+            </div>
+            <div class="menu-toggle">
+                <div class="hamburger"></div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="landing.html#features">Características</a></li>
+                <li><a href="landing.html#how-it-works">Cómo funciona</a></li>
+                <li><a href="landing.html#pricing">Precios</a></li>
+                <li><a href="landing.html#testimonials">Testimonios</a></li>
+                <li><a href="#contact" class="active">Contacto</a></li>
+            </ul>
+            <div class="cta-buttons">
+                <a href="public/loging.html" class="btn btn-secondary">Iniciar sesión</a>
+                <a href="public/loging.html" class="btn btn-primary">Registrarse</a>                
+            </div>
+        </nav>
+    </header>
+
+    <section class="contact-hero">
+        <div class="container">
+            <h1>Contacta con nuestro equipo</h1>
+            <p>¿Listo para transformar la evaluación en tu institución? Nuestro equipo de expertos está aquí para ayudarte a encontrar la solución perfecta.</p>
+        </div>
+    </section>
+
+    <div class="contact-container">
+        <!-- Formulario de Contacto -->
+        <div class="contact-form">
+            <a href="../landing.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Volver al inicio
+            </a>
+
+            <h2>Hablemos de tu proyecto</h2>
+            <p class="subtitle">Completa el formulario y nos pondremos en contacto contigo en menos de 24 horas.</p>
+
+            <div id="success-message" class="success-message">
+                <i class="fas fa-check-circle"></i>
+                ¡Mensaje enviado exitosamente! Te contactaremos pronto.
+            </div>
+
+            <form id="contact-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">Nombre *</label>
+                        <input type="text" id="firstName" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Apellido *</label>
+                        <input type="text" id="lastName" name="lastName" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Correo electrónico *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Teléfono</label>
+                        <input type="tel" id="phone" name="phone">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="institution">Institución *</label>
+                    <input type="text" id="institution" name="institution" placeholder="Universidad, Colegio, Instituto, etc." required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="role">Cargo *</label>
+                        <select id="role" name="role" required>
+                            <option value="">Seleccionar cargo</option>
+                            <option value="director">Director/Rector</option>
+                            <option value="coordinador">Coordinador Académico</option>
+                            <option value="profesor">Profesor</option>
+                            <option value="it">Responsable de TI</option>
+                            <option value="administrador">Administrador</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="students">Número de estudiantes</label>
+                        <select id="students" name="students">
+                            <option value="">Seleccionar</option>
+                            <option value="1-50">1 - 50</option>
+                            <option value="51-200">51 - 200</option>
+                            <option value="201-500">201 - 500</option>
+                            <option value="501-1000">501 - 1,000</option>
+                            <option value="1000+">Más de 1,000</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="interest">¿En qué estás interesado? *</label>
+                    <select id="interest" name="interest" required>
+                        <option value="">Seleccionar opción</option>
+                        <option value="demo">Solicitar demostración</option>
+                        <option value="pricing">Información de precios</option>
+                        <option value="enterprise">Plan Empresarial</option>
+                        <option value="integration">Integración con LMS</option>
+                        <option value="training">Capacitación y soporte</option>
+                        <option value="other">Otro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Mensaje *</label>
+                    <textarea id="message" name="message" placeholder="Cuéntanos más sobre tus necesidades, desafíos actuales y cómo podemos ayudarte..." required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submit-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    Enviar mensaje
+                </button>
+            </form>
+        </div>
+
+        <!-- Información de Contacto -->
+        <div class="contact-info">
+            <h2>Información de contacto</h2>
+            <p>Nuestro equipo está disponible para ayudarte a implementar ExamPro en tu institución. Ofrecemos consultoría personalizada, demos en vivo y soporte completo durante todo el proceso.</p>
+
+            <div class="contact-methods">
+                <div class="contact-method">
+                    <div class="contact-method-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="contact-method-content">
+                        <h3>Email</h3>
+                        <p><a href="mailto:contacto@exampro.com">contacto@sapiensium.com</a></p>
+                        <p>Respuesta en menos de 4 horas</p>
+                    </div>
+                </div>
+
+                <div class="contact-method">
+                    <div class="contact-method-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="contact-method-content">
+                        <h3>Teléfono</h3>
+                        <p><a href="tel:+5114567890">+51 1 456-7890</a></p>
+                        <p>Lun - Vie: 9:00 AM - 6:00 PM</p>
+                    </div>
+                </div>
+
+                <div class="contact-method">
+                    <div class="contact-method-icon">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <div class="contact-method-content">
+                        <h3>WhatsApp</h3>
+                        <p><a href="https://wa.me/5114567890">+51 1 456-7890</a></p>
+                        <p>Disponible 24/7</p>
+                    </div>
+                </div>
+
+                <div class="contact-method">
+                    <div class="contact-method-icon">
+                        <i class="fas fa-calendar"></i>
+                    </div>
+                    <div class="contact-method-content">
+                        <h3>Reunión virtual</h3>
+                        <p><a href="#" onclick="scheduleDemo()">Agendar demo</a></p>
+                        <p>Demos personalizadas de 30 min</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="enterprise-info">
+                <h3>
+                    <i class="fas fa-building"></i>
+                    Plan Empresarial
+                </h3>
+                <p>Para instituciones con más de 1,000 estudiantes ofrecemos soluciones completamente personalizadas:</p>
+                <ul class="enterprise-features">
+                    <li><i class="fas fa-check"></i> IA personalizada para tu institución</li>
+                    <li><i class="fas fa-check"></i> Integración completa con tu LMS</li>
+                    <li><i class="fas fa-check"></i> Marca blanca y personalización</li>
+                    <li><i class="fas fa-check"></i> Soporte técnico dedicado 24/7</li>
+                    <li><i class="fas fa-check"></i> Capacitación completa del equipo</li>
+                    <li><i class="fas fa-check"></i> SLA garantizado</li>
+                </ul>
+                <p><strong>Solicita una cotización personalizada</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 2C8.268 2 2 8.268 2 16C2 23.732 8.268 30 16 30C23.732 30 30 23.732 30 16C30 8.268 23.732 2 16 2Z" fill="#4f46e5"/>
+                        <path d="M22 10H10C9.448 10 9 10.448 9 11V21C9 21.552 9.448 22 10 22H22C22.552 22 23 21.552 23 21V11C23 10.448 22.552 10 22 10Z" fill="white"/>
+                        <path d="M13 14H19V16H13V14Z" fill="#4f46e5"/>
+                        <path d="M13 17H19V19H13V17Z" fill="#4f46e5"/>
+                    </svg>
+                    <span>ExamPro</span>
+                </div>
+                <p>Transformando la educación con inteligencia artificial</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Producto</h4>
+                <ul>
+                    <li><a href="landing.html#features">Características</a></li>
+                    <li><a href="landing.html#pricing">Precios</a></li>
+                    <li><a href="#">Integraciones</a></li>
+                    <li><a href="#">Hoja de ruta</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Recursos</h4>
+                <ul>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Documentación</a></li>
+                    <li><a href="#">Guías</a></li>
+                    <li><a href="#">Webinars</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Empresa</h4>
+                <ul>
+                    <li><a href="#">Sobre nosotros</a></li>
+                    <li><a href="#">Clientes</a></li>
+                    <li><a href="#">Únete al equipo</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Términos de servicio</a></li>
+                    <li><a href="#">Política de privacidad</a></li>
+                    <li><a href="#">Seguridad</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2023 ExamPro. Todos los derechos reservados.</p>
+            <div class="language-selector">
+                <i class="fas fa-globe"></i>
+                <select>
+                    <option>Español</option>
+                    <option>English</option>
+                    <option>Français</option>
+                </select>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Manejo del formulario de contacto
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Validar campos requeridos
+            if (!data.firstName || !data.lastName || !data.email || !data.institution || !data.role || !data.interest || !data.message) {
+                alert('Por favor completa todos los campos requeridos');
+                return;
+            }
+            
+            // Validar email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(data.email)) {
+                alert('Por favor ingresa un email válido');
+                return;
+            }
+            
+            // Simular envío
+            const submitBtn = document.getElementById('submit-btn');
+            const originalText = submitBtn.innerHTML;
+            
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                // Mostrar mensaje de éxito
+                document.getElementById('success-message').style.display = 'flex';
+                
+                // Limpiar formulario
+                this.reset();
+                
+                // Restaurar botón
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                
+                // Ocultar mensaje después de 5 segundos
+                setTimeout(() => {
+                    document.getElementById('success-message').style.display = 'none';
+                }, 5000);
+                
+                // En una implementación real, aquí enviarías los datos al servidor
+                console.log('Datos del formulario:', data);
+                
+            }, 2000);
+        });
+        
+        // Función para agendar demo
+        function scheduleDemo() {
+            // En una implementación real, esto abriría un calendario o redirigirá a Calendly
+            alert('Funcionalidad de agenda próximamente. Por favor contáctanos por email o WhatsApp para agendar tu demo personalizada.');
+        }
+        
+        // Validación en tiempo real
+        const requiredFields = ['firstName', 'lastName', 'email', 'institution', 'role', 'interest', 'message'];
+        
+        requiredFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.addEventListener('blur', function() {
+                    validateField(this);
+                });
+                
+                field.addEventListener('input', function() {
+                    clearError(this);
+                });
+            }
+        });
+        
+        function validateField(field) {
+            const value = field.value.trim();
+            let isValid = true;
+            
+            if (!value) {
+                isValid = false;
+            } else if (field.type === 'email') {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                isValid = emailRegex.test(value);
+            }
+            
+            if (isValid) {
+                field.style.borderColor = '#10b981';
+            } else {
+                field.style.borderColor = '#ef4444';
+            }
+        }
+        
+        function clearError(field) {
+            field.style.borderColor = '#e5e7eb';
+        }
+        
+        // Smooth scroll para enlaces
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargar Examen - ExamPro</title>
+    <!-- Enlaza la hoja de estilos principal -->
+    <link rel="stylesheet" href="styles.css"> <!-- Asegúrate que la ruta sea correcta -->
+    <!-- Añade Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Carga del SDK de Appwrite (SE MANTIENE IGUAL) -->
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@11.0.0"></script>
+    
+    <!-- Script de configuración (SE MANTIENE IGUAL) -->
+
+    <!-- NUEVOS Estilos específicos para esta página, alineados con el tema -->
+    <style>
+        /* Estilos base del body y layout principal */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f8f9fa; /* Color de fondo del tema */
+            font-family: var(--font-family, sans-serif); /* Fuente del tema */
+            color: var(--text-color, #333); /* Color de texto del tema */
+        }
+
+        /* Header y Footer (Estilo consistente) */
+         header nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff; /* Fondo blanco para header */
+            border-bottom: 1px solid #eee; /* Borde sutil */
+         }
+         header .logo span {
+             font-weight: 600;
+             font-size: 1.4rem;
+             color: #333; /* Asegurar color */
+         }
+         header .logo svg { /* Asegurar que el SVG del logo se vea bien */
+             vertical-align: middle;
+             margin-right: 0.5rem;
+         }
+
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 3rem 1rem;
+        }
+
+        /* Contenedor principal estilo 'card' */
+        .content-container { /* Renombrado desde 'card' para evitar confusión con múltiples cards */
+            background-color: #fff;
+            padding: 2.5rem 3rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Sombra del tema */
+            width: 100%;
+            max-width: 900px; /* Ancho adecuado */
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Títulos consistentes */
+        .content-container h1,
+        .content-container h2 {
+            text-align: center;
+            color: var(--primary-color, #4f46e5); /* Color primario del tema */
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+         .content-container h1 {
+             font-size: 1.8rem;
+             margin-bottom: 2rem;
+         }
+         .content-container h2 {
+             font-size: 1.5rem;
+             margin-top: 2.5rem;
+             border-top: 1px solid #eee;
+             padding-top: 2rem;
+         }
+
+        /* Estilo de formularios (consistente) */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #444;
+            font-size: 0.9rem;
+        }
+        .form-group input[type="text"] { /* Estilo solo para text inputs aquí */
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: #fff;
+            color: #333;
+        }
+        .form-group input[type="text"]:focus {
+            border-color: var(--primary-color, #4f46e5);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        /* Área de carga de archivos (estilo del tema) */
+        .file-upload-area { /* Renombrado desde file-upload */
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+            margin-bottom: 1.5rem;
+            background-color: #fdfdfd; /* Fondo muy ligero */
+        }
+        .file-upload-area:hover {
+            border-color: var(--primary-color, #4f46e5);
+            background-color: #f8f9ff;
+        }
+        .file-upload-area svg { /* Estilo SVG dentro del área */
+            width: 40px;
+            height: 40px;
+            stroke: #aaa;
+            margin-bottom: 0.8rem;
+        }
+        .file-upload-area p {
+            color: #666;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+        #upload-info { /* Se mantiene igual pero centrado */
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        #upload-info #file-name { margin-top: 0.5rem; font-weight: 500; color: #333; }
+        #upload-info #btn-remove-file { /* Estilo botón eliminar archivo */
+             margin-top: 1rem;
+             /* Usa clases btn y btn-danger del tema */
+        }
+
+        /* Grupo de botones (consistente) */
+        .action-btn-group { /* Renombrado desde btn-group */
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
+        }
+        /* Estilo general de botones (debe venir de styles.css) */
+        .btn {
+            display: inline-flex; /* Para alinear icono y texto */
+            align-items: center;
+            gap: 0.5rem; /* Espacio entre icono y texto */
+            padding: 0.7rem 1.2rem; /* Padding base del tema */
+            border-radius: 5px; /* Bordes redondeados del tema */
+            cursor: pointer;
+            font-size: 0.95rem; /* Tamaño de fuente del tema */
+            font-weight: 500; /* Peso de fuente del tema */
+            text-decoration: none;
+            border: 1px solid transparent; /* Borde base */
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            white-space: nowrap;
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        /* Clases específicas de botones del tema */
+        .btn-primary {
+            background-color: var(--primary-color, #4f46e5);
+            border-color: var(--primary-color, #4f46e5);
+            color: white;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-dark-color, #4338ca); /* Asume variable hover */
+            border-color: var(--primary-dark-color, #4338ca);
+        }
+        .btn-secondary {
+            background-color: #e2e8f0; /* Gris claro */
+            border-color: #cbd5e1;
+            color: #475569;
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #cbd5e1;
+            border-color: #94a3b8;
+        }
+        .btn-danger {
+            background-color: #ef4444; /* Rojo del tema */
+            border-color: #ef4444;
+            color: white;
+        }
+        .btn-danger:hover:not(:disabled) {
+            background-color: #dc2626;
+            border-color: #dc2626;
+        }
+         .btn-outlined { /* Estilo para 'volver' */
+             background-color: transparent;
+             border-color: var(--primary-color, #4f46e5);
+             color: var(--primary-color, #4f46e5);
+         }
+         .btn-outlined:hover:not(:disabled) {
+             background-color: rgba(79, 70, 229, 0.05); /* Fondo muy sutil */
+         }
+
+        /* Estilo tabla (consistente) */
+        .exam-table-container {
+            margin-top: 2rem;
+            overflow-x: auto;
+        }
+        .exam-table { /* Renombrado desde 'table' */
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .exam-table th,
+        .exam-table td {
+            padding: 0.8rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .exam-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+            white-space: nowrap;
+        }
+        .exam-table tbody tr:hover {
+            background-color: #f1f4ff;
+        }
+        .exam-table .action-buttons button { /* Grupo de botones en tabla */
+             margin-right: 0.5rem;
+             padding: 0.3rem 0.6rem; /* Más pequeños */
+             font-size: 0.8rem;
+             vertical-align: middle; /* Alinear mejor */
+        }
+        .exam-table .action-buttons button:last-child { margin-right: 0; }
+        /* Clases específicas para botones de acción en tabla */
+        .btn-view { background-color: #3b82f6; color: white; border-color: #3b82f6;} /* Azul */
+        .btn-view:hover:not(:disabled) { background-color: #2563eb; border-color: #2563eb;}
+        /* btn-danger ya está definido arriba */
+
+
+        /* Mensajes de alerta (consistente) */
+        .alert {
+            padding: 0.8rem 1rem;
+            margin-top: 1.5rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            border: 1px solid transparent;
+            display: none; /* Oculto por defecto */
+            text-align: left;
+        }
+        .alert.success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; display: block; }
+        .alert.error { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; display: block; }
+        .alert.info { color: #0c5460; background-color: #d1ecf1; border-color: #bee5eb; display: block; }
+
+        /* Contenedor botón volver */
+        .back-button-container {
+            margin-top: 2.5rem;
+            text-align: center;
+        }
+
+        /* Footer (consistente) */
+        footer {
+             background-color: #fff;
+             border-top: 1px solid #eee;
+             padding: 1.5rem 1rem;
+             margin-top: auto;
+         }
+        footer .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+         footer .footer-logo span { font-size: 1.1rem; font-weight: 600; color: #333; }
+         footer .footer-logo svg { vertical-align: middle; margin-right: 0.5rem; }
+         footer .footer-bottom { text-align: right; font-size: 0.85rem; color: #666; margin-top: 0; padding-top: 0; border-top: none; }
+
+        /* Responsividad básica */
+         @media (max-width: 768px) {
+            main { padding: 2rem 1rem; }
+            .content-container { padding: 2rem 1.5rem; max-width: 100%;}
+            .content-container h1 { font-size: 1.6rem; }
+            .content-container h2 { font-size: 1.4rem; }
+            .action-btn-group { flex-direction: column; align-items: stretch; }
+            .action-btn-group .btn { width: 100%; justify-content: center;}
+         }
+         @media (max-width: 600px) {
+              footer .footer-content { flex-direction: column; align-items: center; text-align: center; }
+             footer .footer-bottom { text-align: center; margin-top: 1rem; }
+         }
+
+    </style>
+</head>
+<body>
+    <!-- NUEVO Header estándar -->
+    <header>
+        <nav>
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 2C8.268 2 2 8.268 2 16C2 23.732 8.268 30 16 30C23.732 30 30 23.732 30 16C30 8.268 23.732 2 16 2Z" fill="#4f46e5"/>
+                    <path d="M22 10H10C9.448 10 9 10.448 9 11V21C9 21.552 9.448 22 10 22H22C22.552 22 23 21.552 23 21V11C23 10.448 22.552 10 22 10Z" fill="white"/>
+                    <path d="M13 14H19V16H13V14Z" fill="#4f46e5"/>
+                    <path d="M13 17H19V19H13V17Z" fill="#4f46e5"/>
+                </svg>
+                <span>ExamPro</span>
+            </div>
+            <!-- Sin navegación extra -->
+        </nav>
+    </header>
+
+    <!-- Contenido principal -->
+    <main>
+        <div class="content-container"> <!-- Contenedor principal -->
+            <h1>Cargar Plantilla Respuestas</h1>
+
+            <!-- Formulario (se mantiene estructura interna) -->
+            <div class="form-section"> <!-- Agrupador opcional -->
+                <!-- <h2>Subir Examen en PDF</h2> Eliminado H2 redundante -->
+
+                <div class="form-group">
+                    <label for="id-profesor">ID del profesor</label>
+                    <input type="text" id="id-profesor" placeholder="Ingrese su ID de profesor">
+                </div>
+
+                <div class="form-group">
+                    <label for="nombre-profesor">Nombre del profesor</label>
+                    <input type="text" id="nombre-profesor" placeholder="Ingrese su nombre completo">
+                </div>
+
+                <div class="form-group">
+                    <label for="id-examen">ID del Examen</label>
+                    <input type="text" id="id-examen" placeholder="Ingrese el ID único del examen">
+                </div>
+
+                <div class="form-group">
+                    <label>Archivo del Examen (PDF)</label>
+                    <!-- Área de carga con nueva clase -->
+                    <div class="file-upload-area" id="file-upload-area" role="button" tabindex="0" aria-label="Área para seleccionar archivo PDF">
+                        <input type="file" id="file-input" style="display: none" accept=".pdf">
+                        <div id="upload-placeholder">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"> <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path> <polyline points="17 8 12 3 7 8"></polyline> <line x1="12" y1="3" x2="12" y2="15"></line> </svg>
+                            <p>Haz clic o arrastra aquí el archivo PDF</p>
+                        </div>
+                        <div id="upload-info">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path> <polyline points="14 2 14 8 20 8"></polyline> <line x1="16" y1="13" x2="8" y2="13"></line> <line x1="16" y1="17" x2="8" y2="17"></line> <polyline points="10 9 9 9 8 9"></polyline> </svg>
+                            <p id="file-name"></p>
+                            <!-- Botón eliminar con clases del tema -->
+                            <button class="btn btn-danger btn-small" id="btn-remove-file"> <!-- btn-small es opcional -->
+                                <i class="fas fa-times"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grupo de botones con clases del tema -->
+                <div class="action-btn-group">
+                    <button class="btn btn-secondary" id="btn-limpiar">
+                        <i class="fas fa-eraser"></i> Limpiar Campos
+                    </button>
+                    <button class="btn btn-primary" id="btn-cargar" disabled> <!-- Deshabilitado por defecto -->
+                        <i class="fas fa-upload"></i> Cargar Examen
+                    </button>
+                </div>
+
+                <!-- Área de mensajes con clase del tema -->
+                <div id="message-area" class="alert" role="alert" aria-live="polite"></div>
+            </div>
+
+        <!-- Contenido cargar documentos para examen -->
+
+        <div class="content-container"> <!-- Contenedor principal -->
+            <h1>Cargar Documentos Examen</h1>
+
+            <!-- Formulario (se mantiene estructura interna) -->
+            <div class="form-section"> <!-- Agrupador opcional -->
+                <!-- <h2>Subir Examen en PDF</h2> Eliminado H2 redundante -->
+
+                <div class="form-group">
+                    <label for="id-profesor">ID del profesor</label>
+                    <input type="text" id="id-profesor-anexo" placeholder="Ingrese su ID de profesor">
+                </div>
+
+                <div class="form-group">
+                    <label for="nombre-profesor">Nombre del profesor</label>
+                    <input type="text" id="nombre-profesor-anexo" placeholder="Ingrese su nombre completo">
+                </div>
+
+                <div class="form-group">
+                    <label for="id-examen">ID del Examen</label>
+                    <input type="text" id="id-examen-anexo" placeholder="Ingrese el ID único del examen">
+                </div>
+
+                <div class="form-group">
+                    <label>Archivo Documento del Examen (PDF)</label>
+                    <!-- Área de carga con nueva clase -->
+                    <div class="file-upload-area" id="file-upload-area-anexo" role="button" tabindex="0" aria-label="Área para seleccionar archivo PDF">
+                        <input type="file" id="file-input-anexo" style="display: none" accept=".pdf">
+                        <div id="upload-placeholder-anexo">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"> <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path> <polyline points="17 8 12 3 7 8"></polyline> <line x1="12" y1="3" x2="12" y2="15"></line> </svg>
+                            <p>Haz clic o arrastra aquí el archivo PDF</p>
+                        </div>
+                        <div id="upload-info-anexo">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path> <polyline points="14 2 14 8 20 8"></polyline> <line x1="16" y1="13" x2="8" y2="13"></line> <line x1="16" y1="17" x2="8" y2="17"></line> <polyline points="10 9 9 9 8 9"></polyline> </svg>
+                            <p id="file-name-anexo"></p>
+                            <!-- Botón eliminar con clases del tema -->
+                            <button class="btn btn-danger btn-small" id="btn-remove-file-anexo"> <!-- btn-small es opcional -->
+                                <i class="fas fa-times"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grupo de botones con clases del tema -->
+                <div class="action-btn-group">
+                    <button class="btn btn-secondary" id="btn-limpiar-anexo">
+                        <i class="fas fa-eraser"></i> Limpiar Campos
+                    </button>
+                    <button class="btn btn-primary" id="btn-cargar-anexo" disabled> <!-- Deshabilitado por defecto -->
+                        <i class="fas fa-upload"></i> Cargar Documentos Examen
+                    </button>
+                </div>
+
+                <!-- Área de mensajes con clase del tema -->
+                <div id="message-area" class="alert" role="alert" aria-live="polite"></div>
+            </div>
+
+             <!-- Fin Sección Documentos Examen -->
+
+            <!-- Sección Tabla -->
+            <div class="table-section"> <!-- Agrupador opcional -->
+                <h2>Exámenes Cargados</h2>
+                <div class="exam-table-container">
+                     <!-- Tabla con clase del tema -->
+                    <table class="exam-table">
+                        <thead>
+                            <tr>
+                                <th>ID Examen</th>
+                                <th>ID Profesor</th>
+                                <th>Fecha de Carga</th>
+                                <th>Estado</th> <!-- Se mantiene columna del HTML original -->
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="examenes-table-body">
+                        <!-- Fila fija para Test CHAEA - aparece siempre primera -->
+                        <tr style="background-color: #f0f9ff;">
+                            <td><strong>CHAEA-TEST</strong></td>
+                            <td>SISTEMA</td>
+                            <td>Permanente</td>
+                            <td><span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 4px;">Disponible</span></td>
+                            <td>
+                                <button onclick="copiarUrlCHAEA()" style="background: #059669; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                                    Copiar URL CHAEA
+                                </button>
+                            </td>
+                        </tr>
+                            <!-- Filas generadas por JS (SIN CAMBIOS EN JS) -->
+                            <tr><td colspan="5" style="text-align:center; padding: 1rem;">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Botón Volver con clases del tema -->
+            <div class="back-button-container">
+                <button class="btn btn-outlined" id="btn-volver">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </button>
+            </div>
+        </div> <!-- Fin content-container -->
+    </main>
+
+    <!-- NUEVO Footer estándar -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M16 2C8.268 2 2 8.268 2 16C2 23.732 8.268 30 16 30C23.732 30 30 23.732 30 16C30 8.268 23.732 2 16 2Z" fill="#4f46e5"/> <path d="M22 10H10C9.448 10 9 10.448 9 11V21C9 21.552 9.448 22 10 22H22C22.552 22 23 21.552 23 21V11C23 10.448 22.552 10 22 10Z" fill="white"/> <path d="M13 14H19V16H13V14Z" fill="#4f46e5"/> <path d="M13 17H19V19H13V17Z" fill="#4f46e5"/> </svg>
+                <span>ExamPro</span>
+            </div>
+            <div class="footer-bottom">
+                 <p>© 2023 ExamPro. Todos los derechos reservados.</p>
+             </div>
+        </div>
+    </footer>
+
+    <!-- EL SCRIPT ORIGINAL SE MANTIENE EXACTAMENTE IGUAL -->
+    <script>
+        // Variables globales
+        let selectedFile = null;
+        let examenesSubidos = [
+            {
+                idExamen: 'EXAM-123456',
+                idAlumno: 'ALU-001', // Nota: En tu HTML original esto era ID Profesor, aquí se mantiene idAlumno como en el JS original
+                fechaCarga: '2023-08-15T10:30:00',
+                estado: 'Evaluado',
+                archivo: 'examen_resuelto_1.pdf'
+            },
+            {
+                idExamen: 'EXAM-654321',
+                idAlumno: 'ALU-002', // Nota: Igual que arriba
+                fechaCarga: '2023-08-14T14:45:00',
+                estado: 'Pendiente de evaluación',
+                archivo: 'examen_resuelto_2.pdf'
+            }
+        ];
+        
+        // Obtener email del usuario autenticado
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const { Query } = window.Appwrite;
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Referencias a elementos DOM (Los IDs se mantienen)
+            const fileInput = document.getElementById('file-input');
+            const fileUploadArea = document.getElementById('file-upload-area'); // ID se mantiene
+            const uploadPlaceholder = document.getElementById('upload-placeholder');
+            const uploadInfo = document.getElementById('upload-info');
+            const fileName = document.getElementById('file-name');
+            const btnRemoveFile = document.getElementById('btn-remove-file');
+            const btnCargar = document.getElementById('btn-cargar');
+            const btnLimpiar = document.getElementById('btn-limpiar');
+            const btnVolver = document.getElementById('btn-volver');
+            const messageArea = document.getElementById('message-area');
+            const examenesTableBody = document.getElementById('examenes-table-body');
+            const idProfesor = document.getElementById('id-profesor');
+            const nombreProfesor = document.getElementById('nombre-profesor');
+            const idExamen = document.getElementById('id-examen');
+            const btnCargarAnexo = document.getElementById('btn-cargar-anexo');
+            
+             // Configuración de Appwrite (SE MANTIENE IGUAL)
+             const API_BASE_URL = 'http://127.0.0.1:5000';
+
+            // Función para obtener exámenes del profesor
+            async function obtenerExamenesProfesor(email) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/obtener-examenes-profesor?email=${encodeURIComponent(email)}`);
+                    const data = await response.json();
+                    return data.documents || [];
+                } catch (error) {
+                    console.error('Error obteniendo exámenes:', error);
+                    return [];
+                }
+            }
+   
+            // Cargar exámenes iniciales (de la variable local, como en el original)
+            renderizarTablaExamenes();
+
+            // Event Listeners (SE MANTIENEN IGUAL)
+            fileUploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', handleFileChange);
+            btnRemoveFile.addEventListener('click', function(e) {
+                e.stopPropagation();
+                limpiarArchivo(); // Llama a la función original
+            });
+
+            btnCargar.addEventListener('click', cargarExamen); // Llama a la función original
+            btnLimpiar.addEventListener('click', limpiarFormulario); // Llama a la función original
+            btnVolver.addEventListener('click', function() {
+                window.location.href = 'index.html#examen'; // Se mantiene igual
+            });
+
+            btnCargarAnexo.addEventListener('click', cargarAnexoExamen);
+
+            // AGREGAR AQUÍ LOS NUEVOS EVENT LISTENERS PARA LA SEGUNDA SECCIÓN
+            // Referencias para la segunda sección "Cargar Documentos Examen"
+            const fileInputAnexo = document.getElementById('file-input-anexo');
+            const fileUploadAreaAnexo = document.getElementById('file-upload-area-anexo');
+            const uploadPlaceholderAnexo = document.getElementById('upload-placeholder-anexo');
+            const uploadInfoAnexo = document.getElementById('upload-info-anexo');
+            const fileNameAnexo = document.getElementById('file-name-anexo');
+            const btnRemoveFileAnexo = document.getElementById('btn-remove-file-anexo');
+
+            // Referencias para campos de la segunda sección
+            const idProfesorAnexo = document.getElementById('id-profesor-anexo');
+            const nombreProfesorAnexo = document.getElementById('nombre-profesor-anexo');
+            const idExamenAnexo = document.getElementById('id-examen-anexo');
+            const btnLimpiarAnexo = document.getElementById('btn-limpiar-anexo');
+            btnLimpiarAnexo.addEventListener('click', limpiarFormularioAnexo); // MOVER AQUÍ
+            
+            // Event listeners para la segunda sección
+            fileUploadAreaAnexo.addEventListener('click', function() {
+                fileInputAnexo.click();
+            });
+            
+            fileInputAnexo.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file && file.type === 'application/pdf') {
+                    selectedFile = file;
+                    fileNameAnexo.textContent = file.name;
+                    uploadPlaceholderAnexo.style.display = 'none';
+                    uploadInfoAnexo.style.display = 'block';
+                    actualizarEstadoBotonCargarAnexo();
+                } else {
+                    mostrarMensaje('Por favor, seleccione un archivo PDF válido', 'error');
+                }
+            });
+            
+            btnRemoveFileAnexo.addEventListener('click', function(e) {
+                e.stopPropagation();
+                selectedFile = null;
+                fileInputAnexo.value = '';
+                uploadPlaceholderAnexo.style.display = 'block';
+                uploadInfoAnexo.style.display = 'none';
+                actualizarEstadoBotonCargarAnexo();
+            });
+            
+
+             // Funciones (SE MANTIENEN IGUALES, USANDO LAS VARIABLES ORIGINALES)
+             function handleFileChange(event) {
+                const file = event.target.files[0];
+                if (file && file.type === 'application/pdf') {
+                    selectedFile = file;
+                    fileName.textContent = file.name;
+                    uploadPlaceholder.style.display = 'none';
+                    uploadInfo.style.display = 'block'; // O 'flex' si se usa flexbox en CSS
+                    actualizarEstadoBotonCargar();
+                } else {
+                    mostrarMensaje('Por favor, seleccione un archivo PDF válido', 'error');
+                    limpiarArchivo(); // Limpia si no es PDF
+                }
+            }
+
+            function limpiarArchivo() {
+                selectedFile = null;
+                fileInput.value = '';
+                uploadPlaceholder.style.display = 'block';
+                uploadInfo.style.display = 'none';
+                actualizarEstadoBotonCargar();
+            }
+
+            function limpiarFormulario() {
+                idProfesor.value = '';
+                nombreProfesor.value = '';
+                idExamen.value = '';
+                limpiarArchivo();
+                ocultarMensaje();
+            }
+
+            function limpiarFormularioAnexo() {
+                idProfesorAnexo.value = '';
+                nombreProfesorAnexo.value = '';
+                idExamenAnexo.value = '';
+                limpiarArchivoAnexo();
+                ocultarMensaje();
+            }
+            
+            function limpiarArchivoAnexo() {
+                selectedFile = null;
+                fileInputAnexo.value = '';
+                uploadPlaceholderAnexo.style.display = 'block';
+                uploadInfoAnexo.style.display = 'none';
+                actualizarEstadoBotonCargarAnexo();
+            }
+
+            function actualizarEstadoBotonCargar() {
+                 // Habilitar solo si todos los campos REQUERIDOS Y un archivo están presentes
+                 // Basado en la lógica original, nombreProfesor no era estrictamente necesario para habilitar
+                 if (idProfesor.value.trim() && idExamen.value.trim() && selectedFile) {
+                     btnCargar.disabled = false;
+                 } else {
+                     btnCargar.disabled = true;
+                 }
+             }
+
+             async function cargarExamen() {
+                if (!idProfesor.value || !idExamen.value || !selectedFile) {
+                    mostrarMensaje('Por favor, complete todos los campos y seleccione un archivo', 'error');
+                    return;
+                }
+            
+                mostrarMensaje('Subiendo PDF...', 'info');
+                btnCargar.disabled = true;
+            
+                try {
+                    const formData = new FormData();
+                    formData.append('file', selectedFile);
+                    
+                    const response = await fetch(`${API_BASE_URL}/api/subir-pdf`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        mostrarMensaje('PDF cargado correctamente al bucket.', 'success');
+                        limpiarFormulario();
+                    } else {
+                        throw new Error(result.error || 'Error al subir PDF');
+                    }
+                } catch (error) {
+                    console.error("Error al cargar PDF:", error);
+                    mostrarMensaje('Error al subir el PDF', 'error');
+                } finally {
+                    btnCargar.disabled = false;
+                }
+            }
+
+            async function cargarAnexoExamen() {
+                if (!idProfesorAnexo.value || !idExamenAnexo.value || !selectedFile) {
+                    mostrarMensaje('Por favor, complete todos los campos y seleccione un archivo', 'error');
+                    return;
+                }
+                
+                mostrarMensaje('Subiendo anexo...', 'info');
+                btnCargarAnexo.disabled = true;
+                
+                try {
+                    const formData = new FormData();
+                    formData.append('archivo', selectedFile);  // Cambio: 'archivo' en lugar de 'file'
+                    formData.append('id_examen', idExamenAnexo.value);
+                    
+                    const response = await fetch(`${API_BASE_URL}/subir_anexo_examen`, {  // Cambio: nueva URL
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.status === 'success') {  // Cambio: verificar 'status'
+                        mostrarMensaje('Anexo del examen cargado correctamente.', 'success');
+                        limpiarFormularioAnexo();
+                    } else {
+                        throw new Error(result.error || 'Error al subir anexo');
+                    }
+                } catch (error) {
+                    console.error("Error al cargar anexo:", error);
+                    mostrarMensaje('Error al subir el documento del examen', 'error');
+                } finally {
+                    btnCargarAnexo.disabled = false;
+                    actualizarEstadoBotonCargarAnexo();
+                }
+            }
+            
+
+            function actualizarEstadoBotonCargarAnexo() {
+                // Habilitar solo si todos los campos REQUERIDOS Y un archivo están presentes
+                if (idProfesorAnexo.value.trim() && idExamenAnexo.value.trim() && selectedFile) {
+                    btnCargarAnexo.disabled = false;
+                } else {
+                    btnCargarAnexo.disabled = true;
+                }
+            }
+            
+
+            function agregarExamenALista(examen) {
+                examenesSubidos.unshift(examen); // Añade al PRINCIPIO de la lista local
+                renderizarTablaExamenes(); // Renderiza la lista local actualizada
+            }
+
+
+            function renderizarTablaExamenes() {
+                //examenesTableBody.innerHTML = ''; // Limpia la tabla
+                // Preservar la fila CHAEA y solo limpiar las filas de exámenes dinámicos
+                const filaCHAEA = examenesTableBody.querySelector('tr[style*="background-color: #f0f9ff"]');
+                examenesTableBody.innerHTML = '';
+                if (filaCHAEA) {
+                    examenesTableBody.appendChild(filaCHAEA);
+                }
+            
+                if (examenesSubidos.length === 0) {
+                     examenesTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 1rem;">No hay exámenes cargados.</td></tr>';
+                     return;
+                }
+            
+                examenesSubidos.forEach((examen, index) => { // AGREGAR index aquí
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${examen.idExamen || 'N/A'}</td>
+                        <td>${examen.idAlumno || 'N/A'}</td>
+                        <td>${formatearFecha(examen.fechaCarga)}</td>
+                        <td>${examen.estado || 'N/A'}</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-view btn-small" data-action="ver" data-index="${index}" title="Ver Detalles">
+                                <i class="fas fa-eye"></i> Ver
+                            </button>
+                            <button class="btn btn-danger btn-small" data-action="eliminar" data-index="${index}" title="Eliminar de la lista">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </td>
+                    `;
+            
+                    examenesTableBody.appendChild(tr);
+                });
+                
+                // AGREGAR esta línea para asignar los event listeners
+                asignarListenersBotonesTabla();
+            }
+
+
+
+            // NUEVA función para manejar acciones de la tabla, manteniendo la lógica original
+            
+            function handleTableActionOriginal(event) {
+                const button = event.currentTarget;
+                const action = button.dataset.action;
+                const index = parseInt(button.dataset.index);
+            
+                console.log("Botón presionado. Acción:", action, "Índice:", index);
+            
+                if (isNaN(index)) return;
+            
+                const examenSeleccionado = examenesSubidos[index];
+            
+                if (action === 'ver') {
+                    if (examenSeleccionado && examenSeleccionado.urlExamen) {
+                        window.open(examenSeleccionado.urlExamen, '_blank');
+                        mostrarMensaje('Abriendo examen...', 'success');
+                    } else {
+                        mostrarMensaje('No se encontró la URL del examen.', 'error');
+                    }
+                } else if (action === 'eliminar') {
+                    eliminarExamen(index);
+                }
+            }
+        
+
+            function asignarListenersBotonesTabla() {
+                const botones = document.querySelectorAll('#examenes-table-body button[data-action]');
+                
+                botones.forEach(boton => {
+                    boton.addEventListener('click', handleTableActionOriginal);
+                });
+            }
+
+
+            function eliminarExamen(index) {
+                 // Lógica original: confirma y elimina de la lista local
+                 if (confirm('¿Está seguro de que desea eliminar este examen de la lista?')) {
+                     examenesSubidos.splice(index, 1); // Elimina de la lista local
+                     renderizarTablaExamenes(); // Re-renderiza la tabla
+                     mostrarMensaje('Examen eliminado de la lista local', 'success');
+                     // Nota: Esto NO elimina el archivo de Appwrite Storage ni el registro de la DB
+                 }
+             }
+
+            // Funciones de mensajes y formato (SE MANTIENEN IGUALES)
+            function mostrarMensaje(texto, tipo) {
+                messageArea.textContent = texto;
+                messageArea.className = 'alert ' + tipo; // Usa las clases CSS nuevas
+                // messageArea.style.display = 'block'; // Controlado por CSS
+                 // Auto-ocultar mensajes
+                 if (tipo === 'success' || tipo === 'info') {
+                     setTimeout(ocultarMensaje, 3500); // Un poco más de tiempo
+                 }
+            }
+
+            function ocultarMensaje() {
+                 messageArea.className = 'alert'; // Quita clase de tipo para ocultar vía CSS
+                 // messageArea.style.display = 'none'; // Controlado por CSS
+            }
+
+            function formatearFecha(fechaISO) {
+                 if (!fechaISO) return 'N/A';
+                 try {
+                     // Formato más simple y común
+                     return new Date(fechaISO).toLocaleString('es-ES');
+                 } catch (e) {
+                     return fechaISO; // Devuelve original si falla
+                 }
+             }
+
+            // Función generateUniqueId no parece usarse en la lógica principal recuperada, se mantiene por si acaso.
+            function generateUniqueId() {
+                return 'id-' + Math.random().toString(36).substr(2, 9);
+            }
+
+            // Listeners para validación en tiempo real (SE MANTIENEN IGUALES)
+            idProfesor.addEventListener('input', actualizarEstadoBotonCargar);
+            // nombreProfesor no afectaba el botón en la lógica original, pero lo mantenemos por si acaso
+            nombreProfesor.addEventListener('input', actualizarEstadoBotonCargar);
+            idExamen.addEventListener('input', actualizarEstadoBotonCargar);
+
+            // Inicializar estado del botón (SE MANTIENE IGUAL)
+            actualizarEstadoBotonCargar();
+
+            // Listeners para validación en tiempo real de la segunda sección
+            idProfesorAnexo.addEventListener('input', actualizarEstadoBotonCargarAnexo);
+            idExamenAnexo.addEventListener('input', actualizarEstadoBotonCargarAnexo);
+
+            // Inicializar estado del botón anexo
+            actualizarEstadoBotonCargarAnexo();
+
+            // Cargar la lista desde el servidor Flask
+            async function cargarExamenesDesdeAppwrite() {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                const currentUserEmail = currentUser.email;
+                console.log("Email a buscar:", currentUserEmail);
+                
+                if (!currentUserEmail) { 
+                    mostrarMensaje('Usuario no autenticado', 'error'); 
+                    return; 
+                }
+
+                examenesTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 1rem;"><i class="fas fa-spinner fa-spin"></i> Cargando exámenes...</td></tr>';
+
+                try {
+                    const documentos = await obtenerExamenesProfesor(currentUserEmail);
+                    console.log("Documentos del servidor:", documentos);
+                    console.log("Cantidad de documentos:", documentos.length);
+                    
+                    // Mapear documentos a la estructura esperada
+                    examenesSubidos = documentos.map(doc => ({
+                        idExamen: doc.id_examen,
+                        idAlumno: doc.id_profesor,
+                        fechaCarga: doc.fecha_carga || doc.$createdAt,
+                        estado: doc.estado || 'Registrado',
+                        archivo: doc.nombre_archivo,
+                        appwriteId: doc.archivo_id || doc.appwrite_file_id || doc.file_id,
+                        docId: doc.$id,
+                        urlExamen: doc.url_examen || null,
+                        examenDataJson: doc.examenDataJson
+                    }));
+
+                    // Preservar fila CHAEA antes de renderizar
+                    const filaCHAEA = `
+                    <tr style="background-color: #f0f9ff;">
+                        <td><strong>CHAEA-TEST</strong></td>
+                        <td>SISTEMA</td>
+                        <td>Permanente</td>
+                        <td><span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 4px;">Disponible</span></td>
+                        <td>
+                            <button onclick="copiarUrlCHAEA()" style="background: #059669; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                                Copiar URL CHAEA
+                            </button>
+                        </td>
+                    </tr>`;
+
+                    renderizarTablaExamenes();
+
+                    // Agregar fila CHAEA al inicio después de renderizar
+                    examenesTableBody.insertAdjacentHTML('afterbegin', filaCHAEA);
+
+                    asignarListenersBotonesTabla();
+                } catch (error) {
+                    console.error("Error al cargar exámenes:", error);
+                    mostrarMensaje("Error al cargar exámenes guardados.", "error");
+                    examenesTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red; padding: 1rem;">Error al cargar datos.</td></tr>';
+                }
+            }
+            //new Appwrite.Account(appwriteClient).get().then(() => cargarExamenesDesdeAppwrite()).catch(() => {
+               // mostrarMensaje('Debe iniciar sesión para ver los exámenes.', 'error');
+            //});
+
+             //Llamar a la carga desde Appwrite al inicio
+             cargarExamenesDesdeAppwrite();
+
+        });
+             // Cargar exámenes iniciales
+             renderizarTablaExamenes();
+
+             // Obtener URL Test CHAEA
+             function copiarUrlCHAEA() {
+                const urlCHAEA = window.location.origin + '/chaea.html';
+                
+                navigator.clipboard.writeText(urlCHAEA).then(() => {
+                    const btn = event.target;
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = 'Copiado!';
+                    btn.disabled = true;
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }, 2000);
+                }).catch(err => {
+                    alert('URL del Test CHAEA: ' + urlCHAEA);
+                });
+            }
+    </script>  
+           
+</body>
+</html>

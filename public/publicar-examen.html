@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicar Examen - ExamPro</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+            font-family: var(--font-family, sans-serif);
+            color: var(--text-color, #333);
+        }
+
+        header nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+        }
+        
+        header .logo span { 
+            font-weight: 600; 
+            font-size: 1.4rem; 
+            color: #333; 
+        }
+        
+        header .logo svg { 
+            vertical-align: middle; 
+            margin-right: 0.5rem; 
+        }
+
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 3rem 1rem;
+        }
+
+        .publication-container {
+            background-color: #fff;
+            padding: 2.5rem 3rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 700px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .publication-container h1 {
+            text-align: center;
+            color: var(--primary-color, #4f46e5);
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .publication-container h2 {
+            color: #475569;
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            font-weight: 500;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #444;
+            font-size: 0.9rem;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="datetime-local"],
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: #fff;
+            color: #333;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="datetime-local"]:focus,
+        .form-group select:focus {
+            border-color: var(--primary-color, #4f46e5);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        .current-status {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .current-status.active {
+            border-color: #22c55e;
+            background-color: #f0fdf4;
+        }
+
+        .current-status.inactive {
+            border-color: #64748b;
+            background-color: #f8fafc;
+        }
+
+        .status-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .status-info h3 {
+            margin: 0 0 0.5rem 0;
+            color: #334155;
+            font-size: 1.1rem;
+        }
+
+        .status-info p {
+            margin: 0.3rem 0;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color, #4f46e5);
+            border-color: var(--primary-color, #4f46e5);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-dark-color, #4338ca);
+            border-color: var(--primary-dark-color, #4338ca);
+        }
+
+        .btn-secondary {
+            background-color: #e2e8f0;
+            border-color: #cbd5e1;
+            color: #475569;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #cbd5e1;
+            border-color: #94a3b8;
+        }
+
+        .btn-info {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-info:hover:not(:disabled) {
+            background-color: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            border-color: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background-color: #dc2626;
+            border-color: #dc2626;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: flex-end;
+        }
+
+        .alert {
+            padding: 0.8rem 1rem;
+            margin-top: 1.5rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            border: 1px solid transparent;
+            display: none;
+            text-align: left;
+        }
+
+        .alert.success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            display: block;
+        }
+
+        .alert.error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            display: block;
+        }
+
+        .alert.info {
+            color: #0c5460;
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+            display: block;
+        }
+
+        footer {
+            background-color: #fff;
+            border-top: 1px solid #eee;
+            padding: 1.5rem 1rem;
+            margin-top: auto;
+        }
+
+        footer .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        footer .footer-logo span {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        footer .footer-logo svg {
+            vertical-align: middle;
+            margin-right: 0.5rem;
+        }
+
+        footer .footer-bottom {
+            text-align: right;
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 2rem 1rem;
+            }
+
+            .publication-container {
+                padding: 2rem 1.5rem;
+                max-width: 100%;
+            }
+
+            .publication-container h1 {
+                font-size: 1.6rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                gap: 0.8rem;
+                align-items: stretch;
+            }
+
+            .btn-group button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .status-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 600px) {
+            footer .footer-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            footer .footer-bottom {
+                text-align: center;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 2C8.268 2 2 8.268 2 16C2 23.732 8.268 30 16 30C23.732 30 30 23.732 30 16C30 8.268 23.732 2 16 2Z" fill="#4f46e5"/>
+                    <path d="M22 10H10C9.448 10 9 10.448 9 11V21C9 21.552 9.448 22 10 22H22C22.552 22 23 21.552 23 21V11C23 10.448 22.552 10 22 10Z" fill="white"/>
+                    <path d="M13 14H19V16H13V14Z" fill="#4f46e5"/>
+                    <path d="M13 17H19V19H13V17Z" fill="#4f46e5"/>
+                </svg>
+                <span>ExamPro</span>
+            </div>
+            <button class="btn btn-secondary" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i> Volver
+            </button>
+        </nav>
+    </header>
+
+    <main>
+        <div class="publication-container">
+            <h1>Publicar Examen</h1>
+
+            <!-- Estado Actual del Examen -->
+            <div class="current-status" id="current-status">
+                <h2>Estado Actual</h2>
+                <div class="status-content" id="status-content">
+                    <div class="status-info">
+                        <h3 id="status-title">Cargando estado...</h3>
+                        <p id="status-description">Verificando examen publicado actualmente...</p>
+                    </div>
+                    <div class="status-actions" id="status-actions">
+                        <!-- Botones dinámicos según estado -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de Publicación -->
+            <div id="publication-form">
+                <h2>Nuevo Examen</h2>
+                
+                <div class="form-group">
+                    <label for="nombre-examen">Nombre del Examen</label>
+                    <input type="text" id="nombre-examen" placeholder="Ej: Examen Final Programación I">
+                </div>
+
+                <div class="form-group">
+                    <label for="id-examen">ID del Examen</label>
+                    <input type="text" id="id-examen" placeholder="Ej: PROG1-FINAL-2024">
+                </div>
+
+                <div class="form-group">
+                    <label for="url-examen">URL del Examen</label>
+                    <input type="text" id="url-examen" placeholder="Ej: http://localhost:5000/examen/ABC123">
+                </div>
+
+                <div class="form-group">
+                    <label for="curso">Curso</label>
+                    <select id="curso">
+                        <option value="" disabled selected>Seleccione un curso</option>
+                        <option value="Programación I">Programación I</option>
+                        <option value="Programación II">Programación II</option>
+                        <option value="Bases de Datos">Bases de Datos</option>
+                        <option value="Algoritmos">Algoritmos</option>
+                        <option value="Estructuras de Datos">Estructuras de Datos</option>
+                        <option value="Ingeniería de Software">Ingeniería de Software</option>
+                        <option value="Matemática Discreta">Matemática Discreta</option>
+                        <option value="Sistemas Operativos">Sistemas Operativos</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="fecha-limite">Fecha y Hora Límite</label>
+                    <input type="datetime-local" id="fecha-limite">
+                </div>
+
+                <div class="form-group">
+                    <label for="institucion">Institución</label>
+                    <input type="text" id="institucion" placeholder="Ej: Universidad Nacional del Litoral">
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-info" id="btn-vista-previa">
+                        <i class="fas fa-eye"></i> Vista Previa
+                    </button>
+                    <button class="btn btn-secondary" id="btn-limpiar">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                    <button class="btn btn-primary" id="btn-publicar">
+                        <i class="fas fa-upload"></i> Publicar Examen
+                    </button>
+                </div>
+
+                <div id="mensaje" class="alert" role="alert" aria-live="polite"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 2C8.268 2 2 8.268 2 16C2 23.732 8.268 30 16 30C23.732 30 30 23.732 30 16C30 8.268 23.732 2 16 2Z" fill="#4f46e5"/>
+                    <path d="M22 10H10C9.448 10 9 10.448 9 11V21C9 21.552 9.448 22 10 22H22C22.552 22 23 21.552 23 21V11C23 10.448 22.552 10 22 10Z" fill="white"/>
+                    <path d="M13 14H19V16H13V14Z" fill="#4f46e5"/>
+                    <path d="M13 17H19V19H13V17Z" fill="#4f46e5"/>
+                </svg>
+                <span>ExamPro</span>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2023 ExamPro. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Obtener email del profesor autenticado
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const currentUserEmail = currentUser.email;
+
+        // Validar autenticación al cargar la página
+        if (!currentUserEmail) {
+            alert('Error: Usuario no autenticado');
+            window.location.href = 'login.html';
+        }
+
+        // Referencias a elementos del DOM
+        const currentStatusDiv = document.getElementById('current-status');
+        const statusTitle = document.getElementById('status-title');
+        const statusDescription = document.getElementById('status-description');
+        const statusActions = document.getElementById('status-actions');
+        const publicationForm = document.getElementById('publication-form');
+        const mensaje = document.getElementById('mensaje');
+
+        // Elementos del formulario
+        const nombreExamen = document.getElementById('nombre-examen');
+        const idExamen = document.getElementById('id-examen');
+        const urlExamen = document.getElementById('url-examen');
+        const curso = document.getElementById('curso');
+        const fechaLimite = document.getElementById('fecha-limite');
+        const institucion = document.getElementById('institucion');
+
+        // Botones
+        const btnPublicar = document.getElementById('btn-publicar');
+        const btnLimpiar = document.getElementById('btn-limpiar');
+        const btnVistaPrevia = document.getElementById('btn-vista-previa');
+
+        // Función para mostrar mensajes
+        function showMessage(text, type) {
+            mensaje.textContent = text;
+            mensaje.className = 'alert ' + type;
+            setTimeout(() => {
+                mensaje.className = 'alert';
+            }, 4000);
+        }
+
+        // Función para validar URL
+        function validarURL(url) {
+            try {
+                new URL(url);
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
+        // Función para validar formulario
+        function validarFormulario() {
+            if (!nombreExamen.value.trim()) {
+                showMessage("El nombre del examen es requerido.", "error");
+                return false;
+            }
+
+            if (!idExamen.value.trim()) {
+                showMessage("El ID del examen es requerido.", "error");
+                return false;
+            }
+
+            if (!urlExamen.value.trim()) {
+                showMessage("La URL del examen es requerida.", "error");
+                return false;
+            }
+
+            if (!validarURL(urlExamen.value.trim())) {
+                showMessage("La URL del examen no es válida.", "error");
+                return false;
+            }
+
+            if (!curso.value) {
+                showMessage("Debe seleccionar un curso.", "error");
+                return false;
+            }
+
+            if (!fechaLimite.value) {
+                showMessage("La fecha límite es requerida.", "error");
+                return false;
+            }
+
+            const fechaSeleccionada = new Date(fechaLimite.value);
+            const fechaActual = new Date();
+            if (fechaSeleccionada <= fechaActual) {
+                showMessage("La fecha límite debe ser mayor a la fecha actual.", "error");
+                return false;
+            }
+
+            if (!institucion.value.trim()) {
+                showMessage("La institución es requerida.", "error");
+                return false;
+            }
+
+            return true;
+        }
+
+        // Cargar estado actual del examen
+        async function cargarEstadoActual() {
+            try {
+                statusTitle.textContent = "Cargando...";
+                statusDescription.textContent = "Verificando estado actual...";
+                statusActions.innerHTML = "";
+
+                const response = await fetch(`http://localhost:5001/examen-actual?email_profesor=${encodeURIComponent(currentUserEmail)}`);
+                const data = await response.json();
+
+                if (response.ok && data.examen) {
+                    // Hay examen publicado
+                    currentStatusDiv.className = "current-status active";
+                    statusTitle.textContent = data.examen.nombre_examen;
+                    statusDescription.innerHTML = `
+                        <strong>ID:</strong> ${data.examen.id_examen}<br>
+                        <strong>Curso:</strong> ${data.examen.curso}<br>
+                        <strong>Fecha Límite:</strong> ${new Date(data.examen.fecha_limite).toLocaleString('es-ES')}<br>
+                        <strong>URL:</strong> <a href="${data.examen.url_examen}" target="_blank">${data.examen.url_examen}</a>
+                    `;
+                    statusActions.innerHTML = `
+                        <button class="btn btn-danger" onclick="despublicarExamen()">
+                            <i class="fas fa-times"></i> Despublicar
+                        </button>
+                    `;
+                    
+                    // Deshabilitar formulario
+                    publicationForm.style.opacity = "0.5";
+                    publicationForm.style.pointerEvents = "none";
+                } else {
+                    // No hay examen publicado
+                    currentStatusDiv.className = "current-status inactive";
+                    statusTitle.textContent = "No hay examen publicado";
+                    statusDescription.textContent = "No tiene ningún examen activo actualmente.";
+                    statusActions.innerHTML = "";
+                    
+                    // Habilitar formulario
+                    publicationForm.style.opacity = "1";
+                    publicationForm.style.pointerEvents = "auto";
+                }
+            } catch (error) {
+                console.error("Error cargando estado:", error);
+                statusTitle.textContent = "Error al cargar estado";
+                statusDescription.textContent = "No se pudo verificar el estado actual del examen.";
+                statusActions.innerHTML = "";
+                
+                // Habilitar formulario por defecto
+                publicationForm.style.opacity = "1";
+                publicationForm.style.pointerEvents = "auto";
+            }
+        }
+
+        // Función para despublicar examen
+        async function despublicarExamen() {
+            if (!confirm('¿Está seguro de que desea despublicar el examen actual? Los alumnos no podrán acceder más.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5001/despublicar-examen', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email_profesor: currentUserEmail })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage("Examen despublicado exitosamente.", "success");
+                    cargarEstadoActual(); // Recargar estado
+                } else {
+                    showMessage("Error al despublicar: " + (data.error || "Error desconocido"), "error");
+                }
+            } catch (error) {
+                console.error("Error despublicando:", error);
+                showMessage("Error de conexión al despublicar el examen.", "error");
+            }
+        }
+
+        // Event Listeners
+        btnPublicar.addEventListener('click', async () => {
+            if (!validarFormulario()) return;
+
+            btnPublicar.disabled = true;
+            btnPublicar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publicando...';
+
+            try {
+                const payload = {
+                    email_profesor: currentUserEmail,
+                    nombre_examen: nombreExamen.value.trim(),
+                    id_examen: idExamen.value.trim(),
+                    url_examen: urlExamen.value.trim(),
+                    curso: curso.value,
+                    fecha_limite: fechaLimite.value,
+                    institucion: institucion.value.trim()
+                };
+
+                const response = await fetch('http://localhost:5001/publicar-examen', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage("Examen publicado exitosamente.", "success");
+                    btnLimpiar.click(); // Limpiar formulario
+                    cargarEstadoActual(); // Recargar estado
+                } else {
+                    showMessage("Error al publicar: " + (data.error || "Error desconocido"), "error");
+                }
+            } catch (error) {
+                console.error("Error publicando:", error);
+                showMessage("Error de conexión al publicar el examen.", "error");
+            } finally {
+                btnPublicar.disabled = false;
+                btnPublicar.innerHTML = '<i class="fas fa-upload"></i> Publicar Examen';
+            }
+        });
+
+        btnLimpiar.addEventListener('click', () => {
+            nombreExamen.value = '';
+            idExamen.value = '';
+            urlExamen.value = '';
+            curso.value = '';
+            fechaLimite.value = '';
+            institucion.value = '';
+            mensaje.className = 'alert';
+        });
+
+        btnVistaPrevia.addEventListener('click', () => {
+            if (!validarFormulario()) return;
+
+            const preview = `
+Nombre del Examen: ${nombreExamen.value}
+ID del Examen: ${idExamen.value}
+URL: ${urlExamen.value}
+Curso: ${curso.value}
+Fecha Límite: ${new Date(fechaLimite.value).toLocaleString('es-ES')}
+Institución: ${institucion.value}
+Profesor: ${currentUser.name || currentUserEmail}
+            `;
+
+            alert("Vista Previa:\n\n" + preview);
+        });
+
+        // Cargar estado al iniciar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarEstadoActual();
+            
+            // Establecer fecha mínima como hoy
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            fechaLimite.min = now.toISOString().slice(0, 16);
+        });
+
+        // Hacer despublicarExamen global para que el botón pueda accederla
+        window.despublicarExamen = despublicarExamen;
+    </script>
+</body>
+</html>

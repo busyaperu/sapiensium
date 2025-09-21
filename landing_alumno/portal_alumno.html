@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso a Examen - ExamPro</title>
+    <!-- Enlaza la misma hoja de estilos que index.html -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Estilos específicos para esta página (opcional, pero útil) -->
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f8f9fa; /* Un fondo ligeramente distinto para diferenciar */
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+        .exam-access-container {
+            background-color: #fff;
+            padding: 2.5rem 3rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .exam-access-container h1 {
+            color: var(--primary-color, #4f46e5); /* Usa variable CSS si está definida en styles.css */
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+        }
+
+        .exam-access-container p {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            text-align: left; /* Alinea el label a la izquierda */
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .input-group input[type="text"] {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input[type="text"]:focus {
+            border-color: var(--primary-color, #4f46e5);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2); /* Sombra suave al enfocar */
+        }
+
+        .exam-access-container .btn-primary {
+            width: 100%; /* Botón ancho */
+            padding: 0.9rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem; /* Espacio entre texto e icono */
+        }
+
+        .feedback-message {
+            margin-top: 1rem;
+            min-height: 20px; /* Espacio reservado para mensajes */
+            font-size: 0.9rem;
+        }
+        .feedback-message.error {
+            color: #dc3545; /* Rojo para errores */
+        }
+        .feedback-message.success {
+            color: #28a745; /* Verde para éxito (quizás no necesario aquí) */
+        }
+        .feedback-message.loading::before {
+            content: "\f110"; /* Icono de spinner de Font Awesome */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            display: inline-block;
+            margin-right: 0.5rem;
+            animation: fa-spin 1s infinite linear;
+        }
+
+        /* Footer simplificado para esta página */
+        footer {
+             background-color: #fff; /* Fondo blanco como el header original */
+             border-top: 1px solid #eee;
+             padding: 1.5rem 1rem; /* Menos padding que el original */
+             margin-top: auto; /* Empuja el footer hacia abajo */
+         }
+        footer .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between; /* Logo a la izq, texto a la der */
+            align-items: center;
+            flex-wrap: wrap; /* Para pantallas pequeñas */
+            gap: 1rem;
+        }
+        footer .footer-logo span {
+            font-size: 1.1rem; /* Tamaño consistente */
+            font-weight: 600;
+        }
+        footer .footer-bottom {
+             text-align: right; /* Alinea el texto a la derecha */
+             font-size: 0.85rem;
+             color: #666;
+             margin-top: 0; /* No necesita margen superior extra */
+             padding-top: 0;
+             border-top: none;
+         }
+
+         @media (max-width: 600px) {
+            .exam-access-container {
+                padding: 2rem 1.5rem;
+            }
+            .exam-access-container h1 {
+                font-size: 1.5rem;
+            }
+            footer .footer-content {
+                 flex-direction: column; /* Apila elementos en pantallas pequeñas */
+                 align-items: center;
+                 text-align: center;
+             }
+            footer .footer-bottom {
+                 text-align: center;
+                 margin-top: 1rem;
+             }
+         }
+
+    </style>
+</head>
+<body>
+    <header>
+        <!-- Header simplificado, solo con el logo -->
+        <nav>
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 2C8.268 2 2 8.268 2 16C2 23.732 8.268 30 16 30C23.732 30 30 23.732 30 16C30 8.268 23.732 2 16 2Z" fill="#4f46e5"/>
+                    <path d="M22 10H10C9.448 10 9 10.448 9 11V21C9 21.552 9.448 22 10 22H22C22.552 22 23 21.552 23 21V11C23 10.448 22.552 10 22 10Z" fill="white"/>
+                    <path d="M13 14H19V16H13V14Z" fill="#4f46e5"/>
+                    <path d="M13 17H19V19H13V17Z" fill="#4f46e5"/>
+                </svg>
+                <span>ExamPro</span>
+            </div>
+            <!-- No hay menú de navegación ni botones CTA aquí -->
+        </nav>
+    </header>
+
+    <main>
+        <div class="exam-access-container">
+            <h1>Portal de Exámenes</h1>
+            <p>Ingresa el ID único proporcionado por tu profesor para comenzar tu evaluación.</p>
+
+            <!-- Formulario de Acceso -->
+            <form id="exam-access-form">
+                <div class="input-group">
+                    <label for="exam-id">ID del Examen</label>
+                    <input type="text" id="exam-id" name="exam_id" placeholder="Ej: MAT101-FINAL" required aria-describedby="feedback-msg">
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Ingresar al Examen
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+
+                <!-- Área para mostrar mensajes de feedback (errores, carga, etc.) -->
+                <div id="feedback-msg" class="feedback-message" aria-live="polite"></div>
+            </form>
+
+        </div>
+    </main>
+
+    <!-- Footer simplificado -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"> <!-- Logo más pequeño -->
+                    <path d="M16 2C8.268 2 2 8.268 2 16C2 23.732 8.268 30 16 30C23.732 30 30 23.732 30 16C30 8.268 23.732 2 16 2Z" fill="#4f46e5"/>
+                    <path d="M22 10H10C9.448 10 9 10.448 9 11V21C9 21.552 9.448 22 10 22H22C22.552 22 23 21.552 23 21V11C23 10.448 22.552 10 22 10Z" fill="white"/>
+                    <path d="M13 14H19V16H13V14Z" fill="#4f46e5"/>
+                    <path d="M13 17H19V19H13V17Z" fill="#4f46e5"/>
+                </svg>
+                <span>ExamPro</span>
+            </div>
+            <div class="footer-bottom">
+                 <p>© 2023 ExamPro. Todos los derechos reservados.</p>
+                 <!-- Podrías añadir enlaces a Política de Privacidad o Ayuda si es necesario -->
+             </div>
+        </div>
+    </footer>
+
+    <!-- Script opcional para manejar la interacción (ejemplo básico) -->
+    <script>
+        const form = document.getElementById('exam-access-form');
+        const feedbackMsg = document.getElementById('feedback-msg');
+        const examIdInput = document.getElementById('exam-id');
+        const submitButton = form.querySelector('button[type="submit"]');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita el envío real del formulario
+
+            const examId = examIdInput.value.trim();
+
+            // Limpia mensajes anteriores y clases
+            feedbackMsg.textContent = '';
+            feedbackMsg.className = 'feedback-message';
+            submitButton.disabled = true; // Deshabilita el botón durante el proceso
+
+            if (!examId) {
+                feedbackMsg.textContent = 'Por favor, ingresa el ID del examen.';
+                feedbackMsg.classList.add('error');
+                examIdInput.focus();
+                submitButton.disabled = false; // Habilita de nuevo si hay error
+                return;
+            }
+
+            // Simula una verificación (aquí iría la llamada real al backend)
+            feedbackMsg.textContent = 'Verificando ID...';
+            feedbackMsg.classList.add('loading'); // Muestra icono de carga
+
+            setTimeout(() => {
+                // Simulación de resultado
+                if (examId.toUpperCase() === "MAT101-FINAL") { // ID de ejemplo válido
+                    feedbackMsg.textContent = 'ID válido. Redirigiendo...';
+                    feedbackMsg.classList.remove('loading');
+                    feedbackMsg.classList.add('success'); // Mensaje de éxito (opcional)
+                    // Aquí redirigirías a la página del examen real:
+                    // window.location.href = `/examen/${examId}`;
+                    console.log(`Redirigiendo al examen con ID: ${examId}`);
+                    // Mantener botón deshabilitado mientras redirige
+                } else {
+                    feedbackMsg.textContent = 'ID de examen inválido o no encontrado.';
+                    feedbackMsg.classList.remove('loading');
+                    feedbackMsg.classList.add('error');
+                    submitButton.disabled = false; // Habilita para reintentar
+                    examIdInput.focus();
+                    examIdInput.select(); // Selecciona el texto para facilitar la corrección
+                }
+            }, 1500); // Simula demora de red/verificación
+        });
+    </script>
+
+</body>
+</html>

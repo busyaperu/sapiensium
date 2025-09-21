@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago con Yape - ExamPro</title>
+    <link rel="stylesheet" href="../landing-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/appwrite@13.0.0"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .yape-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .yape-card {
+            background: white;
+            max-width: 900px;
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .yape-header {
+            background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .yape-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="30" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="70" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .yape-logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: #722ed1;
+            font-weight: 800;
+        }
+
+        .yape-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem;
+            position: relative;
+        }
+
+        .yape-header p {
+            opacity: 0.9;
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .payment-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 500px;
+        }
+
+        .qr-section {
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #fafbfc;
+            border-right: 1px solid #e5e7eb;
+        }
+
+        .payment-status {
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .status-waiting .qr-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-placeholder {
+            width: 180px;
+            height: 180px;
+            background: repeating-linear-gradient(
+                45deg,
+                #000,
+                #000 3px,
+                #fff 3px,
+                #fff 6px
+            );
+            opacity: 0.8;
+            position: relative;
+        }
+
+        .qr-refresh {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #722ed1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr-refresh:hover {
+            background: #531dab;
+            transform: rotate(90deg);
+        }
+
+        .qr-instructions {
+            text-align: center;
+        }
+
+        .qr-instructions h3 {
+            color: #1f2937;
+            margin: 0 0 1rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .qr-instructions p {
+            color: #6b7280;
+            margin: 0 0 0.5rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .payment-amount {
+            background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .payment-amount h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem;
+        }
+
+        .payment-amount p {
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .status-steps {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0;
+        }
+
+        .status-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-left: 2px solid #e5e7eb;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .status-step::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 1.5rem;
+            width: 10px;
+            height: 10px;
+            background: #e5e7eb;
+            border-radius: 50%;
+        }
+
+        .status-step.active::before {
+            background: #722ed1;
+        }
+
+        .status-step.completed::before {
+            background: #10b981;
+            content: '✓';
+            color: white;
+            font-size: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            background: #f3f4f6;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            flex-shrink: 0;
+        }
+
+        .status-step.active .step-icon {
+            background: #722ed1;
+            color: white;
+        }
+
+        .status-step.completed .step-icon {
+            background: #10b981;
+            color: white;
+        }
+
+        .step-content h4 {
+            color: #1f2937;
+            margin: 0 0 0.25rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .step-content p {
+            color: #6b7280;
+            margin: 0;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+
+        .status-step.active .step-content h4 {
+            color: #722ed1;
+        }
+
+        .status-step.completed .step-content h4 {
+            color: #10b981;
+        }
+
+        /* Estados del proceso */
+        .status-waiting {
+            display: block;
+        }
+
+        .status-processing {
+            display: none;
+        }
+
+        .status-completed {
+            display: none;
+        }
+
+        .status-error {
+            display: none;
+        }
+
+        /* Estado procesando */
+        .processing-animation {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #722ed1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .processing-text {
+            color: #722ed1;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Estado completado */
+        .success-animation {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .success-text {
+            color: #10b981;
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .transaction-id {
+            background: #f0f9f4;
+            color: #166534;
+            padding: 0.75rem;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            margin: 1rem 0;
+            word-break: break-all;
+        }
+
+        /* Botones de acción */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #6b7280;
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .payment-content {
+                grid-template-columns: 1fr;
+            }
+
+            .qr-section {
+                border-right: none;
+                border-bottom: 1px solid #e5e7eb;
+                padding: 2rem 1rem;
+            }
+
+            .payment-status {
+                padding: 2rem 1rem;
+            }
+
+            .qr-code {
+                width: 150px;
+                height: 150px;
+            }
+
+            .qr-placeholder {
+                width: 130px;
+                height: 130px;
+            }
+
+            .yape-header {
+                padding: 1.5rem;
+            }
+
+            .yape-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Efectos especiales */
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Simulador de recepción de voucher */
+        .voucher-upload {
+            border: 2px dashed #722ed1;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            background: rgba(114, 46, 209, 0.05);
+            margin: 1rem 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .voucher-upload:hover {
+            background: rgba(114, 46, 209, 0.1);
+            border-color: #531dab;
+        }
+
+        .voucher-upload.dragover {
+            background: rgba(114, 46, 209, 0.2);
+            transform: scale(1.02);
+        }
+
+        .qr-code {
+            width: 290px;        /* Reducido de 200px */
+            height: 420px;       /* Reducido de 200px */
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .qr-image {
+            width: 390px;        /* Reducido de 180px */
+            height: 420px;       /* Reducido de 180px */
+            border-radius: 8px;  /* Reducido de 10px */
+            object-fit: cover;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="yape-container">
+        <div class="yape-card">
+            <!-- Header -->
+            <div class="yape-header">
+                <div class="yape-logo">Y</div>
+                <h1>Pago con Yape</h1>
+                <p>Pago 100% seguro con Yape Perú - BCP</p>
+            </div>
+
+            <!-- Agregar después del header, antes de payment-content -->
+            <div style="background: #f8f9fa; padding: 1rem 2rem; border-bottom: 1px solid #e5e7eb;">
+                <div style="max-width: 900px; margin: 0 auto; display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #6b7280;">
+                    <a href="../carrito.html" style="color: #4f46e5; text-decoration: none;">Carrito</a>
+                    <i class="fas fa-chevron-right" style="font-size: 0.75rem;"></i>
+                    <span id="current-payment-method">Pago con Yape</span>
+                    <i class="fas fa-chevron-right" style="font-size: 0.75rem;"></i>
+                    <span style="color: #9ca3af;">Confirmación</span>
+                </div>
+            </div>
+
+            <!-- Contenido principal -->
+            <div class="payment-content">
+                <!-- Sección QR -->
+                <div class="qr-section">
+                    <!-- Estado: Esperando pago -->
+                    <div id="waiting-state" class="status-waiting">
+                        <div class="qr-container pulse-animation">
+                            <div class="qr-code">
+                                <img src="assets/images/qr_yape.jpeg" alt="QR Yape ExamPro" class="qr-image">
+                            </div>
+                        </div>
+                        <div class="qr-instructions">
+                            <h3>¡Es muy fácil!</h3>
+                            <p>1. Abre la app <strong>Yape</strong> en tu celular</p>
+                            <p>2. Luego elige "Escanear QR"</p>
+                            <p>3. Escanea este código QR</p>
+                            <p>4. <strong>Digita S/ 23.60</strong> en la app</p>
+                            <p>5. Confirma el pago</p>
+                            <p>6. Comparte tu voucher aquí</p>
+                        </div>
+                    </div>
+
+                    <!-- Estado: Procesando -->
+                    <div id="processing-state" class="status-processing">
+                        <div class="processing-animation fade-in">
+                            <div class="spinner"></div>
+                            <div class="processing-text">Verificando pago...</div>
+                            <p style="color: #6b7280;">No cierres esta ventana</p>
+                        </div>
+                    </div>
+
+                    <!-- Estado: Completado -->
+                    <div id="completed-state" class="status-completed">
+                        <div class="success-animation fade-in">
+                            <div class="success-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="success-text">¡Pago exitoso!</div>
+                            <p style="color: #6b7280;">Tu pago ha sido procesado correctamente</p>
+                            <div class="transaction-id">
+                                ID: YPE-<span id="transaction-id"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel de estado -->
+                <div class="payment-status">
+                    <div class="payment-amount">
+                        <h2 id="amount-display">S/ 87.32</h2>
+                        <p>Plan Profesional - ExamPro</p>
+                        <p style="font-size: 0.875rem; opacity: 0.8;">👆 Digita este monto en tu app</p>
+                    </div>
+                    <div id="tipo-cambio-info"></div>
+
+                    <ul class="status-steps">
+                        <li class="status-step active" id="step-1">
+                            <div class="step-icon">
+                                <i class="fas fa-qrcode"></i>
+                            </div>
+                            <div class="step-content">
+                                <h4>Código QR generado</h4>
+                                <p>Escanea el código con tu celular</p>
+                            </div>
+                        </li>
+                        <li class="status-step" id="step-2">
+                            <div class="step-icon">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <div class="step-content">
+                                <h4>Digitando monto</h4>
+                                <p>Ingresa S/ 23.60 en tu app</p>
+                            </div>
+                        </li>
+                        <li class="status-step" id="step-3">
+                            <div class="step-icon">
+                                <i class="fas fa-share"></i>
+                            </div>
+                            <div class="step-content">
+                                <h4>Enviando comprobante</h4>
+                                <p>Comparte el voucher a esta página</p>
+                            </div>
+                        </li>
+                        <li class="status-step" id="step-4">
+                            <div class="step-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="step-content">
+                                <h4>Pago confirmado</h4>
+                                <p>Acceso activado exitosamente</p>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <!-- Simulador de carga de voucher -->
+                    <div id="voucher-section" style="display: none;">
+                        <div class="voucher-upload" onclick="simulateVoucherUpload()">
+                            <i class="fas fa-upload" style="font-size: 2rem; color: #722ed1; margin-bottom: 1rem;"></i>
+                            <p><strong>Simular recepción de voucher</strong></p>
+                            <p style="font-size: 0.875rem; color: #6b7280;">
+                                Click aquí para simular que recibiste el comprobante desde Yape
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-action btn-secondary" onclick="cancelPayment()">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
+                        <button class="btn-action btn-primary" id="continue-btn" style="display: none;" onclick="redirectToDashboard()">
+                            <i class="fas fa-arrow-right"></i>
+                            Continuar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        import { config } from './config.js';
+    
+        const DATABASE_ID = config.appwrite.databaseId;
+        const USUARIOS_COLLECTION_ID = config.appwrite.collectionUsuarios;
+        const BUCKET_ID = config.appwrite.bucketId;
+
+        // Configuración Appwrite
+        const { Client, Storage, Databases, ID } = Appwrite;
+
+        const client = new Client()
+            .setEndpoint('https://tu-appwrite-endpoint.com/v1') // Tu endpoint
+            .setProject('tu-project-id'); // Tu Project ID
+
+        const storage = new Storage(client);
+        const databases = new Databases(client);
+
+        // Recuperar datos del pedido
+        function loadOrderData() {
+
+            // Agregar al DOMContentLoaded:
+            document.getElementById('current-payment-method').textContent = 'Pago con Yape';
+
+            const orderData = JSON.parse(sessionStorage.getItem('examProOrder') || '{}');
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            return {
+                plan: urlParams.get('plan') || orderData.plan || 'profesional',
+                amount: urlParams.get('amount') || orderData.amount || '23.60',
+                customer: orderData.customer || {},
+                timestamp: orderData.timestamp || Date.now()
+            };
+        }
+
+        // Actualizar loadPlanData() en ambos archivos:
+        async function loadPlanData() {
+            const orderData = loadOrderData();
+            
+            // Obtener tipo de cambio
+            await obtenerTipoCambio();
+            
+            // Convertir a soles peruanos
+            const amountUSD = parseFloat(orderData.amount.replace('$', ''));
+            const amountPEN = amountUSD * tipoCambioSunat;
+            
+            document.getElementById('amount-display').innerHTML = `
+                S/ ${amountPEN.toFixed(2)}
+                <div style="font-size: 0.875rem; opacity: 0.8; margin-top: 0.25rem;">
+                    $${amountUSD.toFixed(2)} × ${tipoCambioSunat.toFixed(3)} = S/ ${amountPEN.toFixed(2)}
+                </div>
+            `;
+
+            // AGREGAR ESTA LÍNEA:
+            actualizarTipoCambio();
+            
+            // Actualizar instrucciones con monto correcto
+            const instructionElements = document.querySelectorAll('.qr-instructions p');
+            instructionElements.forEach(p => {
+                if (p.textContent.includes('S/ 23.60')) {
+                    p.innerHTML = p.innerHTML.replace('S/ 23.60', `<strong>S/ ${amountPEN.toFixed(2)}</strong>`);
+                }
+            });
+        }
+
+        // Función para obtener tipo de cambio en páginas de pago
+        // Tipo de cambio SUNAT
+        let tipoCambioSunat = 3.70; // Valor por defecto
+        let tipoCambioFecha = '';
+
+        // Obtener tipo de cambio del día
+        async function obtenerTipoCambio() {
+            try {
+                // API del Banco Central de Reserva del Perú
+                const response = await fetch('https://api.bcrp.gob.pe/estadisticas/api/PD04637PD/json/2025/2025/');
+                const data = await response.json();
+                
+                if (data && data.periods && data.periods.length > 0) {
+                    const ultimoTipoCambio = data.periods[data.periods.length - 1];
+                    tipoCambioSunat = parseFloat(ultimoTipoCambio.values[0]);
+                    tipoCambioFecha = ultimoTipoCambio.name;
+                }
+            } catch (error) {
+                console.warn('Error BCRP, usando valor por defecto');
+                tipoCambioSunat = 3.56;
+                tipoCambioFecha = new Date().toLocaleDateString('es-PE');
+            }
+            
+            actualizarTipoCambio();
+        }
+
+        // Actualizar visualización del tipo de cambio
+        function actualizarTipoCambio() {
+            const tipoCambioElement = document.getElementById('tipo-cambio-info');
+            if (tipoCambioElement) {
+                tipoCambioElement.innerHTML = `
+                    <div style="background: #f0f9f4; border: 1px solid #10b981; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <i class="fas fa-exchange-alt" style="color: #10b981;"></i>
+                            <strong style="color: #065f46;">Tipo de Cambio SUNAT</strong>
+                        </div>
+                        <div style="font-size: 0.875rem; color: #047857;">
+                            <div>Fecha: ${tipoCambioFecha}</div>
+                            <div>1 USD = S/ ${tipoCambioSunat.toFixed(3)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Actualizar montos convertidos
+            actualizarMontosConvertidos();
+        }
+
+        // Actualizar montos con conversión
+        function actualizarMontosConvertidos() {
+            const subtotalElement = document.getElementById('subtotal');
+            const taxElement = document.getElementById('tax');
+            const totalElement = document.getElementById('total');
+            
+            if (subtotalElement && taxElement && totalElement) {
+                const subtotalUSD = parseFloat(subtotalElement.textContent.replace('$', ''));
+                const taxUSD = parseFloat(taxElement.textContent.replace('$', ''));
+                const totalUSD = parseFloat(totalElement.textContent.replace('$', ''));
+                
+                const subtotalPEN = subtotalUSD * tipoCambioSunat;
+                const taxPEN = taxUSD * tipoCambioSunat;
+                const totalPEN = totalUSD * tipoCambioSunat;
+                
+                // Actualizar display con ambas monedas
+                subtotalElement.innerHTML = `$${subtotalUSD.toFixed(2)} <small style="color: #6b7280;">(S/ ${subtotalPEN.toFixed(2)})</small>`;
+                taxElement.innerHTML = `$${taxUSD.toFixed(2)} <small style="color: #6b7280;">(S/ ${taxPEN.toFixed(2)})</small>`;
+                totalElement.innerHTML = `$${totalUSD.toFixed(2)} <small style="color: #6b7280;">(S/ ${totalPEN.toFixed(2)})</small>`;
+            }
+        }
+
+        // Variables globales
+        let sessionId = 'EXAMPRO-FIXED-QR-2024'; // QR fijo de ExamPro
+        let paymentStatus = 'waiting'; // waiting, processing, completed, error
+        let qrTimeout;
+
+        // Validaciones de seguridad para Yape Perú
+        const YAPE_SECURITY = {
+            validPackages: ['com.bcp.innovacxion.yapeapp'],
+            validOrigins: ['yape://', 'https://yape.com.pe'],
+            
+            validateOrigin(source) {
+                return this.validOrigins.some(origin => source.startsWith(origin));
+            },
+            
+            validatePackage(packageName) {
+                return this.validPackages.includes(packageName);
+            }
+        };
+
+        // AGREGAR en JavaScript de plin-payment.html:
+        const PLIN_SECURITY = {
+            validPackages: [
+                'com.bbva.nxt_peru',                        // BBVA Perú
+                'pe.com.interbank.mobilebanking',           // Interbank
+                'pe.com.scotiabank.blpm.android.client'    // Scotiabank
+            ],
+            validOrigins: ['plin://', 'https://plin.pe'],
+            
+            validateOrigin(source) {
+                return this.validOrigins.some(origin => source.startsWith(origin));
+            },
+            
+            validatePackage(packageName) {
+                return this.validPackages.includes(packageName);
+            },
+            
+            getBankFromPackage(packageName) {
+                const banks = {
+                    'com.bbva.nxt_peru': 'BBVA',
+                    'pe.com.interbank.mobilebanking': 'Interbank', 
+                    'pe.com.scotiabank.blpm.android.client': 'Scotiabank'
+                };
+                return banks[packageName] || 'Desconocido';
+            }
+        };
+
+        // Sistema de validación anti-fraude Yape
+        class YapeSecurityValidator {
+            static validateMessage(event) {
+                // 1. Validar origen
+                if (!YAPE_SECURITY.validateOrigin(event.origin)) {
+                    throw new Error('FRAUDE: Origen no autorizado - ' + event.origin);
+                }
+                
+                // 2. Validar package
+                if (!event.data.packageName || !YAPE_SECURITY.validatePackage(event.data.packageName)) {
+                    throw new Error('FRAUDE: App no autorizada - ' + event.data.packageName);
+                }
+                
+                // 3. Validar estructura del voucher
+                if (!this.validateVoucherStructure(event.data.voucher)) {
+                    throw new Error('FRAUDE: Voucher inválido');
+                }
+                
+                // 4. Validar timestamp (máximo 5 minutos)
+                if (Date.now() - event.data.timestamp > 300000) {
+                    throw new Error('FRAUDE: Voucher expirado');
+                }
+                
+                return true;
+            }
+            
+            static validateVoucherStructure(voucher) {
+                const requiredFields = ['transactionId', 'amount', 'timestamp', 'fromYapeApp'];
+                return requiredFields.every(field => voucher && voucher.hasOwnProperty(field));
+            }
+        }
+
+        // Manejo de brechas de seguridad
+        function handleSecurityBreach(message) {
+            // Bloquear sesión inmediatamente
+            paymentStatus = 'blocked';
+            
+            // Mostrar alerta de seguridad
+            showSecurityAlert(message);
+            
+            // Reportar intento de fraude
+            reportFraudAttempt(message);
+            
+            // Bloquear interfaz
+            blockUserInterface();
+        }
+
+        function showSecurityAlert(message) {
+            showNotification('🚨 ALERTA DE SEGURIDAD: ' + message, 'error');
+        }
+
+        function reportFraudAttempt(message) {
+            fetch('/api/security/fraud-report', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    sessionId: sessionId,
+                    fraudType: 'yape_origin_validation',
+                    message: message,
+                    timestamp: Date.now(),
+                    userAgent: navigator.userAgent,
+                    referrer: document.referrer
+                })
+            }).catch(console.error);
+        }
+
+        function blockUserInterface() {
+            document.body.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; height: 100vh; background: #fee2e2; color: #dc2626; text-align: center; font-family: Inter, sans-serif;">
+                    <div>
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">🚨</div>
+                        <h1 style="font-size: 2rem; margin-bottom: 1rem;">Sesión Bloqueada</h1>
+                        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">Se detectó actividad sospechosa</p>
+                        <p style="color: #991b1b;">Intento de acceso no autorizado</p>
+                        <div style="margin-top: 2rem; padding: 1rem; background: white; border-radius: 10px; color: #374151;">
+                            <p><strong>Contacta soporte:</strong></p>
+                            <p>📧 security@exampro.com</p>
+                            <p>📞 +51 1 456-7890</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Listener para recibir mensajes desde Yape
+        window.addEventListener('message', function(event) {
+            try {
+                YapeSecurityValidator.validateMessage(event);
+                processVoucherSecure(event.data);
+            } catch (error) {
+                console.error('🚨 Intento de fraude detectado:', error.message);
+                handleSecurityBreach(error.message);
+            }
+        });
+        
+        // Generar ID de sesión único (simula seguridad como WhatsApp Web)
+        function generateSessionId() {
+            return 'YPE-' + Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Inicializar al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Sesión iniciada:', sessionId);
+            
+            // Simular actualización del QR cada 30 segundos
+            setInterval(refreshQR, 30000);
+            
+            // Simular detección automática después de 10 segundos
+            setTimeout(() => {
+                if (paymentStatus === 'waiting') {
+                    simulatePaymentDetection();
+                }
+            }, 10000);
+            
+            // Obtener datos del plan desde URL
+            loadPlanData();
+        });
+
+        function refreshQR() {
+            if (paymentStatus !== 'waiting') return;
+            
+            console.log('Refrescando código QR...');
+            const qrContainer = document.querySelector('.qr-container');
+            if (qrContainer) {
+                qrContainer.classList.add('pulse-animation');
+                setTimeout(() => {
+                    qrContainer.classList.remove('pulse-animation');
+                }, 1000);
+            }
+            
+            showNotification('Código QR actualizado', 'info');
+        }
+
+        // Simular detección de pago (como si escanearan el QR)
+        function simulatePaymentDetection() {
+            if (paymentStatus !== 'waiting') return;
+            
+            console.log('Simulando detección de escaneo QR...');
+            paymentStatus = 'scanned';
+            
+            // Actualizar UI
+            updateStepStatus(2, 'active');
+            showNotification('QR escaneado, confirma el pago en tu celular', 'info');
+            
+            // Mostrar sección de voucher después de 5 segundos
+            setTimeout(() => {
+                document.getElementById('voucher-section').style.display = 'block';
+                updateStepStatus(3, 'active');
+                showNotification('Esperando comprobante de pago', 'warning');
+            }, 5000);
+        }
+
+        // Simular carga de voucher (como si compartieran desde Yape)
+        function simulateVoucherUpload() {
+            // Simular datos como si vinieran desde Yape oficial
+            const mockYapeData = {
+                origin: 'yape://app',
+                packageName: 'com.bcp.innovacxion.yapeapp',
+                timestamp: Date.now(),
+                voucher: {
+                    transactionId: 'YPE-' + Date.now(),
+                    amount: parseFloat(document.getElementById('amount-display').textContent.replace('S/ ', '')),
+                    timestamp: Date.now(),
+                    fromYapeApp: true
+                }
+            };
+            
+            // Simular evento desde Yape
+            window.dispatchEvent(new MessageEvent('message', {
+                data: mockYapeData,
+                origin: 'yape://app'
+            }));
+        }
+
+        // Función existente para incluir datos del usuario autenticado
+        async function processVoucherSecure(voucherData) {
+            try {
+                showNotification('Voucher recibido, procesando...', 'info');
+                changeUIState('processing');
+                
+                // Obtener usuario autenticado del proyecto principal
+                const user = await account.get();
+                const userData = await databases.listDocuments(
+                    config.appwrite.databaseId,
+                    config.appwrite.collectionUsuarios,
+                    [`userId="${user.$id}"`]
+                );
+                
+                if (userData.documents.length === 0) {
+                    throw new Error('Usuario no encontrado en base de datos');
+                }
+                
+                const userInfo = userData.documents[0];
+                
+                // Configurar cliente para proyecto de pagos
+                const pagosClient = new Client()
+                    .setEndpoint(config.pagosAppwrite.endpoint)
+                    .setProject(config.pagosAppwrite.projectId)
+                    .setKey(config.pagosAppwrite.apiKey);
+                    
+                const pagosStorage = new Storage(pagosClient);
+                const pagosDatabases = new Databases(pagosClient);
+                // Generar URL de la imagen
+                const imageUrl = `${config.pagosAppwrite.endpoint}/storage/buckets/${config.pagosAppwrite.bucketId}/files/${uploadResult.$id}/view?project=${config.pagosAppwrite.projectId}`;
+
+                                
+                // Subir imagen al bucket de pagos
+                const uploadResult = await pagosStorage.createFile(
+                    config.pagosAppwrite.bucketId,
+                    'unique()',
+                    voucherData.voucher.imageData
+                );
+                
+                // Crear registro temporal para procesamiento
+                const documentData = {
+                    fileId: uploadResult.$id,
+                    uploadDate: uploadResult.$createdAt,
+                    // Datos del usuario
+                    nombre: userInfo.nombre,
+                    telefono: userInfo.telefono,
+                    email: userInfo.email,
+                    imageUrl: imageUrl
+                };
+                
+                // Guardar en base temporal para que Python procese
+                const result = await pagosDatabases.createDocument(
+                    config.pagosAppwrite.databaseId,
+                    'temp_processing', // Colección temporal
+                    'unique()',
+                    documentData
+                );
+                
+                showNotification('Voucher enviado para procesamiento', 'success');
+                
+            } catch (error) {
+                console.error('Error procesando voucher:', error);
+                showNotification('Error: ' + error.message, 'error');
+            }
+        }
+
+        // Completar pago exitosamente
+        function completePayment() {
+            paymentStatus = 'completed';
+            const transactionId = Date.now().toString(36).toUpperCase();
+            const orderData = loadOrderData();
+            
+            console.log('Pago completado:', transactionId);
+            
+            // Guardar datos de la transacción
+            const transactionData = {
+                transactionId: transactionId,
+                paymentMethod: window.location.pathname.includes('yape') ? 'yape' : 'plin',
+                amount: document.getElementById('amount-display').textContent,
+                plan: orderData.plan,
+                customer: orderData.customer,
+                completedAt: Date.now()
+            };
+            
+            sessionStorage.setItem('examProTransaction', JSON.stringify(transactionData));
+            
+            // Cambiar UI
+            changeUIState('completed');
+            updateStepStatus(4, 'completed');
+            
+            // Mostrar información
+            document.getElementById('transaction-id').textContent = transactionId;
+            document.getElementById('continue-btn').style.display = 'flex';
+            
+            const paymentMethodName = window.location.pathname.includes('yape') ? 'Yape' : 
+                (window.location.pathname.includes('plin') ? selectedBank.toUpperCase() : 'Banco');
+            
+            showNotification(`¡Pago exitoso con ${paymentMethodName}! Bienvenido a ExamPro`, 'success');
+        }
+
+        // Cambiar estado de la UI
+        function changeUIState(state) {
+            const states = ['waiting', 'processing', 'completed'];
+            
+            states.forEach(s => {
+                const element = document.getElementById(`${s}-state`);
+                if (element) {
+                    element.style.display = s === state ? 'block' : 'none';
+                }
+            });
+        }
+
+        // Actualizar estado de los pasos
+        function updateStepStatus(stepNumber, status) {
+            const step = document.getElementById(`step-${stepNumber}`);
+            if (!step) return;
+            
+            // Remover clases anteriores
+            step.classList.remove('active', 'completed');
+            
+            // Agregar nueva clase
+            if (status !== 'waiting') {
+                step.classList.add(status);
+            }
+        }
+
+        // Cancelar pago
+        function cancelPayment() {
+            if (paymentStatus === 'completed') {
+                redirectToDashboard();
+                return;
+            }
+            
+            if (paymentStatus === 'processing') {
+                if (!confirm('Tu pago está siendo procesado. ¿Estás seguro de que deseas cancelar?')) {
+                    return;
+                }
+            }
+            
+            if (confirm('¿Estás seguro de que deseas cancelar el pago?')) {
+                // Mantener datos para regresar al carrito
+                window.location.href = 'carrito.html';
+            }
+        }
+
+        // Redirigir al dashboard
+        function redirectToDashboard() {
+            const transactionData = JSON.parse(sessionStorage.getItem('examProTransaction') || '{}');
+            
+            showNotification('Procesando activación de cuenta...', 'success');
+            
+            // Simular activación de cuenta
+            setTimeout(() => {
+                showNotification('¡Cuenta activada! Redirigiendo...', 'success');
+                
+                setTimeout(() => {
+                    // Limpiar datos temporales
+                    sessionStorage.removeItem('examProOrder');
+                    
+                    // Redirigir con parámetros de éxito
+                    const params = new URLSearchParams({
+                        success: 'true',
+                        plan: transactionData.plan || 'profesional',
+                        transaction: transactionData.transactionId || 'unknown'
+                    });
+                    
+                    window.location.href = `loging.html?${params.toString()}`;
+                }, 1500);
+            }, 1000);
+        }
+
+        // Sistema de notificaciones
+        function showNotification(message, type = 'info') {
+            // Remover notificación anterior si existe
+            const existingNotif = document.querySelector('.notification');
+            if (existingNotif) {
+                existingNotif.remove();
+            }
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${getNotificationColor(type)};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                transform: translateX(400px);
+                transition: transform 0.3s ease;
+                max-width: 300px;
+                font-weight: 500;
+            `;
+            
+            const icon = getNotificationIcon(type);
+            notification.innerHTML = `<i class="${icon}" style="margin-right: 0.5rem;"></i>${message}`;
+            
+            document.body.appendChild(notification);
+            
+            // Animar entrada
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remover después de 4 segundos
+            setTimeout(() => {
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        function getNotificationColor(type) {
+            const colors = {
+                success: '#10b981',
+                error: '#ef4444',
+                warning: '#f59e0b',
+                info: '#722ed1'
+            };
+            return colors[type] || colors.info;
+        }
+
+        function getNotificationIcon(type) {
+            const icons = {
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-circle',
+                warning: 'fas fa-exclamation-triangle',
+                info: 'fas fa-info-circle'
+            };
+            return icons[type] || icons.info;
+        }
+
+        // Manejo de eventos de ventana
+        window.addEventListener('beforeunload', function(e) {
+            if (paymentStatus === 'processing') {
+                const message = 'Tu pago está siendo procesado. ¿Estás seguro de que deseas salir?';
+                e.returnValue = message;
+                return message;
+            }
+        });
+
+        // Simular conexión WebSocket (en implementación real)
+        function simulateWebSocketConnection() {
+            console.log('Conectando al servidor de pagos...');
+            
+            // En implementación real, aquí establecerías WebSocket
+            // const ws = new WebSocket('wss://api.exampro.com/payments');
+            
+            setTimeout(() => {
+                console.log('Conectado al servidor de pagos');
+                showNotification('Conexión establecida', 'success');
+            }, 1000);
+        }
+
+        // Inicializar conexión simulada
+        simulateWebSocketConnection();
+        
+        // Debugging (remover en producción)
+        window.yapeDev = {
+            sessionId: () => sessionId,
+            forceComplete: () => completePayment(),
+            forceDetection: () => simulatePaymentDetection(),
+            changeState: (state) => changeUIState(state)
+        };
+    </script>
+</body>
+</html>

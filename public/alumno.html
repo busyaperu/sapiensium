@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso de Alumno - ExamPro</title>
+    <!-- Enlaza la misma hoja de estilos principal -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Añade Font Awesome (asumiendo que styles.css no lo importa ya) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+
+    <!-- Estilos específicos para esta página de registro, alineados con index.html -->
+    <style>
+        /* Estilos base del body y layout principal */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f8f9fa; /* Fondo similar al index o un gris claro */
+            font-family: var(--font-family, sans-serif); /* Asegura usar la fuente de styles.css */
+            color: var(--text-color, #333);
+        }
+
+        /* Header y Footer simplificados (adaptados de la versión anterior) */
+         header nav { /* Asegura padding y alineación como en index.html */
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+         }
+         header .logo span {
+             font-weight: 600; /* Consistencia con index.html */
+             font-size: 1.4rem;
+         }
+
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center; /* Centra el contenido principal */
+            align-items: flex-start; /* Alinea arriba para formularios largos */
+            padding: 3rem 1rem; /* Espaciado superior/inferior */
+        }
+
+        /* Contenedor principal del formulario */
+        .registration-container {
+            background-color: #fff;
+            padding: 2.5rem 3rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Sombra sutil */
+            width: 100%;
+            max-width: 600px; /* Ancho máximo para el formulario */
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .registration-container h1 {
+            text-align: center;
+            color: var(--primary-color, #4f46e5); /* Color principal */
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem; /* Tamaño similar a títulos de sección */
+            font-weight: 600;
+        }
+
+        /* Estilo de los grupos de formulario */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500; /* Un poco menos pesado que 600 */
+            color: #444; /* Color de texto ligeramente más oscuro para etiquetas */
+            font-size: 0.9rem;
+        }
+
+        /* Estilo consistente para inputs y selects */
+        .form-group input[type="text"],
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem; /* Padding consistente */
+            border: 1px solid #ccc;
+            border-radius: 5px; /* Bordes redondeados */
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: #fff; /* Fondo blanco */
+            color: #333;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group select:focus {
+            border-color: var(--primary-color, #4f46e5); /* Borde color primario al enfocar */
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15); /* Sombra suave al enfocar */
+        }
+
+        /* Estilo para el contenedor de botones */
+        .btn-group {
+            display: flex;
+            gap: 1rem; /* Espacio entre botones */
+            margin-top: 2rem; /* Espacio sobre los botones */
+            justify-content: flex-end; /* Alinea botones a la derecha (opcional) */
+        }
+
+        /* Reemplazo de clases de botón genéricas por las del tema */
+        /* Asume que styles.css define .btn, .btn-primary, .btn-secondary */
+        /* Si no, copia los estilos de index.html aquí o en styles.css */
+        .btn-success { /* Redefine btn-success o usa btn-primary */
+            /* Si quieres mantenerlo verde pero con el estilo del tema: */
+             /* background-color: #28a745;
+             border-color: #28a745;
+             color: white; */
+             /* O mejor, usa el primario: */
+             background-color: var(--primary-color, #4f46e5);
+             border-color: var(--primary-color, #4f46e5);
+             color: white;
+        }
+        .btn-success:hover { /* Hover consistente */
+             background-color: var(--primary-dark-color, #4338ca); /* Asume variable de hover */
+             border-color: var(--primary-dark-color, #4338ca);
+        }
+
+        /* El botón 'Limpiar' podría usar el estilo secundario o delineado */
+        .btn#btn-limpiar { /* Estilo secundario o delineado */
+            background-color: #f8f9fa; /* Fondo claro */
+            color: #555;
+            border: 1px solid #ccc;
+        }
+         .btn#btn-limpiar:hover {
+             background-color: #e9ecef; /* Hover más oscuro */
+             border-color: #bbb;
+         }
+
+        /* Estilo para los mensajes de alerta */
+        .alert {
+            padding: 0.8rem 1rem;
+            margin-top: 1.5rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            border: 1px solid transparent;
+            display: none; /* Oculto por defecto */
+            text-align: left; /* Alinea texto a la izquierda */
+        }
+
+        .alert.success { /* Mensaje de éxito */
+            color: #155724; /* Texto oscuro */
+            background-color: #d4edda; /* Fondo verde pálido */
+            border-color: #c3e6cb; /* Borde verde */
+            display: block; /* Mostrar cuando tenga la clase */
+        }
+
+        .alert.error { /* Mensaje de error */
+            color: #721c24; /* Texto oscuro */
+            background-color: #f8d7da; /* Fondo rojo pálido */
+            border-color: #f5c6cb; /* Borde rojo */
+            display: block; /* Mostrar cuando tenga la clase */
+        }
+        /* Footer simplificado */
+        footer {
+             background-color: #fff; /* Fondo blanco como el header original */
+             border-top: 1px solid #eee;
+             padding: 1.5rem 1rem; /* Menos padding que el original */
+             margin-top: auto; /* Empuja el footer hacia abajo */
+         }
+        footer .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between; /* Logo a la izq, texto a la der */
+            align-items: center;
+            flex-wrap: wrap; /* Para pantallas pequeñas */
+            gap: 1rem;
+        }
+         footer .footer-logo span {
+             font-size: 1.1rem; /* Tamaño consistente */
+             font-weight: 600;
+         }
+         footer .footer-bottom {
+             text-align: right; /* Alinea el texto a la derecha */
+             font-size: 0.85rem;
+             color: #666;
+             margin-top: 0; /* No necesita margen superior extra */
+             padding-top: 0;
+             border-top: none;
+         }
+
+        /* Responsividad */
+         @media (max-width: 768px) {
+            main {
+                padding: 2rem 1rem;
+            }
+            .registration-container {
+                padding: 2rem 1.5rem;
+            }
+            .registration-container h1 {
+                 font-size: 1.6rem;
+             }
+            .btn-group {
+                flex-direction: column; /* Apila botones en pantallas pequeñas */
+                gap: 0.8rem;
+                align-items: stretch; /* Estira botones al ancho completo */
+            }
+             .btn-group button {
+                 width: 100%; /* Asegura que ocupen todo el ancho */
+             }
+         }
+         @media (max-width: 600px) {
+              footer .footer-content {
+                  flex-direction: column; /* Apila elementos en pantallas pequeñas */
+                  align-items: center;
+                  text-align: center;
+              }
+             footer .footer-bottom {
+                  text-align: center;
+                  margin-top: 1rem;
+              }
+
+              /* AÑADIR después de los estilos existentes: */
+            .mode-toggle {
+                display: flex;
+                background-color: #f1f5f9;
+                border-radius: 8px;
+                padding: 4px;
+                margin-bottom: 2rem;
+            }
+
+            .mode-btn {
+                flex: 1;
+                padding: 0.75rem 1rem;
+                border: none;
+                border-radius: 6px;
+                background-color: transparent;
+                color: #64748b;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .mode-btn.active {
+                background-color: var(--primary-color, #4f46e5);
+                color: white;
+            }
+
+            .form-group.hidden {
+                display: none;
+            }
+         }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header Simplificado (Solo Logo) -->
+    <header>
+        <nav>
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 2C8.268 2 2 8.268 2 16C2 23.732 8.268 30 16 30C23.732 30 30 23.732 30 16C30 8.268 23.732 2 16 2Z" fill="#4f46e5"/>
+                    <path d="M22 10H10C9.448 10 9 10.448 9 11V21C9 21.552 9.448 22 10 22H22C22.552 22 23 21.552 23 21V11C23 10.448 22.552 10 22 10Z" fill="white"/>
+                    <path d="M13 14H19V16H13V14Z" fill="#4f46e5"/>
+                    <path d="M13 17H19V19H13V17Z" fill="#4f46e5"/>
+                </svg>
+                <span>ExamPro</span>
+            </div>
+            <!-- Sin navegación ni CTAs -->
+        </nav>
+    </header>
+
+    <main>
+        <div class="registration-container">
+            <h1>Acceso de Alumno</h1>
+            <div class="mode-toggle">
+                <button type="button" id="btn-login" class="mode-btn active">
+                    <i class="fas fa-sign-in-alt"></i> Ingresar
+                </button>
+                <button type="button" id="btn-register" class="mode-btn">
+                    <i class="fas fa-user-plus"></i> Registrarse
+                </button>
+            </div>
+            <!-- Se mantiene la estructura del formulario original -->
+            <div class="form-group">
+                <label for="nombre-completo">Nombre Alumno</label>
+                <input type="text" id="nombre-completo" placeholder="Ej: Ana García López">
+            </div>
+            <div class="form-group">
+                <label for="id-alumno">ID Alumno</label>
+                <input type="text" id="id-alumno" placeholder="Ej: 2023ALUM001">
+            </div>
+            <div class="form-group">
+                <label for="email-alumno">Email</label>
+                <input type="text" id="email-alumno" placeholder="Ej: alumno@gmail.com">
+            </div>
+            <div class="form-group">
+                <label for="curso">Curso</label>
+                <select id="curso">
+                <option value="" disabled selected>Seleccione un curso</option> <!-- Placeholder mejorado -->
+                <option value="Programación I">Programación I</option>
+                <option value="Programación II">Programación II</option>
+                <option value="Bases de Datos">Bases de Datos</option>
+                <!-- Agregar más opciones según sea necesario -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="profesor">Nombre del Profesor</label>
+                <select id="profesor">
+                <option value="" disabled selected>Seleccione un profesor</option> <!-- Placeholder mejorado -->
+                <option value="Dr. Juan Pérez">Dr. Juan Pérez</option>
+                <option value="Dra. María López">Dra. María López</option>
+                <option value="Ing. Carlos Sánchez">Ing. Carlos Sánchez</option>
+                <!-- Agregar más opciones según sea necesario -->
+                </select>
+            </div>
+            <div class="form-group">
+              <label for="institucion">Institución</label>
+              <input type="text" id="institucion" placeholder="Ej: Universidad Nacional del Litoral">
+            </div>
+            <!-- Contenedor de botones -->
+            <div class="btn-group">
+                 <!-- Usar clases de botón del tema: btn-primary para acción principal -->
+                 <button class="btn btn-primary" id="btn-submit">
+                    <i class="fas fa-user-plus"></i> Registrarse
+                </button>
+                 <!-- Usar btn-secondary o btn-outlined para acción secundaria -->
+                 <button class="btn btn-secondary" id="btn-limpiar">
+                     <i class="fas fa-eraser"></i> Limpiar
+                 </button>
+             </div>
+
+            <!-- Mensaje de feedback (se mantiene igual pero se estiliza con CSS) -->
+            <div id="mensaje" class="alert" role="alert" aria-live="polite"></div>
+        </div>
+    </main>
+
+    <!-- Footer Simplificado -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 2C8.268 2 2 8.268 2 16C2 23.732 8.268 30 16 30C23.732 30 30 23.732 30 16C30 8.268 23.732 2 16 2Z" fill="#4f46e5"/>
+                    <path d="M22 10H10C9.448 10 9 10.448 9 11V21C9 21.552 9.448 22 10 22H22C22.552 22 23 21.552 23 21V11C23 10.448 22.552 10 22 10Z" fill="white"/>
+                    <path d="M13 14H19V16H13V14Z" fill="#4f46e5"/>
+                    <path d="M13 17H19V19H13V17Z" fill="#4f46e5"/>
+                </svg>
+                <span>ExamPro</span>
+            </div>
+            <div class="footer-bottom">
+                 <p>© 2023 ExamPro. Todos los derechos reservados.</p>
+             </div>
+        </div>
+    </footer>
+
+    <!-- Script (sin cambios en la lógica, solo verifica que las clases CSS coincidan) -->
+    <script type="module">
+        
+        import appwriteConfig from './appwrite-config.js';
+        const { Appwrite, databases, config } = appwriteConfig;
+    
+        let isLoginMode = true; // Empieza en modo login
+    
+        // Referencias DOM
+        const pageTitle = document.getElementById('page-title');
+        const btnLogin = document.getElementById('btn-login');
+        const btnRegister = document.getElementById('btn-register');
+        const btnSubmit = document.getElementById('btn-submit');
+        const extraFields = ['nombre-completo', 'profesor', 'institucion'];
+    
+        function showMessage(text, type) {
+            const mensaje = document.getElementById('mensaje');
+            if (mensaje) { // Verificar que el elemento existe
+                mensaje.textContent = text;
+                mensaje.className = 'alert ' + type;
+                setTimeout(() => {
+                    mensaje.className = 'alert';
+                }, 3000);
+            }
+        }
+    
+        function toggleMode(loginMode) {
+            isLoginMode = loginMode;
+            
+            if (loginMode) {
+                if (pageTitle) pageTitle.textContent = 'Iniciar Sesión';
+                if (btnLogin) btnLogin.classList.add('active');
+                if (btnRegister) btnRegister.classList.remove('active');
+                if (btnSubmit) btnSubmit.innerHTML = '<i class="fas fa-sign-in-alt"></i> Ingresar';                
+                
+                // Ocultar campos extra en login
+                extraFields.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element && element.closest('.form-group')) { // Verificar que existen ambos
+                        element.closest('.form-group').classList.add('hidden');
+                    }
+                });
+            } else {
+                if (pageTitle) pageTitle.textContent = 'Registro de Alumno';
+                if (btnRegister) btnRegister.classList.add('active');
+                if (btnLogin) btnLogin.classList.remove('active');
+                if (btnSubmit) btnSubmit.innerHTML = '<i class="fas fa-user-plus"></i> Registrarse';
+                
+                // Mostrar todos los campos en registro
+                extraFields.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element && element.closest('.form-group')) { // Verificar que existen ambos
+                        element.closest('.form-group').classList.remove('hidden');
+                    }
+                });
+            }
+        }
+    
+        // Event listeners para toggle
+        if (btnLogin) btnLogin.addEventListener('click', () => toggleMode(true));
+        if (btnRegister) btnRegister.addEventListener('click', () => toggleMode(false));
+    
+        // Lógica principal del submit
+        if (btnSubmit) {
+            btnSubmit.addEventListener('click', async () => {
+                if (!window.Appwrite) {
+                    showMessage("Error: Sistema no disponible. Recargue la página.", "error");
+                    return;
+                }
+                const idAlumno = document.getElementById('id-alumno')?.value.trim();
+                const email = document.getElementById('email-alumno')?.value.trim();
+                const curso = document.getElementById('curso')?.value;
+        
+                if (!idAlumno || !email || !curso) {
+                    showMessage("Por favor, complete ID Alumno, Email y Curso.", "error");
+                    return;
+                }
+        
+                btnSubmit.disabled = true;
+                
+                try {
+                    if (isLoginMode) {
+                        // MODO LOGIN: Verificar si existe
+                        const response = await databases.listDocuments(
+                            config.databaseId,
+                            config.collectionDatosAlumno,
+                            [
+                                window.Appwrite.Query.equal('id_alumno', idAlumno), 
+                                window.Appwrite.Query.equal('email', email),
+                                window.Appwrite.Query.equal('curso', curso)
+                            ]
+                        );
+        
+                        if (response.documents.length > 0) {
+                            const alumno = response.documents[0];
+                            localStorage.setItem('currentAlumno', JSON.stringify(alumno));
+                            
+                            // Registrar asistencia
+                            const datosExamen = JSON.parse(localStorage.getItem('configuracionExamen') || '{}');
+                            await registrarAsistencia(alumno, datosExamen);
+                            
+                            showMessage("¡Autenticación exitosa! Redirigiendo...", "success");
+                            
+                            setTimeout(() => {
+                                window.location.href = 'examen.html';
+                            }, 1500);
+                        } else {
+                            showMessage("Credenciales incorrectas. ¿Es su primera vez? Use 'Registrarse'.", "error");
+                        }
+                    } else {
+                        // MODO REGISTRO: Crear nuevo
+                        const nombre = document.getElementById('nombre-completo')?.value.trim();
+                        const profesor = document.getElementById('profesor')?.value;
+                        const institucion = document.getElementById('institucion')?.value.trim();
+        
+                        if (!nombre || !profesor || !institucion) {
+                            showMessage("Complete todos los campos para registrarse.", "error");
+                            return;
+                        }
+        
+                        // Verificar si ya existe
+                        const existing = await databases.listDocuments(
+                            config.databaseId,
+                            config.collectionDatosAlumno,
+                            [window.Appwrite.Query.equal('id_alumno', idAlumno)] // Cambio: usar Query directamente
+                        );
+        
+                        if (existing.documents.length > 0) {
+                            showMessage("El ID de alumno ya existe. Use 'Ingresar' para autenticarse.", "error");
+                            return;
+                        }
+        
+                        const newAlumno = await databases.createDocument(
+                            config.databaseId,
+                            config.collectionDatosAlumno,
+                            Appwrite.ID.unique(),
+                            {
+                                nombre_alumno: nombre,
+                                id_alumno: idAlumno,
+                                email: email,
+                                curso: curso,
+                                nombre_profesor: profesor,
+                                institucion: institucion
+                            }
+                        );
+        
+                        localStorage.setItem('currentAlumno', JSON.stringify(newAlumno));
+                        showMessage("¡Registro exitoso! Redirigiendo...", "success");
+                        
+                        setTimeout(() => {
+                            window.location.href = 'examen.html';
+                        }, 1500);
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    showMessage("Error de conexión. Intente nuevamente.", "error");
+                } finally {
+                    btnSubmit.disabled = false;
+                }
+            });
+        }
+    
+        // Inicializar en modo login
+        toggleMode(true);
+    
+        // Limpiar formulario
+        const btnLimpiar = document.getElementById('btn-limpiar');
+        if (btnLimpiar) {
+            btnLimpiar.addEventListener('click', () => {
+                document.querySelectorAll('input, select').forEach(el => el.value = '');
+                const mensaje = document.getElementById('mensaje');
+                if (mensaje) mensaje.className = 'alert';
+            });
+        }
+        
+        async function registrarAsistencia(alumno, datosExamen) {
+            try {
+                const response = await fetch('http://localhost:9000/api/registrar-asistencia', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        nombre_alumno: alumno.nombre_alumno,
+                        id_alumno: alumno.id_alumno,
+                        email_alumno: alumno.email,
+                        curso: alumno.curso,
+                        institucion: alumno.institucion,
+                        nombre_profesor: alumno.nombre_profesor,
+                        id_profesor: datosExamen.idProfesor || 'N/A',
+                        id_examen: datosExamen.idExamen || 'N/A',
+                        fecha_examen: datosExamen.fechaConfiguracion || new Date().toISOString(),
+                        url_examen: datosExamen.urlExamen || 'N/A'
+                    })
+                });
+        
+                const resultado = await response.json();
+                if (resultado.success) {
+                    console.log('Asistencia registrada exitosamente');
+                }
+            } catch (error) {
+                console.error('Error registrando asistencia:', error);
+            }
+        }
+
+    </script>
+</body>
+</html>

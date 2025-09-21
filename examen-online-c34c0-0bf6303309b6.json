@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "examen-online-c34c0",
+  "private_key_id": "0bf6303309b68b7857477479c0ce742143d81857",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCpEcdR/mQGyFg+\nX75LtZhsGFAo4zsCek3qcG6poEPzeW7mml7obu717OM3GvXLhg1kEZwpDt39ZPTA\nVvDd9xollwaAkgb8XjnZ5yEAIGajIl0mo/tGgZp4y1xPhY3WB4JY5yhnxDahdejf\nIeyqoZhHTDD9Cd6fPGorF2GOPwFyKEDrG9iTZaBGEt6IIwWcMAk4Oamdxftn9woI\nA/Q08PlVP0/iRneftnzhlEdrFPv6xVSSX5J8c5nTqLJeL6Gx8kyxu5cqUteEJFpp\nEX8hgYxw8OfbktPZJ8R+8jsaH7zYG+tTYTKOPxHJcQ7/de8/kns1tE8QKvdRWT4V\nWUEOOSSdAgMBAAECggEAKN/7/PZQb5VbREU4iCxQu/2Kz7/UIe64zK+/CXKOSxx2\nM/lpba94RWuuqUFy4HA555IcW47VG7CfPasnU7qsjx76uvXTC4uqV+S5xUKQHeuu\ncqudkfe+hWrBGBa1amPpXx4P1jqJbLLJiLy2b7Be1Qn2JA8RTBU6o81k0BOqgVMV\nw7sgtwhRnifeNTi/3K9BuvWwah8MfuwjP5Z3Abww8ZDUGTxn1iMTG2cFweP7Hk5D\nbyJVKqK0Vay/Myrpbpxw7AikuopQYgVoyceSO+hDybk4cQPcOynuczJ4waK19nOC\nYSn19JDpvXKN9p24GBVtOTixXRPUFkde8m4BEaKpXwKBgQDqVRyQnYM1gvNt+b1q\n1qqrmgfggfEHAM6V5QNvDHZZSBGpvm8T7AHdP9vN4ZKuSOHZYGaaiTKH632kV1fm\n6CkBiQv9YwujvtxDeK468YbbxKa/udk2VpqNd21+DV/OZslD/we2lc+ntexa2XR6\n8ZI8v6xVJqTm7ppMeP06PVHHpwKBgQC4s9MmKEs3l+MH35g/VwudpQ3vZ2gs9gpf\n5XsPxBmsDU+uXOZblyhUAlZoN90bGDJhVFegsdg0CFHAvbCgxmlaRjQqM/+BtOr6\n0I134dX4WpVddEZGPMZeXI/xshv+GKEbV5uWu+/2eZf9EghbqQujR0xeFufaDEQd\nS2W8rWD6GwKBgAx4uyx3NaSDc7FGuW4WPr8jU4f/YnSc9mHD7orafvIBg+8k04Sb\n6v17iJdMiiH8fwiyuMNAyg+x2N4GSAdiE8yhHqI9w0DTx6VPpvY8JJFNxhIuMgFS\nWqds08cBrzetAMk9qYtuLb8fT5UGPczNTpstGF7vz5b62/t19QREfzXBAoGAO4ia\n0n3CYNTwNKV5aVEhSVreNwBZr8ROa8KH+/j1XWOc/1KqXXNHaGyodUcsWYNfGcgZ\nxo4MZhkYYMvDls7dPl/KiJ/iB2jNJLL8JlwAn+ByrIDB9fm45slnDDygkTJXG30N\nhXRmUEe5GbUqRIEkYyikEN/JM5soiVi4Hiy0SWkCgYEAolePdRRtc2PNeqVNtLss\nioN+DwtpmOq4nsWXNdYdrR2ib1oN5bSeG0ikNRkG1AlHXxZUvXJI86R7fC52GlmQ\nimZFC3b1SYggVn9F3tPNclAveeDMtaPe3KF+zoYtGKd0s+aDoI2wuDG98fcbDjFE\nE4SGxCrWrmB9ChxYK1M7IDQ=\n-----END PRIVATE KEY-----\n",
+  "client_email": "examen-alumno@examen-online-c34c0.iam.gserviceaccount.com",
+  "client_id": "109410319389680376319",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/examen-alumno%40examen-online-c34c0.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

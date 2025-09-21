@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Administrativo - ExamPro</title>
+    <link rel="icon" href="data:,">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #581c87 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .logo {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 15px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-container {
+            padding: 40px 30px;
+        }
+
+        .form-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            color: #64748b;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: #1e40af;
+            color: white;
+            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.3);
+        }
+
+        .form-wrapper {
+            position: relative;
+            min-height: 320px;
+        }
+
+        .form {
+            display: none;
+        }
+
+        .form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #1e40af;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(30, 64, 175, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .back-link a {
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link a:hover {
+            color: #1e40af;
+        }
+
+        .domain-notice {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #1e40af;
+            text-align: center;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .auth-container {
+                margin: 10px;
+                max-width: none;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .form-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+    <script type="module">
+        import appwriteConfig from './appwrite-config.js';
+        window.Appwrite = appwriteConfig.Appwrite;
+    </script>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">🔐</div>
+                <h1>Acceso Administrativo</h1>
+                <p>Panel de administración ExamPro</p>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <div class="form-tabs">
+                <button class="tab-btn active" data-form="admin-login">Iniciar Sesión</button>
+                <button class="tab-btn" data-form="admin-signup">Registro Interno</button>
+            </div>
+
+            <div class="form-wrapper">
+                <!-- Formulario de Login Admin -->
+                <form id="admin-login-form" class="form active">
+                    <div class="domain-notice">
+                        Solo usuarios con email @sapiensium.com
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="admin-login-email">Email Corporativo</label>
+                        <input type="email" id="admin-login-email" placeholder="usuario@sapiensium.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="admin-login-password">Contraseña</label>
+                        <input type="password" id="admin-login-password" required>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Acceder al Sistema</button>
+                    <div id="login-loading" class="loading">Verificando credenciales...</div>
+                </form>
+
+                <!-- Formulario de Registro Admin -->
+                <form id="admin-signup-form" class="form">
+                    <div class="domain-notice">
+                        Registro exclusivo para personal de Sapiensium
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="admin-signup-email">Email Corporativo</label>
+                        <input type="email" id="admin-signup-email" placeholder="usuario@sapiensium.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="admin-signup-password">Contraseña</label>
+                        <input type="password" id="admin-signup-password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="admin-documento">Documento de Identidad</label>
+                        <input type="text" id="admin-documento" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="admin-nombre">Nombre Completo</label>
+                        <input type="text" id="admin-nombre" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="admin-telefono">Teléfono</label>
+                        <input type="text" id="admin-telefono" required>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Crear Cuenta Interna</button>
+                    <div id="signup-loading" class="loading">Creando cuenta...</div>
+                </form>
+            </div>
+
+            <div class="back-link">
+                <a href="loging.html">← Volver a acceso público</a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { databases, account, config } from './appwrite-config.js';
+        import { Query } from "https://cdn.jsdelivr.net/npm/appwrite@13.0.1/+esm";
+
+        // Referencias DOM
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const forms = document.querySelectorAll('.form');
+        const adminLoginForm = document.getElementById('admin-login-form');
+        const adminSignupForm = document.getElementById('admin-signup-form');
+
+        // Manejo de pestañas
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetForm = button.dataset.form;
+                
+                // Actualizar pestañas activas
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Mostrar formulario correspondiente
+                forms.forEach(form => form.classList.remove('active'));
+                document.getElementById(targetForm + '-form').classList.add('active');
+            });
+        });
+
+        // Función para registrar usuario administrativo
+        async function registerAdminUser(email, password, userData) {
+            try {
+                // Validar dominio corporativo
+                if (!email.endsWith('@sapiensium.com')) {
+                    throw new Error('Solo se permiten emails del dominio @sapiensium.com');
+                }
+
+                // 1. Crear usuario en Appwrite Auth
+                const user = await account.create(
+                    'unique()',
+                    email,
+                    password,
+                    userData.nombre
+                );
+                
+                console.log('Usuario administrativo creado:', user);
+                
+                // 2. Crear sesión temporal para el usuario recién creado
+                await account.createEmailSession(email, password);
+                
+                // 3. Guardar datos en base de datos (sin institución ni curso)
+                const userDocument = await databases.createDocument(
+                    config.databaseId,
+                    config.collectionDatosProfesores,
+                    'unique()',
+                    {
+                        userId: user.$id,
+                        email: email,
+                        nombre: userData.nombre,
+                        documento_id: userData.documento,
+                        telefono: userData.telefono,
+                        institucion: 'Sapiensium', // Valor por defecto
+                        curso: 'Administrativo' // Valor por defecto
+                    }
+                );
+                
+                // 4. Crear rol automáticamente
+                let role;
+                if (email === 'jcamus@sapiensium.com') {
+                    role = 'admin';
+                } else {
+                    role = 'interno'; // Pendiente de asignación
+                }
+                
+                await databases.createDocument(
+                    config.databaseId,
+                    config.collectionUserRoles,
+                    'unique()',
+                    {
+                        user_id: user.$id,
+                        role: role
+                    }
+                );
+                
+                // 5. Cerrar sesión temporal
+                await account.deleteSession('current');
+                
+                console.log('Usuario administrativo registrado completamente');
+                return { user, userDocument };
+                
+            } catch (error) {
+                console.error("Error en registro administrativo:", error);
+                throw error;
+            }
+        }
+
+        // Manejador del formulario de registro administrativo
+        adminSignupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('admin-signup-email').value;
+            const password = document.getElementById('admin-signup-password').value;
+            
+            // Validar dominio antes de proceder
+            if (!email.endsWith('@sapiensium.com')) {
+                alert('Error: Solo se permiten emails del dominio @sapiensium.com para registro administrativo.');
+                return;
+            }
+            
+            const userData = {
+                documento: document.getElementById('admin-documento').value,
+                nombre: document.getElementById('admin-nombre').value,
+                telefono: document.getElementById('admin-telefono').value
+            };
+            
+            const loadingDiv = document.getElementById('signup-loading');
+            loadingDiv.style.display = 'block';
+            
+            try {
+                await registerAdminUser(email, password, userData);
+                alert('Cuenta administrativa creada correctamente. Ahora puedes iniciar sesión.');
+                adminSignupForm.reset();
+                
+                // Cambiar a pestaña de login
+                tabButtons[0].click();
+                
+            } catch (error) {
+                console.error('Error en registro:', error);
+                if (error.message.includes('user with the same id, email, or phone already exists')) {
+                    alert('Error: Ya existe un usuario con ese email. Por favor usa otro email o inicia sesión.');
+                } else {
+                    alert(`Error en el registro: ${error.message}`);
+                }
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        });
+
+        // Manejador del formulario de login administrativo
+        adminLoginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('admin-login-email').value;
+            const password = document.getElementById('admin-login-password').value;
+            
+            // Validar dominio antes de proceder
+            if (!email.endsWith('@sapiensium.com')) {
+                alert('Error: Solo se permite acceso a usuarios con email @sapiensium.com.');
+                return;
+            }
+            
+            const loadingDiv = document.getElementById('login-loading');
+            loadingDiv.style.display = 'block';
+            
+            try {
+                // Cerrar cualquier sesión existente
+                try {
+                    await account.deleteSession('current');
+                } catch (error) {
+                    console.log('No había sesión previa');
+                }
+                
+                // Crear nueva sesión
+                await account.createEmailSession(email, password);
+                
+                // Obtener datos del usuario
+                const currentUser = await account.get();
+                
+                // Obtener rol del usuario
+                const roleQuery = await databases.listDocuments(
+                    config.databaseId,
+                    config.collectionUserRoles,
+                    [Query.equal('user_id', currentUser.$id)]
+                );
+                
+                const userRole = roleQuery.documents.length > 0 ? roleQuery.documents[0].role : 'interno';
+                
+                // Guardar datos del usuario con rol
+                localStorage.setItem('currentUser', JSON.stringify({
+                    email: email,
+                    nombre: currentUser.name || 'Administrador',
+                    role: userRole,
+                    userId: currentUser.$id
+                }));
+                localStorage.setItem('isAuthenticated', 'true');
+
+                // Guardar credenciales temporalmente para re-autenticación
+                localStorage.setItem('tempCredentials', JSON.stringify({
+                    email: email,
+                    password: password
+                }));
+                                
+                // Redirigir al panel administrativo
+                window.location.replace("index.html");
+                
+            } catch (error) {
+                console.error('Error en login:', error);
+                if (error.message.includes('Invalid credentials')) {
+                    alert('Error: Email o contraseña incorrectos. Verifica tus datos.');
+                } else {
+                    alert(`Error en el login: ${error.message}`);
+                }
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        });
+
+        // Validación en tiempo real del dominio
+        const emailInputs = document.querySelectorAll('input[type="email"]');
+        emailInputs.forEach(input => {
+            input.addEventListener('blur', (e) => {
+                const email = e.target.value;
+                if (email && !email.endsWith('@sapiensium.com')) {
+                    e.target.style.borderColor = '#ef4444';
+                    e.target.style.background = '#fef2f2';
+                } else {
+                    e.target.style.borderColor = '#e5e7eb';
+                    e.target.style.background = '#f9fafb';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

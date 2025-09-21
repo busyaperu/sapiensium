@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - ExamPro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+/* CSS Mejorado para Admin Panel - Colores más vibrantes */
+
+:root {
+    --primary-blue: #3b82f6;
+    --secondary-blue: #1e40af;
+    --accent-orange: #f97316;
+    --success-green: #10b981;
+    --danger-red: #ef4444;
+    --warning-yellow: #f59e0b;
+    --bg-light: #f8fafc;
+    --bg-white: #ffffff;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --border-color: #e5e7eb;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    color: var(--text-dark);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* Header mejorado */
+.header {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    color: white;
+    padding: 20px 40px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%);
+    background-size: 30px 30px;
+    opacity: 0.1;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    margin-left: 20px;  /* Agregar esta línea */
+}
+
+.back-btn {
+    background: rgba(255, 255, 255, 0.9);
+    color: #1e40af;
+    border: 2px solid white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.back-btn:hover {
+    background: white;
+    color: #1e40af;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Container principal */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px;
+}
+
+/* Cards de estadísticas vibrantes */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card.total {
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+    color: white;
+}
+
+.stat-card.pending {
+    background: linear-gradient(135deg, var(--accent-orange), #ea580c);
+    color: white;
+}
+
+.stat-card.approved {
+    background: linear-gradient(135deg, var(--success-green), #047857);
+    color: white;
+}
+
+.stat-card.rejected {
+    background: linear-gradient(135deg, var(--danger-red), #dc2626);
+    color: white;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(30%, -30%);
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.stat-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+/* Sección principal */
+.main-section {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.section-header {
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+    color: white;
+    padding: 25px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.btn-refresh {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 12px 24px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.btn-refresh:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-refresh:active {
+    transform: translateY(0);
+}
+
+/* Tabla mejorada */
+.requests-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+}
+
+.requests-table thead {
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+}
+
+.requests-table thead th {
+    padding: 20px 16px;
+    text-align: left;
+    font-weight: 700;
+    color: var(--text-dark);
+    border-bottom: 3px solid var(--primary-blue);
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.requests-table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.requests-table tbody tr:nth-child(even) {
+    background: rgba(59, 130, 246, 0.02);
+}
+
+.requests-table tbody tr:hover {
+    background: rgba(59, 130, 246, 0.08);
+    transform: scale(1.01);
+}
+
+.requests-table td {
+    padding: 18px 16px;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+/* Status badges vibrantes */
+.status-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.status-badge.status-pending {
+    background: linear-gradient(135deg, var(--accent-orange), #ea580c);
+    color: white;
+}
+
+.status-badge.status-approved {
+    background: linear-gradient(135deg, var(--success-green), #047857);
+    color: white;
+}
+
+.status-badge.status-rejected {
+    background: linear-gradient(135deg, var(--danger-red), #dc2626);
+    color: white;
+}
+
+/* Botones de acción mejorados */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-view {
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+    color: white;
+}
+
+.btn-approve {
+    background: linear-gradient(135deg, var(--success-green), #047857);
+    color: white;
+}
+
+.btn-reject {
+    background: linear-gradient(135deg, var(--danger-red), #dc2626);
+    color: white;
+}
+
+.logout-btn {
+    background: #ff6b6b;
+    color: white;
+    border: 2px solid #ff5252;
+    padding: 12px 24px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 700;
+    margin-right: 20px;
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: #ff5252;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 107, 107, 0.4);
+}
+
+/* Loading y estados especiales */
+.loading {
+    text-align: center;
+    padding: 60px;
+    color: var(--text-light);
+    font-size: 1.2rem;
+}
+
+.loading i {
+    color: var(--primary-blue);
+    font-size: 2rem;
+    margin-bottom: 16px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 80px 40px;
+    color: var(--text-light);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: var(--primary-blue);
+    margin-bottom: 24px;
+    opacity: 0.7;
+}
+
+.empty-state h3 {
+    font-size: 1.5rem;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+/* Mensajes de éxito y error */
+.success-message, .error-message {
+    padding: 16px 24px;
+    border-radius: 12px;
+    margin: 20px 0;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.success-message {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    color: #065f46;
+    border-left: 5px solid var(--success-green);
+}
+
+.error-message {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #991b1b;
+    border-left: 5px solid var(--danger-red);
+}
+
+/* Modales mejorados */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+}
+
+.modal-content {
+    background: white;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+    color: white;
+    padding: 25px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.close {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close:hover {
+    color: white;
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+#modalDetails .form-group {
+    margin-bottom: 20px;
+    text-align: left;
+    padding: 0;
+}
+
+#modalDetails .form-group label,
+#modalDetails .form-group div {
+    text-align: left;
+    margin: 0;
+    padding: 4px 0;
+}
+
+#modalDetails {
+    padding: 20px;
+    text-align: left;
+}
+
+/* Formularios */
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.modal-body {
+    padding: 30px;
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-dark);
+    text-align: left;
+}
+
+.form-group div {
+    padding: 8px 0;
+    color: var(--text-dark);
+    text-align: left;
+}
+
+.modal-body * {
+    text-align: left !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px 15px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .stat-card {
+        padding: 20px;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+    }
+    
+    .requests-table {
+        font-size: 0.9rem;
+    }
+    
+    .requests-table th,
+    .requests-table td {
+        padding: 12px 8px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1><i class="fas fa-cog"></i> Panel de Administración - ExamPro</h1>
+        <form action="index.html" method="get" style="display: inline;">
+            <button type="submit" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Volver al sitio
+            </button>
+        </form>
+    </header>
+
+    <div class="container">
+        <!-- Estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalRequests">-</div>
+                <div class="stat-label">Total Solicitudes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingRequests">-</div>
+                <div class="stat-label">Pendientes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="approvedRequests">-</div>
+                <div class="stat-label">Aprobadas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="rejectedRequests">-</div>
+                <div class="stat-label">Rechazadas</div>
+            </div>
+        </div>
+
+        <!-- Mensajes -->
+        <div id="successMessage" class="success-message"></div>
+        <div id="errorMessage" class="error-message"></div>
+
+        <!-- Tabla de solicitudes -->
+        <div class="requests-section">
+            <div class="section-header">
+                <h2 class="section-title">Solicitudes de Demo</h2>
+                <button class="refresh-btn" onclick="loadRequests()">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+            </div>
+            
+            <div id="requestsContainer">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Cargando solicitudes...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ver detalles -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Detalles de la Solicitud</h3>
+                <span class="close" onclick="closeModal('detailModal')">&times;</span>
+            </div>
+            <div id="modalDetails"></div>
+        </div>
+    </div>
+
+    <!-- Modal para rechazar -->
+    <div id="rejectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Rechazar Solicitud</h3>
+                <span class="close" onclick="closeModal('rejectModal')">&times;</span>
+            </div>
+            <form id="rejectForm">
+                <div class="form-group">
+                    <label class="form-label">Motivo del rechazo:</label>
+                    <textarea id="rejectReason" class="form-input" rows="4" placeholder="Explica brevemente por qué se rechaza esta solicitud..."></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal('rejectModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-reject">Rechazar Solicitud</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <script>
+        // Configuración - REEMPLAZAR CON TUS DATOS
+        const config = {
+            endpoint: 'https://appwrite.sapiensium.com/v1',
+            projectId: '68b9b7dd98304d1d2268',
+            databaseId: '68b9b80f1fae24f27525', 
+            collectionSolicitudes: '68b9de1494e971cb7e1b',
+            collectionCodigos: '68b9f035dd8e268c6952',
+            collectionCreditos: '68b9c63103be86be95ae'
+        };
+
+        const { Client, Databases } = Appwrite;
+        const client = new Client()
+            .setEndpoint(config.endpoint)
+            .setProject(config.projectId)
+           
+        const databases = new Databases(client);
+        let currentRequestId = null;
+
+        // Cargar solicitudes al inicio
+        document.addEventListener('DOMContentLoaded', async function() {
+            // try {
+            //     const account = new Appwrite.Account(client);
+            //     await account.get();
+            //     console.log('Usuario autenticado');
+            //     loadRequests();
+            // } catch (error) {
+            //     console.log('No hay sesión activa');
+            //     alert('Debes iniciar sesión para acceder a esta página');
+            //     window.location.href = 'admin-auth.html';
+            // }
+            
+            // Temporal - cargar sin verificar autenticación
+            loadRequests();
+        });
+
+        async function loadRequests() {
+            try {
+                showLoading();
+                const response = await databases.listDocuments(
+                    config.databaseId,
+                    config.collectionSolicitudes
+                );
+                
+                displayRequests(response.documents);
+                updateStats(response.documents);
+                
+            } catch (error) {
+                console.error('Error cargando solicitudes:', error);
+                showError('Error cargando las solicitudes');
+            }
+        }
+
+        function displayRequests(requests) {
+            const container = document.getElementById('requestsContainer');
+            
+            if (requests.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No hay solicitudes</h3>
+                        <p>Cuando los usuarios soliciten demos, aparecerán aquí.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const tableHTML = `
+                <table class="requests-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Empresa</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${requests.map(req => `
+                            <tr>
+                                <td>${req.name}</td>
+                                <td>${req.email}</td>
+                                <td>${req.company || 'No especificada'}</td>
+                                <td><span class="status-badge status-${req.status}">${getStatusText(req.status)}</span></td>
+                                <td>${formatDate(req.requested_at)}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-view" onclick="viewDetails('${req.$id}')">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </button>
+                                        ${req.status === 'pending' ? `
+                                            <button class="btn btn-approve" onclick="approveRequest('${req.$id}')">
+                                                <i class="fas fa-check"></i> Aprobar
+                                            </button>
+                                            <button class="btn btn-reject" onclick="rejectRequest('${req.$id}')">
+                                                <i class="fas fa-times"></i> Rechazar
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = tableHTML;
+        }
+
+        function updateStats(requests) {
+            const total = requests.length;
+            const pending = requests.filter(r => r.status === 'pending').length;
+            const approved = requests.filter(r => r.status === 'approved').length;
+            const rejected = requests.filter(r => r.status === 'rejected').length;
+
+            document.getElementById('totalRequests').textContent = total;
+            document.getElementById('pendingRequests').textContent = pending;
+            document.getElementById('approvedRequests').textContent = approved;
+            document.getElementById('rejectedRequests').textContent = rejected;
+        }
+
+        async function approveRequest(requestId) {
+            if (!confirm('¿Aprobar esta solicitud? Se generará un código promocional automáticamente.')) {
+                return;
+            }
+
+            try {
+                // Obtener detalles de la solicitud
+                const request = await databases.getDocument(
+                    config.databaseId,
+                    config.collectionSolicitudes,
+                    requestId
+                );
+
+                // Generar código promocional
+                const codigo = generatePromoCode();
+                
+                // Crear código promocional
+                await databases.createDocument(
+                    config.databaseId,
+                    config.collectionCodigos,
+                    'unique()',
+                    {
+                        codigo: codigo,
+                        user_email: request.email,
+                        credits_amount: 1000,
+                        status: 'pending',
+                        created_at: new Date().toISOString(),
+                        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+                    }
+                );
+                
+                // Otorgar créditos internos directamente al usuario
+                await databases.createDocument(
+                    config.databaseId,
+                    config.collectionCreditos,
+                    'unique()',
+                    {
+                        user_email: request.email,
+                        credits_amount: 1000,
+                        transaction_type: 'demo_approval',
+                        status: 'active',
+                        created_at: new Date().toISOString(),
+                        source: 'admin_approval',
+                        promo_code: codigo,
+                        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+                    }
+                );
+
+                // Actualizar estado de solicitud
+                await databases.updateDocument(
+                    config.databaseId,
+                    config.collectionSolicitudes,
+                    requestId,
+                    {
+                        status: 'approved',
+                        approved_at: new Date().toISOString(),
+                        reviewed_by: 'admin'
+                    }
+                );
+
+                showSuccess(`Solicitud aprobada. Código generado: ${codigo}`);
+                loadRequests();
+
+            } catch (error) {
+                console.error('Error aprobando solicitud:', error);
+                showError('Error al aprobar la solicitud');
+            }
+        }
+
+       
+
+        async function rejectRequest(requestId) {
+            currentRequestId = requestId;
+            document.getElementById('rejectModal').style.display = 'block';
+        }
+
+        async function viewDetails(requestId) {
+            try {
+                const request = await databases.getDocument(
+                    config.databaseId,
+                    config.collectionSolicitudes,
+                    requestId
+                );
+
+                const detailsHTML = `
+                    <div class="form-group">
+                        <label class="form-label">Nombre:</label>
+                        <div>${request.name}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email:</label>
+                        <div>${request.email}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Empresa:</label>
+                        <div>${request.company || 'No especificada'}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Teléfono:</label>
+                        <div>${request.phone || 'No especificado'}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Caso de uso:</label>
+                        <div>${request.use_case}</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Estado:</label>
+                        <div><span class="status-badge status-${request.status}">${getStatusText(request.status)}</span></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Fecha de solicitud:</label>
+                        <div>${formatDate(request.requested_at)}</div>
+                    </div>
+                `;
+
+                document.getElementById('modalDetails').innerHTML = detailsHTML;
+                document.getElementById('detailModal').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error cargando detalles:', error);
+                showError('Error al cargar los detalles');
+            }
+        }
+
+        // Manejar formulario de rechazo
+        document.getElementById('rejectForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const reason = document.getElementById('rejectReason').value.trim();
+            if (!reason) {
+                showError('Por favor ingresa un motivo para el rechazo');
+                return;
+            }
+
+            try {
+                await databases.updateDocument(
+                    config.databaseId,
+                    config.collectionSolicitudes,
+                    currentRequestId,
+                    {
+                        status: 'rejected',
+                        reviewed_by: 'admin',
+                        reject_reason: reason,
+                        approved_at: new Date().toISOString()
+                    }
+                );
+
+                showSuccess('Solicitud rechazada correctamente');
+                closeModal('rejectModal');
+                loadRequests();
+
+            } catch (error) {
+                console.error('Error rechazando solicitud:', error);
+                showError('Error al rechazar la solicitud');
+            }
+        });
+
+        // Funciones auxiliares
+        function generatePromoCode() {
+            return `BETA-${Math.random().toString(36).substr(2, 4).toUpperCase()}-2025`;
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'Pendiente',
+                'approved': 'Aprobada',
+                'rejected': 'Rechazada'
+            };
+            return statusMap[status] || status;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function showLoading() {
+            document.getElementById('requestsContainer').innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Cargando solicitudes...
+                </div>
+            `;
+        }
+
+        function showSuccess(message) {
+            const element = document.getElementById('successMessage');
+            element.textContent = message;
+            element.style.display = 'block';
+            setTimeout(() => element.style.display = 'none', 5000);
+        }
+
+        function showError(message) {
+            const element = document.getElementById('errorMessage');
+            element.textContent = message;
+            element.style.display = 'block';
+            setTimeout(() => element.style.display = 'none', 5000);
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            if (modalId === 'rejectModal') {
+                document.getElementById('rejectReason').value = '';
+                currentRequestId = null;
+            }
+        }
+
+        // Cerrar modales al hacer clic fuera
+        window.addEventListener('click', function(event) {
+            // Solo si se hace clic directamente en el fondo del modal
+            if (event.target.classList && event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        });
+
+        // Cerrar modales al hacer clic fuera
+        window.addEventListener('click', function(event) {
+            // Solo si se hace clic directamente en el fondo del modal, no en enlaces
+            if (event.target.classList && event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
