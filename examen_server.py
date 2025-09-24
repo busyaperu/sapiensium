@@ -147,5 +147,99 @@ def registrar_asistencia():
         print(f"Error registrando asistencia: {str(e)}")
         return jsonify({'error': 'Error interno del servidor'}), 500
 
+@app.route('/examen-actual', methods=['GET'])
+def examen_actual():
+    try:
+        email_profesor = request.args.get('email_profesor')
+        if not email_profesor:
+            return jsonify({'error': 'Email del profesor requerido'}), 400
+        
+        response = databases.list_documents(
+            database_id=APPWRITE_DATABASE_ID,
+            collection_id=APPWRITE_COLLECTION_CONFIGURACION_EXAMENES,
+            queries=[
+                Query.equal('id_profesor', email_profesor),
+                Query.equal('activo', True)
+            ]
+        )
+        
+        if response['documents']:
+            examen = response['documents'][0]
+            return jsonify({'examen': examen}), 200
+        else:
+            return jsonify({'examen': None}), 200
+            
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({'error': 'Error interno'}), 500
+    
+@app.route('/publicar-examen', methods=['POST'])
+def publicar_examen():
+    try:
+        data = request.get_json()
+        email_profesor = data.get('email_profesor')
+        
+        if not email_profesor:
+            return jsonify({'error': 'Email del profesor requerido'}), 400
+        
+        documento_examen = {
+            'email_profesor': email_profesor,
+            'nombre_examen': data.get('nombre_examen'),
+            'id_examen': data.get('id_examen'),
+            'url_examen': data.get('url_examen'),
+            'curso': data.get('curso'),
+            'fecha_limite': data.get('fecha_limite'),
+            'institucion': data.get('institucion'),
+            'activo': True,
+            'timestamp_publicacion': time.strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+        resultado = databases.create_document(
+            database_id=APPWRITE_DATABASE_ID,
+            collection_id=APPWRITE_COLLECTION_CONFIGURACION_EXAMENES,
+            document_id=ID.unique(),
+            data=documento_examen
+        )
+        
+        return jsonify({'success': True, 'message': 'Examen publicado exitosamente'}), 201
+        
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({'error': 'Error interno del servidor'}), 500
+    
+@app.route('/despublicar-examen', methods=['POST'])
+def despublicar_examen():
+    try:
+        data = request.get_json()
+        email_profesor = data.get('email_profesor')
+        
+        if not email_profesor:
+            return jsonify({'error': 'Email del profesor requerido'}), 400
+        
+        response = databases.list_documents(
+            database_id=APPWRITE_DATABASE_ID,
+            collection_id=APPWRITE_COLLECTION_CONFIGURACION_EXAMENES,
+            queries=[
+                Query.equal('email_profesor', email_profesor),
+                Query.equal('activo', True)
+            ]
+        )
+        
+        if response['documents']:
+            examen = response['documents'][0]
+            databases.update_document(
+                database_id=APPWRITE_DATABASE_ID,
+                collection_id=APPWRITE_COLLECTION_CONFIGURACION_EXAMENES,
+                document_id=examen['$id'],
+                data={'activo': False, 'timestamp_despublicacion': time.strftime('%Y-%m-%d %H:%M:%S')}
+            )
+            return jsonify({'success': True, 'message': 'Examen despublicado exitosamente'}), 200
+        else:
+            return jsonify({'error': 'No se encontró examen activo'}), 404
+            
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({'error': 'Error interno del servidor'}), 500            
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=9000, debug=True)
